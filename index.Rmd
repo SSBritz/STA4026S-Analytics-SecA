@@ -1,11 +1,12 @@
 --- 
 title: "STA4026S -- Honours Analytics -- Section B: Theory and Applications of Supervised Learning"
 author: "Stefan S. Britz"
-date: "`r Sys.Date()`"
+date: "August 2023"
 site: bookdown::bookdown_site
 ---
 
 # Introduction
 
-Blah blah bloo
+- Based on generally considered current best practices. These things change. 
 
+- Aims to find balance between breadth of topics, depth of theory, and practical application.
