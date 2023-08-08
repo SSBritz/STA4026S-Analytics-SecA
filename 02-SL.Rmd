@@ -1,6 +1,11 @@
 # Supervised Learning
 
-## Basics - b-v trade-off etc???
+## Basics - b-v trade-off etc
+
+Slegs basics, Et het reeds.
+
+Net decomposition of error
 
 ## Model validation
 
+Hoef nie CV van scratch af nie, Et het die beginsel gedek.

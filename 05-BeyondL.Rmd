@@ -1,7 +1,11 @@
 # Beyond Linearity
 
-## Polynomial regression?
+Begin met polynomial Polynomial regression?
 
 ## GAMs
 
 ## WLS - LOESS/LOWESS???
+
+Well, I like it...
+
+## KNN

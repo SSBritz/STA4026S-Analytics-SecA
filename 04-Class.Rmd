@@ -2,8 +2,6 @@
 
 ## Logistic regression
 
-## KNN???
-
 ## Model evaluation
 
 ### ROC Curves

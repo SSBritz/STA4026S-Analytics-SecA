@@ -1,9 +1,13 @@
 # Model Selection & Regularisation
 
-## Best subset & stepwise???
+Noem Best subset & stepwise, maar geen detail
 
 ## L1 and L2
+
+Bring teorie in vir $\hat{\beta_{RIDGE}}$ en Lasso. Kyk na Othonormal covariates op Lasso wiki
 
 ## ElasticNet
 
 ## PCR & PLS
+
+Sal sien oor die PLS, hang af van die tyd en scope.Versigtig vir ISLR, nie noodwendig reg nie. 
