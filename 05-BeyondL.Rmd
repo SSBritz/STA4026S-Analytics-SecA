@@ -1,6 +1,6 @@
 # Beyond Linearity
 
-Begin met polynomial Polynomial regression?
+Begin met polynomial Polynomial regression? Noem dit maar net. Dalk vroeër, om die CV beginsel te illustreer?
 
 ## GAMs
 
