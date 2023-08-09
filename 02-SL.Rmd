@@ -6,6 +6,8 @@ Slegs basics, Et het reeds.
 
 Net decomposition of error
 
+Foo
+
 ## Model validation
 
 Hoef nie CV van scratch af nie, Et het die beginsel gedek.
