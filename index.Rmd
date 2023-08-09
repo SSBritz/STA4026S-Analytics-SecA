@@ -5,8 +5,36 @@ date: "August 2023"
 site: bookdown::bookdown_site
 ---
 
+```{r}
+library(knitr)
+```
+
 # Introduction
 
-- Based on generally considered current best practices. These things change. 
+Welcome to an introduction to **supervised learning**! In this set of course notes we will: 
 
-- Aims to find balance between breadth of topics, depth of theory, and practical application.
+a) cover some of the fundamental theoretical principles underpinning supervised statistical and machine learning; 
+b) explore various models, algorithms, and heuristics to analyse different types of data, both for regression (continuous target variable) and classification (categorical target variable) problems; and
+c) apply these methods in R.
+
+The aim is to find a balance between breadth of topics, depth of theory, and practical application. Since we will be covering several topics in a relatively short time, the application component will focus largely on the current best practices for implementation in R. Therefore, we will mostly be using existing R packages and will not spend time coding these algorithms from scratch, with one exception in Chapter 6. 
+
+The fields of stastistical learning/AI/machine learning/data science/analytics/data mining/deep learning/[insert new buzzword here] are constantly evolving at a rapid pace. Although the core theory and methodology will (should) always be relevant, adaptations to the methods are regularly being developed, along with more efficient and convenient packages for implementation. Therefore, although these notes attempt to introduce you to up-to-date modern frameworks, note that these things change over time. 
+
+Note that this is by no means an exhaustive exploration of either theory, methods, or application, but it will imbue you with a skillset with which to tackle various problems and provide a solid foundation for further learning. 
+
+These notes draw from various sources, with the theoretical aspects largely relying on **An Introduction to Statistical Learning with Applications in R** by and **Elements of Statistical Learning** by , both of which freely available through the links below
+
+```{r, out.width = '50%'}
+include_graphics('figs/ISLRcover.pdf')
+```
+
+It is recommended that you keep these texts on hand, as you will be referred to sections therein for reading.
+
+Briefly contextualise where supervised learning fits in. 
+
+## Analytics -- different levels
+
+## Statistical or machine learning?
+
+
