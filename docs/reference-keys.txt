@@ -1,6 +1,4 @@
 introduction
-analytics-different-levels
-statistical-or-machine-learning
 supervised-learning
 basics---b-v-trade-off-etc
 model-validation

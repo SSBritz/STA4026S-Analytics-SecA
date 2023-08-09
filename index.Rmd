@@ -1,40 +1,49 @@
---- 
+---
 title: "STA4026S -- Honours Analytics -- Section B: Theory and Applications of Supervised Learning"
 author: "Stefan S. Britz"
 date: "August 2023"
 site: bookdown::bookdown_site
+bibliography: references.bib
 ---
 
-```{r}
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = 'figs/'
+)
+
 library(knitr)
+library(cowplot) #Gives more control for figures
 ```
 
 # Introduction
 
-Welcome to an introduction to **supervised learning**! In this set of course notes we will: 
+Welcome to an introduction to **supervised learning**! In this set of course notes we will:
 
-a) cover some of the fundamental theoretical principles underpinning supervised statistical and machine learning; 
-b) explore various models, algorithms, and heuristics to analyse different types of data, both for regression (continuous target variable) and classification (categorical target variable) problems; and
-c) apply these methods in R.
+a)  cover some of the fundamental theoretical principles underpinning supervised statistical and machine learning;
+b)  explore various models, algorithms, and heuristics to analyse different types of data, both for regression (continuous target variable) and classification (categorical target variable) problems; and
+c)  apply these methods in R.
 
-The aim is to find a balance between breadth of topics, depth of theory, and practical application. Since we will be covering several topics in a relatively short time, the application component will focus largely on the current best practices for implementation in R. Therefore, we will mostly be using existing R packages and will not spend time coding these algorithms from scratch, with one exception in Chapter 6. 
+The aim is to find a balance between breadth of topics, depth of theory, and practical application. Since we will be covering several topics in a relatively short time, the application component will focus largely on the current best practices for implementation in R. Therefore, we will mostly be using existing R packages and will not spend time coding these algorithms from scratch, with one exception in Chapter 6.
 
-The fields of stastistical learning/AI/machine learning/data science/analytics/data mining/deep learning/[insert new buzzword here] are constantly evolving at a rapid pace. Although the core theory and methodology will (should) always be relevant, adaptations to the methods are regularly being developed, along with more efficient and convenient packages for implementation. Therefore, although these notes attempt to introduce you to up-to-date modern frameworks, note that these things change over time. 
+The fields of stastistical learning/AI/machine learning/data science/analytics/data mining/deep learning/[insert new buzzword here] are constantly evolving at a rapid pace. Although the core theory and methodology will (should) always be relevant, adaptations to the methods are regularly being developed, along with more efficient and convenient packages for implementation. Therefore, although these notes attempt to introduce you to up-to-date modern frameworks, note that these things change over time.
 
-Note that this is by no means an exhaustive exploration of either theory, methods, or application, but it will imbue you with a skillset with which to tackle various problems and provide a solid foundation for further learning. 
+Also note that this is by no means an exhaustive exploration of either theory, methods, or application, but it will imbue you with a skillset with which to tackle various problems and provide a solid foundation for further learning.
 
-These notes draw from various sources, with the theoretical aspects largely relying on **An Introduction to Statistical Learning with Applications in R** by and **Elements of Statistical Learning** by , both of which freely available through the links below
+These notes draw from various sources, with the theoretical aspects largely relying on **An Introduction to Statistical Learning with Applications in R** [@james2013introduction]and **Elements of Statistical Learning** [@hastie2009elements], both of which are freely available [here](https://www.statlearning.com/) and [here](https://hastie.su.domains/ElemStatLearn/), respectively.
 
-```{r, out.width = '50%'}
-include_graphics('figs/ISLRcover.pdf')
+```{r echo=FALSE, fig.align='center', fig.cap='', fig.height=3}
+ggdraw() + 
+  draw_image('figs/ISLR.png', width = 0.4) + 
+  draw_image('figs/ESL.jpg', width = 0.4, x = 0.5)
 ```
 
-It is recommended that you keep these texts on hand, as you will be referred to sections therein for reading.
+It is recommended that you keep the former on hand, as you will be referred to sections therein for reading. Other sources will be referenced as and when they are used.
 
-Briefly contextualise where supervised learning fits in. 
+<!-- Perhaps leave the following just for the slides: -->
 
-## Analytics -- different levels
+<!-- Before we delve into the content, a brief look at the bigger picture might help to contextualise where supervised learning fits in. -->
 
-## Statistical or machine learning?
+<!-- ## Analytics -- different levels -->
 
+<!-- ## Statistical or machine learning? -->
 
