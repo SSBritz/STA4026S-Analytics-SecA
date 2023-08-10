@@ -13,5 +13,8 @@ pre code {
   white-space: inherit;
 }
 body {
-text-align: justify;
+  text-align: justify;
+}
+h1 {
+  text-align: center;
 }
