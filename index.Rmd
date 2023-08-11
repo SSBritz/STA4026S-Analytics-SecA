@@ -7,6 +7,7 @@ author: 'Stefan S. Britz'
 date: 'August 2023'
 site: bookdown::bookdown_site
 bibliography: references.bib
+csl: apa.csl
 ---
 
 ```{r, setup, include=FALSE}
@@ -30,7 +31,7 @@ The aim is to find a balance between breadth of topics, depth of theory, and pra
 
 The fields of statistical learning/AI/machine learning/data science/analytics/data mining/deep learning/[insert new buzzword here] are constantly evolving at a rapid pace. Although the core theory and methodology will (should) always be relevant, adaptations to the methods are regularly being developed, along with more efficient and convenient packages for implementation. Therefore, although these notes attempt to introduce you to up-to-date modern frameworks, note that these things change over time.
 
-Also note that this is by no means an exhaustive exploration of either theory, methods, or application, but it will imbue you with a skillset with which to tackle various problems and provide a solid foundation for further learning.
+Also note that this is by no means an exhaustive exploration of either theory, methods, or application, but it will imbue you with a skill set with which to tackle various problems and provide a solid foundation for further learning.
 
 These notes draw from various sources, with the theoretical aspects largely relying on **An Introduction to Statistical Learning with Applications in R** [@james2013introduction] and **Elements of Statistical Learning** [@hastie2009elements], both of which are freely available [here](https://www.statlearning.com/) and [here](https://hastie.su.domains/ElemStatLearn/), respectively.
 

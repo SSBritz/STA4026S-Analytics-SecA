@@ -4,18 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 Supervised Learning | STA4026S – Honours Analytics – Section B: Theory and Applications of Supervised Learning</title>
-  <meta name="description" content="Chapter 2 Supervised Learning | STA4026S – Honours Analytics – Section B: Theory and Applications of Supervised Learning" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <title>Chapter 2 Supervised Learning |  STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning</title>
+  <meta name="description" content="<br />
+STA4026S – Honours Analytics<br />
+Section B: Theory and Application of Supervised Learning</p>" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 Supervised Learning | STA4026S – Honours Analytics – Section B: Theory and Applications of Supervised Learning" />
+  <meta property="og:title" content="Chapter 2 Supervised Learning |  STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 Supervised Learning | STA4026S – Honours Analytics – Section B: Theory and Applications of Supervised Learning" />
+  <meta name="twitter:title" content="Chapter 2 Supervised Learning |  STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning" />
   
   
   
@@ -54,10 +56,6 @@
 
 
 
-<style type="text/css">
-  
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-</style>
 <style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
 div.csl-bib-body { }
@@ -100,8 +98,9 @@ div.csl-indent {
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="supervised-learning.html"><a href="supervised-learning.html"><i class="fa fa-check"></i><b>2</b> Supervised Learning</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#basics---b-v-trade-off-etc"><i class="fa fa-check"></i><b>2.1</b> Basics - b-v trade-off etc</a></li>
+<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-Variance trade-off</a></li>
 <li class="chapter" data-level="2.2" data-path="supervised-learning.html"><a href="supervised-learning.html#model-validation"><i class="fa fa-check"></i><b>2.2</b> Model validation</a></li>
+<li class="chapter" data-level="2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#side-note-statistical-learning-vs-machine-learning"><i class="fa fa-check"></i><b>2.3</b> Side note: Statistical learning vs machine learning</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="model-selection-regularisation.html"><a href="model-selection-regularisation.html"><i class="fa fa-check"></i><b>3</b> Model Selection &amp; Regularisation</a>
 <ul>
@@ -142,7 +141,9 @@ div.csl-indent {
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">STA4026S – Honours Analytics – Section B: Theory and Applications of Supervised Learning</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"><p><img src="figs/Dept_Logo.jpg" style="width:50.0%" /><img src="figs/UCTLogo.jpg" style="width:20.0%" /><br />
+STA4026S – Honours Analytics<br />
+Section B: Theory and Application of Supervised Learning</p></a>
           </h1>
         </div>
 
@@ -152,17 +153,65 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="supervised-learning" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Supervised Learning<a href="supervised-learning.html#supervised-learning" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="basics---b-v-trade-off-etc" class="section level2 hasAnchor" number="2.1">
-<h2><span class="header-section-number">2.1</span> Basics - b-v trade-off etc<a href="supervised-learning.html#basics---b-v-trade-off-etc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Slegs basics, Et het reeds.</p>
-<p>Net decomposition of error</p>
-<p>Foo</p>
+<p>This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already.</p>
+<p>Using a set of observations to uncover some underlying process in the real world is the basic premise of “learning from data” <span class="citation">(Abu-Mostafa et al., 2012, p. 11)</span>. By discerning patterns, relationships, and trends within the data, machines become capable of making informed decisions and predictions in various domains. Different learning paradigms have developed to address different problems and data structures, and are generally divided into three broad classes: supervised learning, unsupervised learning, and reinforcement learning. We will not discuss the latter in this course.</p>
+<p>The basic distinction is that <strong>supervised learning</strong> refers to cases where there is some <strong>target variable</strong>, usually indicated as <span class="math inline">\(Y\)</span>, whereas if we are interested in the structures and patterns in explanatory variables<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> only, we refer to unsupervised learning.</p>
+<p>Given a quantitative response <span class="math inline">\(Y\)</span> and a set of <span class="math inline">\(p\)</span> predictors <span class="math inline">\(X_1, X_2, \ldots, X_p\)</span>, we are interested in the assumed, unobserved function that maps the inputs to the outputs:</p>
+<p><span class="math display" id="eq:fx">\[\begin{equation}
+Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},
+%\tag{2.1}
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(f(.)\)</span> represents the fixed, but unknown function and <span class="math inline">\(\epsilon\)</span> is a random error term, independent of <span class="math inline">\(X\)</span>, with <span class="math inline">\(E(X) = 0\)</span>. By estimating <span class="math inline">\(f\)</span> such that</p>
+<p><span class="math display" id="eq:fhat">\[\begin{equation}
+\hat{Y} = \hat{f}(X),
+%\tag{2.2}
+\end{equation}\]</span></p>
+<p>we allow for both prediction of <span class="math inline">\(Y\)</span> – which is the primary goal in forecasting – and inference, i.e. describing how <span class="math inline">\(Y\)</span> is affected by changes in <span class="math inline">\(X\)</span>.</p>
+<p>Estimating <span class="math inline">\(\hat{f}\)</span> can be done in two ways, namely via a parametric or a non-parametric approach.</p>
+<p><strong>Parametric approach</strong></p>
+<p>Here an assumption is made about the the functional form of <span class="math inline">\(f\)</span>, for example</p>
+<p><span class="math display">\[f(\boldsymbol{X}) = \beta_0 + \sum_{j=1}^p\beta_jX_j.\]</span></p>
+<p>The best estimate of <span class="math inline">\(f\)</span> is now defined as the set of parameters <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> that minimise some specified loss function.
+Given a set of observations <span class="math inline">\(\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n\)</span>, we could use ordinary least squares to minimise the mean squared error (MSE):</p>
+<p><span class="math display">\[MSE = \frac{1}{n}\sum_{i=1}^n\left[y_i - \hat{f}(x_i)\right]^2 \]</span>
+Therefore, the problem of estimating an arbitrary p-dimensional function is simplified to fitting a set of parameters.</p>
+<p><strong>Non-parametric approach</strong></p>
+<p>Another option is to make no explicit assumptions regarding the functional form of <span class="math inline">\(f\)</span>. This allows one to fit a wide range of possible forms for <span class="math inline">\(f\)</span> – in these notes we consider K-nearest neighbours and tree-based methods – but since estimation is not reduced to estimating a set of parameters, this approach generally requires more data than parametric estimation.</p>
+<p>The objective remains to find <span class="math inline">\(f\)</span> that fits the available data as closely as possible, although one must be careful to avoiding overfitting, ensuring that the model generalises well to unseen data.</p>
+<p><strong>Generalisation</strong></p>
+<p>The primary goal of prediction is of course to accurately predict the outcomes of observations not yet observed by the model.</p>
+<p>By now you will be familiar with the</p>
+<div id="bias-variance-trade-off" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Bias-Variance trade-off<a href="supervised-learning.html#bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Consider the case where <span class="math inline">\(\hat{f}\)</span> is fixed and out-of-sample observations of the variables are introduced, which we will denote as {_0, y_0}. We can deconstruct the theoretical MSE as follows:</p>
+<p><span class="math display">\[\begin{align}
+E\left[y_0 - \hat{f}(\boldsymbol{x}_0) \right]^2 &amp;= E[f(\boldsymbol{x}_0) + \epsilon - \hat{f}(\boldsymbol{x}_0)]^2 \\
+&amp;= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2 + 2\epsilon(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)) + \epsilon^2] \\
+&amp;= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2] + 2E[\epsilon]E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))] + E[\epsilon^2] \\
+&amp;= \underbrace{E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2]}_{reducible} + \underbrace{Var(\epsilon)}_{irreducible} \\
+\end{align}\]</span>
+2022P1</p>
 </div>
 <div id="model-validation" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> Model validation<a href="supervised-learning.html#model-validation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Hoef nie CV van scratch af nie, Et het die beginsel gedek.</p>
+<p>This has been a very brief summary of some of the basic statistical learning principles we will encounter going forward. For a more in-depth discussion,</p>
+</div>
+<div id="side-note-statistical-learning-vs-machine-learning" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Side note: Statistical learning vs machine learning<a href="supervised-learning.html#side-note-statistical-learning-vs-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Statistical Learning:</p>
+<p>Foundation: Statistical learning is rooted in the field of statistics and builds upon principles of probability, inference, and hypothesis testing. Objective: The primary objective of statistical learning is to understand and model relationships between variables in order to make predictions or draw insights from data. Emphasis: Statistical learning places a strong emphasis on understanding the underlying data-generating process and making inferences about population characteristics based on sample data. Assumptions: It often involves making explicit assumptions about the underlying statistical distributions and relationships between variables. Interpretability: Statistical models tend to be more interpretable, as they often involve understanding the impact and significance of individual variables on the outcome.</p>
+<p>Foundation: Machine learning draws from various fields, including computer science, artificial intelligence, and statistical learning, but with a stronger emphasis on algorithmic and computational aspects. Objective: The primary objective of machine learning is to develop algorithms that can automatically learn patterns and relationships from data, with an emphasis on predictive accuracy and generalization to new, unseen data. Emphasis: While understanding the underlying data-generating process is important, machine learning is often more focused on achieving optimal predictive performance. Assumptions: Machine learning methods often work in a more agnostic manner and may not rely heavily on explicit statistical assumptions. Interpretability: Some machine learning models, like deep neural networks, can be highly complex and challenging to interpret due to their architecture and the multitude of learned features.</p>
+<p>It’s important to note that the distinction between statistical learning and machine learning can sometimes be blurred, and the two fields have evolved to influence each other over time. Many modern machine learning techniques, such as ensemble methods and regularization, have strong roots in statistical learning theory. Additionally, both fields share common goals of extracting insights from data and making predictions, but they may approach these goals with different philosophical and methodological perspectives.</p>
+<p>In essence, statistical learning often focuses on understanding the probabilistic relationships between variables, while machine learning places greater emphasis on developing algorithms that can learn patterns directly from data, sometimes sacrificing interpretability for predictive performance.</p>
 
 </div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>Often referred to as <strong>features</strong> in the learning context, or <strong>predictors</strong> in supervised learning specifically.<a href="supervised-learning.html#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
             </section>
 

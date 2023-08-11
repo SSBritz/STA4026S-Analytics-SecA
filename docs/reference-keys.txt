@@ -1,7 +1,10 @@
+eq:fx
+eq:fhat
 introduction
 supervised-learning
-basics---b-v-trade-off-etc
+bias-variance-trade-off
 model-validation
+side-note-statistical-learning-vs-machine-learning
 model-selection-regularisation
 l1-and-l2
 elasticnet

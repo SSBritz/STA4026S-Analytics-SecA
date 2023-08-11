@@ -11,3 +11,7 @@ Bring teorie in vir $\hat{\beta_{RIDGE}}$ en Lasso. Kyk na Othonormal covariates
 ## PCR & PLS
 
 Sal sien oor die PLS, hang af van die tyd en scope.Versigtig vir ISLR, nie noodwendig reg nie. 
+
+
+
+A3Q2

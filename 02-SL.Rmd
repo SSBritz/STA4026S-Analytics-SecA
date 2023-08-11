@@ -1,13 +1,85 @@
+---
+csl: apa.csl
+---
+
 # Supervised Learning
 
-## Basics - b-v trade-off etc
+This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already. 
 
-Slegs basics, Et het reeds.
+Using a set of observations to uncover some underlying process in the real world is the basic premise of "learning from data" [@Mostafa2012, p. 11]. By discerning patterns, relationships, and trends within the data, machines become capable of making informed decisions and predictions in various domains. Different learning paradigms have developed to address different problems and data structures, and are generally divided into three broad classes: supervised learning, unsupervised learning, and reinforcement learning. We will not discuss the latter in this course.
 
-Net decomposition of error
+The basic distinction is that **supervised learning** refers to cases where there is some **target variable**, usually indicated as $Y$, whereas if we are interested in the structures and patterns in explanatory variables[^02-sl-1] only, we refer to unsupervised learning.
 
-Foo
+[^02-sl-1]: Often referred to as **features** in the learning context, or **predictors** in supervised learning specifically.
+
+Given a quantitative response $Y$ and a set of $p$ predictors $X_1, X_2, \ldots, X_p$, we are interested in the assumed, unobserved function that maps the inputs to the outputs:
+
+\begin{equation}
+Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},
+%(\#eq:fx)
+\end{equation}
+
+where $f(.)$ represents the fixed, but unknown function and $\epsilon$ is a random error term, independent of $X$, with $E(X) = 0$. By estimating $f$ such that 
+
+\begin{equation}
+\hat{Y} = \hat{f}(X),
+%(\#eq:fhat)
+\end{equation}
+
+we allow for both prediction of $Y$ -- which is the primary goal in forecasting -- and inference, i.e. describing how $Y$ is affected by changes in $X$.
+
+Estimating $\hat{f}$ can be done in two ways, namely via a parametric or a non-parametric approach.
+
+**Parametric approach**
+
+Here an assumption is made about the the functional form of $f$, for example
+
+$$f(\boldsymbol{X}) = \beta_0 + \sum_{j=1}^p\beta_jX_j.$$
+
+The best estimate of $f$ is now defined as the set of parameters $\hat{\boldsymbol{\beta}}$ that minimise some specified loss function. 
+Given a set of observations $\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n$, we could use ordinary least squares to minimise the  mean squared error (MSE):   
+
+$$MSE = \frac{1}{n}\sum_{i=1}^n\left[y_i - \hat{f}(x_i)\right]^2 $$
+Therefore, the problem of estimating an arbitrary p-dimensional function is simplified to fitting a set of parameters.
+
+**Non-parametric approach**
+
+Another option is to make no explicit assumptions regarding the functional form of $f$. This allows one to fit a wide range of possible forms for $f$ -- in these notes we consider K-nearest neighbours and tree-based methods -- but since estimation is not reduced to estimating a set of parameters, this approach generally requires more data than parametric estimation. 
+
+The objective remains to find $f$ that fits the available data as closely as possible, although one must be careful to avoiding overfitting, ensuring that the model generalises well to unseen data. 
+
+**Generalisation**
+
+The primary goal of prediction is of course to accurately predict the outcomes of observations not yet observed by the model. 
+
+By now you will be familiar with the 
+
+## Bias-Variance trade-off
+
+Consider the case where $\hat{f}$ is fixed and out-of-sample observations of the variables are introduced, which we will denote as {\boldsymbol{x}_0, y_0}. We can deconstruct the theoretical MSE as follows:
+
+\begin{align}
+E\left[y_0 - \hat{f}(\boldsymbol{x}_0) \right]^2 &= E[f(\boldsymbol{x}_0) + \epsilon - \hat{f}(\boldsymbol{x}_0)]^2 \\
+&= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2 + 2\epsilon(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)) + \epsilon^2] \\
+&= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2] + 2E[\epsilon]E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))] + E[\epsilon^2] \\
+&= \underbrace{E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2]}_{reducible} + \underbrace{Var(\epsilon)}_{irreducible} \\
+\end{align}
+2022P1
 
 ## Model validation
 
 Hoef nie CV van scratch af nie, Et het die beginsel gedek.
+
+This has been a very brief summary of some of the basic statistical learning principles we will encounter going forward. For a more in-depth discussion, 
+
+## Side note: Statistical learning vs machine learning
+
+Statistical Learning:
+
+Foundation: Statistical learning is rooted in the field of statistics and builds upon principles of probability, inference, and hypothesis testing. Objective: The primary objective of statistical learning is to understand and model relationships between variables in order to make predictions or draw insights from data. Emphasis: Statistical learning places a strong emphasis on understanding the underlying data-generating process and making inferences about population characteristics based on sample data. Assumptions: It often involves making explicit assumptions about the underlying statistical distributions and relationships between variables. Interpretability: Statistical models tend to be more interpretable, as they often involve understanding the impact and significance of individual variables on the outcome.
+
+Foundation: Machine learning draws from various fields, including computer science, artificial intelligence, and statistical learning, but with a stronger emphasis on algorithmic and computational aspects. Objective: The primary objective of machine learning is to develop algorithms that can automatically learn patterns and relationships from data, with an emphasis on predictive accuracy and generalization to new, unseen data. Emphasis: While understanding the underlying data-generating process is important, machine learning is often more focused on achieving optimal predictive performance. Assumptions: Machine learning methods often work in a more agnostic manner and may not rely heavily on explicit statistical assumptions. Interpretability: Some machine learning models, like deep neural networks, can be highly complex and challenging to interpret due to their architecture and the multitude of learned features.
+
+It's important to note that the distinction between statistical learning and machine learning can sometimes be blurred, and the two fields have evolved to influence each other over time. Many modern machine learning techniques, such as ensemble methods and regularization, have strong roots in statistical learning theory. Additionally, both fields share common goals of extracting insights from data and making predictions, but they may approach these goals with different philosophical and methodological perspectives.
+
+In essence, statistical learning often focuses on understanding the probabilistic relationships between variables, while machine learning places greater emphasis on developing algorithms that can learn patterns directly from data, sometimes sacrificing interpretability for predictive performance.
