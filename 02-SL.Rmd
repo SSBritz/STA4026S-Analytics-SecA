@@ -4,7 +4,7 @@ csl: apa.csl
 
 # Supervised Learning
 
-This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already. 
+This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already. Whereas there are many good sources that provide a more comprehensive discussion, Chapter 2 of @james2013introduction is sufficient for the level and scope of this course. 
 
 Using a set of observations to uncover some underlying process in the real world is the basic premise of "learning from data" [@Mostafa2012, p. 11]. By discerning patterns, relationships, and trends within the data, machines become capable of making informed decisions and predictions in various domains. Different learning paradigms have developed to address different problems and data structures, and are generally divided into three broad classes: supervised learning, unsupervised learning, and reinforcement learning. We will not discuss the latter in this course.
 
@@ -14,21 +14,15 @@ The basic distinction is that **supervised learning** refers to cases where ther
 
 Given a quantitative response $Y$ and a set of $p$ predictors $X_1, X_2, \ldots, X_p$, we are interested in the assumed, unobserved function that maps the inputs to the outputs:
 
-\begin{equation}
-Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},
-%(\#eq:fx)
-\end{equation}
+$$Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},$$
 
-where $f(.)$ represents the fixed, but unknown function and $\epsilon$ is a random error term, independent of $X$, with $E(X) = 0$. By estimating $f$ such that 
+where $f(.)$ represents the fixed, but unknown function and $\epsilon$ is a random error term, independent of $X$, with $E(X) = 0$. By estimating $f$ such that
 
-\begin{equation}
-\hat{Y} = \hat{f}(X),
-%(\#eq:fhat)
-\end{equation}
+$$\hat{Y} = \hat{f}(X),$$
 
 we allow for both prediction of $Y$ -- which is the primary goal in forecasting -- and inference, i.e. describing how $Y$ is affected by changes in $X$.
 
-Estimating $\hat{f}$ can be done in two ways, namely via a parametric or a non-parametric approach.
+Hypothesising $\hat{f}$ can be done in two ways, namely via a parametric or a non-parametric approach.
 
 **Parametric approach**
 
@@ -36,41 +30,74 @@ Here an assumption is made about the the functional form of $f$, for example
 
 $$f(\boldsymbol{X}) = \beta_0 + \sum_{j=1}^p\beta_jX_j.$$
 
-The best estimate of $f$ is now defined as the set of parameters $\hat{\boldsymbol{\beta}}$ that minimise some specified loss function. 
-Given a set of observations $\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n$, we could use ordinary least squares to minimise the  mean squared error (MSE):   
+The best estimate of $f$ is now defined as the set of parameters $\hat{\boldsymbol{\beta}}$ that minimise some specified loss function. Given a set of observations $\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n$ -- henceforth referred to as the **training set** -- we could use ordinary least squares to minimise the mean squared error (MSE):
 
-$$MSE = \frac{1}{n}\sum_{i=1}^n\left[y_i - \hat{f}(x_i)\right]^2 $$
-Therefore, the problem of estimating an arbitrary p-dimensional function is simplified to fitting a set of parameters.
+$$MSE = \frac{1}{n}\sum_{i=1}^n\left[y_i - \hat{f}(x_i)\right]^2 $$ Therefore, the problem of estimating an arbitrary p-dimensional function is simplified to fitting a set of parameters.
 
 **Non-parametric approach**
 
-Another option is to make no explicit assumptions regarding the functional form of $f$. This allows one to fit a wide range of possible forms for $f$ -- in these notes we consider K-nearest neighbours and tree-based methods -- but since estimation is not reduced to estimating a set of parameters, this approach generally requires more data than parametric estimation. 
+Another option is to make no explicit assumptions regarding the functional form of $f$. This allows one to fit a wide range of possible forms for $f$ -- in these notes we consider K-nearest neighbours and tree-based methods -- but since estimation is not reduced to estimating a set of parameters, this approach generally requires more data than parametric estimation.
 
-The objective remains to find $f$ that fits the available data as closely as possible, although one must be careful to avoiding overfitting, ensuring that the model generalises well to unseen data. 
+The objective remains to find $f$ that fits the available data as closely as possible, whilst avoiding overfitting to ensure that the model generalises well to unseen data.
 
 **Generalisation**
 
-The primary goal of prediction is of course to accurately predict the outcomes of observations not yet observed by the model. 
+The primary goal of prediction is of course to accurately predict the outcomes of observations not yet observed by the model, referred to as out-of-sample observations.
 
-By now you will be familiar with the 
+Consider the case where the estimated function $\hat{f}$ is fixed and out-of-sample observations of the variables are introduced, which we will denote as $\{\boldsymbol{x}_0, y_0\}$. The expected MSE for these **test set** observations (see Section \@ref(model-validation)) can be deconstructed as follows:
+
+```{=tex}
+\begin{align}
+E\left[y_0 - \hat{f}(\boldsymbol{x}_0) \right]^2 &= E\left[f(\boldsymbol{x}_0) + \epsilon - \hat{f}(\boldsymbol{x}_0)\right]^2 \\
+&= E\left[\left(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right)^2 + 2\epsilon \left(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0) \right) + \epsilon^2\right] \\
+&= E\left[f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right]^2 + 2E[\epsilon]E\left[f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right] + E\left[\epsilon^2\right] \\
+&= \underbrace{E\left[f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right]^2}_{reducible} + \underbrace{Var(\epsilon)}_{irreducible} (\#eq:test-mse-decomp)
+\end{align}
+```
+The primary goal of machine learning is to find an $\hat{f}$ that best approximates the underlying, unknown relationship between the input and output variables by minimising the reducible error. Note that because of the irreducible component (the "noise" in the data), there will always be some lower bound for the theoretical MSE, and that **this bound is almost always unknown in practice** [@james2013introduction, p. 19].
+
+By now you will be familiar with the concept of bias-variance trade-off, according to which we attempt to find a sufficiently (but not overly) complex model. The reducible error component can be decomposed further to help illustrate this trade-off.
 
 ## Bias-Variance trade-off
 
-Consider the case where $\hat{f}$ is fixed and out-of-sample observations of the variables are introduced, which we will denote as {\boldsymbol{x}_0, y_0}. We can deconstruct the theoretical MSE as follows:
+Consider again a fixed $\hat{f}$ and out-of-sample observations $\{\boldsymbol{x}_0, y_0\}$. For ease of notation, let $f = f(\boldsymbol{x}_0)$ and $\hat{f} = \hat{f}(\boldsymbol{x}_0)$. Also note that $f$ is deterministic such that $E\left[f\right] = f$.
 
+Starting with the reducible error in Equation \@ref(eq:test-mse-decomp), we have
+
+```{=tex}
 \begin{align}
-E\left[y_0 - \hat{f}(\boldsymbol{x}_0) \right]^2 &= E[f(\boldsymbol{x}_0) + \epsilon - \hat{f}(\boldsymbol{x}_0)]^2 \\
-&= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2 + 2\epsilon(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)) + \epsilon^2] \\
-&= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2] + 2E[\epsilon]E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))] + E[\epsilon^2] \\
-&= \underbrace{E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2]}_{reducible} + \underbrace{Var(\epsilon)}_{irreducible} \\
+E\left[f - \hat{f} \right]^2 &= E\left[\hat{f} - f \right]^2 \\
+&= E\left[\hat{f} - E(\hat{f}) + E(\hat{f}) - f \right]^2 \\
+&= E\left\{ \left[\hat{f} - E(\hat{f})\right]^2 + 2\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right] + \left[E(\hat{f}) - f\right]^2 \right\} \\
+&= E\left[\hat{f} - E(\hat{f})\right]^2 + 2E\left\{\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right]\right\} + E\left[E(\hat{f}) - f\right]^2 \\
+&= Var\left[\hat{f}\right] + 0 + \left[E(\hat{f}) - f\right]^2 \\
+&= Var\left[\hat{f}\right] + Bias^2\left[\hat{f}\right] (\#eq:bias-var)
 \end{align}
-2022P1
+```
+Showing that the crossproduct term equals zero:
+
+```{=tex}
+\begin{align}
+E\left\{\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right]\right\} &= E\left[\hat{f}E(\hat{f}) - E(\hat{f})E(\hat{f}) - \hat{f}f + E(\hat{f})f\right] \\
+&= E(\hat{f})E(\hat{f}) - E(\hat{f})E(\hat{f}) - E(\hat{f})f + E(\hat{f})f \\
+&= 0
+\end{align}
+```
+Therefore, in order to minimise the expected test MSE we need to find a model that has the lowest combined variance and (squared) bias.
+
+The **variance** represents the extent to which $\hat{f}$ changes between different training samples taken from the same population. The bias of $\hat{f}$ is simply the error that is introduced by approximating the real-world relationship with a simpler representation. Note, however, that since $f$ is generally unknown, the bias component cannot be directly observed or measured outside of simulations. However, these simulations may help us illustrate how the bias and variance change as model complexity increases.
+
+Although the concepts of model complexity and flexibility are not necessarily perfectly defined -- depending on the class of model being hypothesised -- the following example should provide an intuitive understanding.
+
+### Example 1 -- Simulation 1
+
+
 
 ## Model validation
 
 Hoef nie CV van scratch af nie, Et het die beginsel gedek.
 
-This has been a very brief summary of some of the basic statistical learning principles we will encounter going forward. For a more in-depth discussion, 
+This has been a very brief summary of some of the basic statistical learning principles we will encounter going forward. For a more in-depth discussion,
 
 ## Side note: Statistical learning vs machine learning
 

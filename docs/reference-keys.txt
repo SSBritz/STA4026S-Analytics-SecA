@@ -1,8 +1,9 @@
-eq:fx
-eq:fhat
+eq:test-mse-decomp
+eq:bias-var
 introduction
 supervised-learning
 bias-variance-trade-off
+example-1-simulation-1
 model-validation
 side-note-statistical-learning-vs-machine-learning
 model-selection-regularisation

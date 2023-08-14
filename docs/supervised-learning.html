@@ -8,7 +8,7 @@
   <meta name="description" content="<br />
 STA4026S – Honours Analytics<br />
 Section B: Theory and Application of Supervised Learning</p>" />
-  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 Supervised Learning |  STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning" />
   <meta property="og:type" content="book" />
@@ -57,6 +57,10 @@ Section B: Theory and Application of Supervised Learning</p>" />
 
 
 <style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
 div.csl-bib-body { }
 div.csl-entry {
@@ -98,7 +102,10 @@ div.csl-indent {
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="supervised-learning.html"><a href="supervised-learning.html"><i class="fa fa-check"></i><b>2</b> Supervised Learning</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-Variance trade-off</a></li>
+<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-Variance trade-off</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="supervised-learning.html"><a href="supervised-learning.html#example-1-simulation-1"><i class="fa fa-check"></i><b>2.1.1</b> Example 1 – Simulation 1</a></li>
+</ul></li>
 <li class="chapter" data-level="2.2" data-path="supervised-learning.html"><a href="supervised-learning.html#model-validation"><i class="fa fa-check"></i><b>2.2</b> Model validation</a></li>
 <li class="chapter" data-level="2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#side-note-statistical-learning-vs-machine-learning"><i class="fa fa-check"></i><b>2.3</b> Side note: Statistical learning vs machine learning</a></li>
 </ul></li>
@@ -153,44 +160,58 @@ Section B: Theory and Application of Supervised Learning</p></a>
             <section class="normal" id="section-">
 <div id="supervised-learning" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Supervised Learning<a href="supervised-learning.html#supervised-learning" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already.</p>
+<p>This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already. Whereas there are many good sources that provide a more comprehensive discussion, Chapter 2 of <span class="citation">James et al. (2013)</span> is sufficient for the level and scope of this course.</p>
 <p>Using a set of observations to uncover some underlying process in the real world is the basic premise of “learning from data” <span class="citation">(Abu-Mostafa et al., 2012, p. 11)</span>. By discerning patterns, relationships, and trends within the data, machines become capable of making informed decisions and predictions in various domains. Different learning paradigms have developed to address different problems and data structures, and are generally divided into three broad classes: supervised learning, unsupervised learning, and reinforcement learning. We will not discuss the latter in this course.</p>
 <p>The basic distinction is that <strong>supervised learning</strong> refers to cases where there is some <strong>target variable</strong>, usually indicated as <span class="math inline">\(Y\)</span>, whereas if we are interested in the structures and patterns in explanatory variables<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> only, we refer to unsupervised learning.</p>
 <p>Given a quantitative response <span class="math inline">\(Y\)</span> and a set of <span class="math inline">\(p\)</span> predictors <span class="math inline">\(X_1, X_2, \ldots, X_p\)</span>, we are interested in the assumed, unobserved function that maps the inputs to the outputs:</p>
-<p><span class="math display" id="eq:fx">\[\begin{equation}
-Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},
-%\tag{2.1}
-\end{equation}\]</span></p>
+<p><span class="math display">\[Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},\]</span></p>
 <p>where <span class="math inline">\(f(.)\)</span> represents the fixed, but unknown function and <span class="math inline">\(\epsilon\)</span> is a random error term, independent of <span class="math inline">\(X\)</span>, with <span class="math inline">\(E(X) = 0\)</span>. By estimating <span class="math inline">\(f\)</span> such that</p>
-<p><span class="math display" id="eq:fhat">\[\begin{equation}
-\hat{Y} = \hat{f}(X),
-%\tag{2.2}
-\end{equation}\]</span></p>
+<p><span class="math display">\[\hat{Y} = \hat{f}(X),\]</span></p>
 <p>we allow for both prediction of <span class="math inline">\(Y\)</span> – which is the primary goal in forecasting – and inference, i.e. describing how <span class="math inline">\(Y\)</span> is affected by changes in <span class="math inline">\(X\)</span>.</p>
-<p>Estimating <span class="math inline">\(\hat{f}\)</span> can be done in two ways, namely via a parametric or a non-parametric approach.</p>
+<p>Hypothesising <span class="math inline">\(\hat{f}\)</span> can be done in two ways, namely via a parametric or a non-parametric approach.</p>
 <p><strong>Parametric approach</strong></p>
 <p>Here an assumption is made about the the functional form of <span class="math inline">\(f\)</span>, for example</p>
 <p><span class="math display">\[f(\boldsymbol{X}) = \beta_0 + \sum_{j=1}^p\beta_jX_j.\]</span></p>
-<p>The best estimate of <span class="math inline">\(f\)</span> is now defined as the set of parameters <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> that minimise some specified loss function.
-Given a set of observations <span class="math inline">\(\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n\)</span>, we could use ordinary least squares to minimise the mean squared error (MSE):</p>
-<p><span class="math display">\[MSE = \frac{1}{n}\sum_{i=1}^n\left[y_i - \hat{f}(x_i)\right]^2 \]</span>
-Therefore, the problem of estimating an arbitrary p-dimensional function is simplified to fitting a set of parameters.</p>
+<p>The best estimate of <span class="math inline">\(f\)</span> is now defined as the set of parameters <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> that minimise some specified loss function. Given a set of observations <span class="math inline">\(\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n\)</span> – henceforth referred to as the <strong>training set</strong> – we could use ordinary least squares to minimise the mean squared error (MSE):</p>
+<p><span class="math display">\[MSE = \frac{1}{n}\sum_{i=1}^n\left[y_i - \hat{f}(x_i)\right]^2 \]</span> Therefore, the problem of estimating an arbitrary p-dimensional function is simplified to fitting a set of parameters.</p>
 <p><strong>Non-parametric approach</strong></p>
 <p>Another option is to make no explicit assumptions regarding the functional form of <span class="math inline">\(f\)</span>. This allows one to fit a wide range of possible forms for <span class="math inline">\(f\)</span> – in these notes we consider K-nearest neighbours and tree-based methods – but since estimation is not reduced to estimating a set of parameters, this approach generally requires more data than parametric estimation.</p>
-<p>The objective remains to find <span class="math inline">\(f\)</span> that fits the available data as closely as possible, although one must be careful to avoiding overfitting, ensuring that the model generalises well to unseen data.</p>
+<p>The objective remains to find <span class="math inline">\(f\)</span> that fits the available data as closely as possible, whilst avoiding overfitting to ensure that the model generalises well to unseen data.</p>
 <p><strong>Generalisation</strong></p>
-<p>The primary goal of prediction is of course to accurately predict the outcomes of observations not yet observed by the model.</p>
-<p>By now you will be familiar with the</p>
+<p>The primary goal of prediction is of course to accurately predict the outcomes of observations not yet observed by the model, referred to as out-of-sample observations.</p>
+<p>Consider the case where the estimated function <span class="math inline">\(\hat{f}\)</span> is fixed and out-of-sample observations of the variables are introduced, which we will denote as <span class="math inline">\(\{\boldsymbol{x}_0, y_0\}\)</span>. The expected MSE for these <strong>test set</strong> observations (see Section <a href="supervised-learning.html#model-validation">2.2</a>) can be deconstructed as follows:</p>
+<span class="math display" id="eq:test-mse-decomp">\[\begin{align}
+E\left[y_0 - \hat{f}(\boldsymbol{x}_0) \right]^2 &amp;= E\left[f(\boldsymbol{x}_0) + \epsilon - \hat{f}(\boldsymbol{x}_0)\right]^2 \\
+&amp;= E\left[\left(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right)^2 + 2\epsilon \left(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0) \right) + \epsilon^2\right] \\
+&amp;= E\left[f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right]^2 + 2E[\epsilon]E\left[f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right] + E\left[\epsilon^2\right] \\
+&amp;= \underbrace{E\left[f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)\right]^2}_{reducible} + \underbrace{Var(\epsilon)}_{irreducible} \tag{2.1}
+\end{align}\]</span>
+<p>The primary goal of machine learning is to find an <span class="math inline">\(\hat{f}\)</span> that best approximates the underlying, unknown relationship between the input and output variables by minimising the reducible error. Note that because of the irreducible component (the “noise” in the data), there will always be some lower bound for the theoretical MSE, and that <strong>this bound is almost always unknown in practice</strong> <span class="citation">(James et al., 2013, p. 19)</span>.</p>
+<p>By now you will be familiar with the concept of bias-variance trade-off, according to which we attempt to find a sufficiently (but not overly) complex model. The reducible error component can be decomposed further to help illustrate this trade-off.</p>
 <div id="bias-variance-trade-off" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Bias-Variance trade-off<a href="supervised-learning.html#bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Consider the case where <span class="math inline">\(\hat{f}\)</span> is fixed and out-of-sample observations of the variables are introduced, which we will denote as {_0, y_0}. We can deconstruct the theoretical MSE as follows:</p>
-<p><span class="math display">\[\begin{align}
-E\left[y_0 - \hat{f}(\boldsymbol{x}_0) \right]^2 &amp;= E[f(\boldsymbol{x}_0) + \epsilon - \hat{f}(\boldsymbol{x}_0)]^2 \\
-&amp;= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2 + 2\epsilon(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0)) + \epsilon^2] \\
-&amp;= E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2] + 2E[\epsilon]E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))] + E[\epsilon^2] \\
-&amp;= \underbrace{E[(f(\boldsymbol{x}_0) - \hat{f}(\boldsymbol{x}_0))^2]}_{reducible} + \underbrace{Var(\epsilon)}_{irreducible} \\
+<p>Consider again a fixed <span class="math inline">\(\hat{f}\)</span> and out-of-sample observations <span class="math inline">\(\{\boldsymbol{x}_0, y_0\}\)</span>. For ease of notation, let <span class="math inline">\(f = f(\boldsymbol{x}_0)\)</span> and <span class="math inline">\(\hat{f} = \hat{f}(\boldsymbol{x}_0)\)</span>. Also note that <span class="math inline">\(f\)</span> is deterministic such that <span class="math inline">\(E\left[f\right] = f\)</span>.</p>
+<p>Starting with the reducible error in Equation <a href="supervised-learning.html#eq:test-mse-decomp">(2.1)</a>, we have</p>
+<span class="math display" id="eq:bias-var">\[\begin{align}
+E\left[f - \hat{f} \right]^2 &amp;= E\left[\hat{f} - f \right]^2 \\
+&amp;= E\left[\hat{f} - E(\hat{f}) + E(\hat{f}) - f \right]^2 \\
+&amp;= E\left\{ \left[\hat{f} - E(\hat{f})\right]^2 + 2\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right] + \left[E(\hat{f}) - f\right]^2 \right\} \\
+&amp;= E\left[\hat{f} - E(\hat{f})\right]^2 + 2E\left\{\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right]\right\} + E\left[E(\hat{f}) - f\right]^2 \\
+&amp;= Var\left[\hat{f}\right] + 0 + \left[E(\hat{f}) - f\right]^2 \\
+&amp;= Var\left[\hat{f}\right] + Bias^2\left[\hat{f}\right] \tag{2.2}
 \end{align}\]</span>
-2022P1</p>
+<p>Showing that the crossproduct term equals zero:</p>
+<span class="math display">\[\begin{align}
+E\left\{\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right]\right\} &amp;= E\left[\hat{f}E(\hat{f}) - E(\hat{f})E(\hat{f}) - \hat{f}f + E(\hat{f})f\right] \\
+&amp;= E(\hat{f})E(\hat{f}) - E(\hat{f})E(\hat{f}) - E(\hat{f})f + E(\hat{f})f \\
+&amp;= 0
+\end{align}\]</span>
+<p>Therefore, in order to minimise the expected test MSE we need to find a model that has the lowest combined variance and (squared) bias.</p>
+<p>The <strong>variance</strong> represents the extent to which <span class="math inline">\(\hat{f}\)</span> changes between different training samples taken from the same population. The bias of <span class="math inline">\(\hat{f}\)</span> is simply the error that is introduced by approximating the real-world relationship with a simpler representation. Note, however, that since <span class="math inline">\(f\)</span> is generally unknown, the bias component cannot be directly observed or measured outside of simulations. However, these simulations may help us illustrate how the bias and variance change as model complexity increases.</p>
+<p>Although the concepts of model complexity and flexibility are not necessarily perfectly defined – depending on the class of model being hypothesised – the following example should provide an intuitive understanding.</p>
+<div id="example-1-simulation-1" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Example 1 – Simulation 1<a href="supervised-learning.html#example-1-simulation-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
 </div>
 <div id="model-validation" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> Model validation<a href="supervised-learning.html#model-validation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
