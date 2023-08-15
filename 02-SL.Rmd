@@ -91,6 +91,38 @@ Although the concepts of model complexity and flexibility are not necessarily pe
 
 ### Example 1 -- Simulation 1
 
+To allow for easy visualisation, let us consider a simple model with only one feature:
+
+$$Y = X + 2\cos(5X) + \epsilon,$$
+where $\epsilon \sim N(0, 2)$.
+
+Below we simulate $n = 100$ observations from $X \sim U(-2,2)$, to which we fit cubic smoothing splines of increasing complexity. [Splines are beyond the scope of this course, but provide an easy-to-see illustration of "flexibility"]
+
+```{r, animation.hook='gifski', interval=0.333}
+set.seed(4026)
+
+#Simulated data
+x <- runif(100, -2, 2)
+y <- x + 2*cos(5*x) + rnorm(100, sd = sqrt(2))
+
+#The true function
+xx <- seq(-2, 2, length.out = 1000)
+f <- xx + 2*cos(5*xx)
+
+#Fit cubic splines with increasing degrees of freedom
+for(dof in 2:50){
+fhat <- smooth.spline(x, y, df = dof)
+plot(x, y, pch = 16)
+lines(xx, f, 'l', lwd = 2)
+lines(fhat, col = 'blue', lwd = 2)
+title(main = paste('Degrees of freedom:', dof))
+legend('bottomright', 
+       c('f(x) - True', 
+         expression(hat(f)(x) ~ '- Cubic spline')), 
+       col = c('black', 'blue'),
+       lty = 1, lwd = 2)
+}
+```
 
 
 ## Model validation
