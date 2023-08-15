@@ -111,18 +111,79 @@ f <- xx + 2*cos(5*xx)
 
 #Fit cubic splines with increasing degrees of freedom
 for(dof in 2:50){
-fhat <- smooth.spline(x, y, df = dof)
-plot(x, y, pch = 16)
-lines(xx, f, 'l', lwd = 2)
-lines(fhat, col = 'blue', lwd = 2)
-title(main = paste('Degrees of freedom:', dof))
-legend('bottomright', 
-       c('f(x) - True', 
-         expression(hat(f)(x) ~ '- Cubic spline')), 
-       col = c('black', 'blue'),
-       lty = 1, lwd = 2)
+  fhat <- smooth.spline(x, y, df = dof)
+  plot(x, y, pch = 16)
+  lines(xx, f, 'l', lwd = 2)
+  lines(fhat, col = 'blue', lwd = 2)
+  title(main = paste('Degrees of freedom:', dof))
+  legend('bottomright', c('f(x) - True', expression(hat(f)(x) ~ '- Cubic spline')), 
+         col = c('black', 'blue'), lty = 1, lwd = 2)
 }
 ```
+
+This serves to illustrate how the model's degrees of freedom is directly proportional to the model's complexity. However, to extricate the bias and variance components, we need to observe these models' fit on out-of-sample data across many random realisations of training samples.  
+
+In the following simulation we again observe $n=100$ training observations at a time, to which the same models of varying complexity as above are fitted. Each model's fit is then assessed on a fixed set of $100$ testing observations. This process is repeated $250$ times, such that we can keep track of how each test observation's predictions vary across the iterations, as well as the errors. 
+
+```{r}
+set.seed(1)
+
+n <- 100        #Sample size
+num_sims <- 1000#Number of iterations
+dofs <- 2:24    #Model complexities
+
+pred_mat <- matrix(nrow = num_sims, ncol = n) #To store each set of predictions
+mses <- vector(length = num_sims)     #Also want to track the testing MSEs
+red_err <- vector(length = num_sims)  #As well as the reducible error
+
+#Herein we will capture the deconstructed components for each model
+results <- data.frame(Var = NA, Bias2 = NA, Red_err = NA, MSE = NA)
+
+#Testing data
+x_test <- runif(n, -2, 2)
+f_test <- x_test + 2*cos(5*x_test) #This is the part we don't know outside sims!!
+y_test <- f_test + rnorm(n, sd = sqrt(2))
+
+d <- 0 #To keep track of dof iterations, whilst easily changing the range above
+
+for(dof in dofs) { #Repeat over all model complexities
+  d <- d+1
+  for(iter in 1:num_sims){ 
+    
+    #Training data
+    x_train <- runif(n, -2, 2)
+    y_train <- x_train + 2*cos(5*x_train) + rnorm(n, sd = sqrt(2))
+    
+    #Fit cubic spline
+    spline_mod <- smooth.spline(x_train, y_train, df = dof)
+    
+    #Predict on OOS data
+    yhat <- predict(spline_mod, x_test)$y
+    
+    #And store
+    pred_mat[iter, ] <- yhat
+    red_err[iter] <- mean((f_test - yhat)^2)
+    mses[iter] <- mean((y_test - yhat)^2)
+  }
+  
+  var_fhat <- mean(apply(pred_mat, 2, var)) #E[\hat{f} - E(\hat{f})]^2
+  bias2_fhat <- mean((colMeans(pred_mat) - f_test)^2) #[E(\hat{f}) - f]^2
+  reducible <- mean(red_err) #E[f - \hat{f}]^2
+  MSE <- mean(mses)          #E[y_0 - \hat{f}]^2
+  
+  results[d, ] <- c(var_fhat, bias2_fhat, reducible, MSE)
+}
+
+#Plot the results
+
+plot(dofs, results$Var, 'l', col = 'orange', lwd = 2,
+     xlab = 'Model complexity', ylab = '', ylim = c(0, max(results[,-4])))
+lines(dofs, results$Bias2, 'l', col = 'lightblue', lwd = 2)
+lines(dofs, results$Red_err, 'l', col = 'darkred', lwd = 2)
+abline(v = dofs[which.min(results$Red_err)], lty = 2)
+# lines(dofs, results[, 4], 'l', lwd = 2)
+```
+
 
 
 ## Model validation
