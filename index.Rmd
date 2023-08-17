@@ -12,6 +12,7 @@ csl: apa.csl
 
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(
+  warnings = FALSE,
   fig.path = 'figs/'
 )
 

@@ -4,7 +4,7 @@ csl: apa.csl
 
 # Supervised Learning
 
-This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already. Whereas there are many good sources that provide a more comprehensive discussion, Chapter 2 of @james2013introduction is sufficient for the level and scope of this course. 
+This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, most of which you should be familiar with already. Whereas there are many good sources that provide a more comprehensive discussion, Chapter 2 of @james2013introduction is sufficient for the level and scope of this course.
 
 Using a set of observations to uncover some underlying process in the real world is the basic premise of "learning from data" [@Mostafa2012, p. 11]. By discerning patterns, relationships, and trends within the data, machines become capable of making informed decisions and predictions in various domains. Different learning paradigms have developed to address different problems and data structures, and are generally divided into three broad classes: supervised learning, unsupervised learning, and reinforcement learning. We will not discuss the latter in this course.
 
@@ -93,8 +93,7 @@ Although the concepts of model complexity and flexibility are not necessarily pe
 
 To allow for easy visualisation, let us consider a simple model with only one feature:
 
-$$Y = X + 2\cos(5X) + \epsilon,$$
-where $\epsilon \sim N(0, 2)$.
+$$Y = X + 2\cos(5X) + \epsilon,$$ where $\epsilon \sim N(0, 2)$.
 
 Below we simulate $n = 100$ observations from $X \sim U(-2,2)$, to which we fit cubic smoothing splines of increasing complexity. [Splines are beyond the scope of this course, but provide an easy-to-see illustration of "flexibility"]
 
@@ -121,20 +120,21 @@ for(dof in 2:50){
 }
 ```
 
-This serves to illustrate how the model's degrees of freedom is directly proportional to the model's complexity. However, to extricate the bias and variance components, we need to observe these models' fit on out-of-sample data across many random realisations of training samples.  
+This serves to illustrate how the model's degrees of freedom is directly proportional to the model's complexity. However, to extricate the bias and variance components, we need to observe these models' fit on out-of-sample data across many random realisations of training samples.
 
-In the following simulation we again observe $n=100$ training observations at a time, to which the same models of varying complexity as above are fitted. Each model's fit is then assessed on a fixed set of $100$ testing observations. This process is repeated $250$ times, such that we can keep track of how each test observation's predictions vary across the iterations, as well as the errors. 
+In the following simulation we again observe $n=100$ training observations at a time, to which the same models of varying complexity as above are fitted. Each model's fit is then assessed on a set of 100 testing observations, where the $\boldsymbol{x}_0$ (and, therefore, true $f(\boldsymbol{x}_0)$) are fixed, but random noise is added. This process is repeated 1000 times, such that we can keep track of how each test observation's predictions vary across the iterations, as well as the errors.
 
-```{r}
+```{r b-v-trade, warning=FALSE, fig.dim=c(6,6), fig.align='center', fig.cap='I must still write this figure caption!!'}
 set.seed(1)
 
-n <- 100        #Sample size
-num_sims <- 1000#Number of iterations
-dofs <- 2:24    #Model complexities
+n <- 100          #Sample size
+num_sims <- 1000  #Number of iterations (could be parallelised)
+dofs <- 2:25      #Model complexities
+var_eps <- 2      #Var(epsilon): The irreducible error
 
 pred_mat <- matrix(nrow = num_sims, ncol = n) #To store each set of predictions
-mses <- vector(length = num_sims)     #Also want to track the testing MSEs
-red_err <- vector(length = num_sims)  #As well as the reducible error
+mses <- vector(length = num_sims)             #Also want to track the testing MSEs
+red_err <- vector(length = num_sims)          #As well as the reducible error
 
 #Herein we will capture the deconstructed components for each model
 results <- data.frame(Var = NA, Bias2 = NA, Red_err = NA, MSE = NA)
@@ -142,7 +142,6 @@ results <- data.frame(Var = NA, Bias2 = NA, Red_err = NA, MSE = NA)
 #Testing data
 x_test <- runif(n, -2, 2)
 f_test <- x_test + 2*cos(5*x_test) #This is the part we don't know outside sims!!
-y_test <- f_test + rnorm(n, sd = sqrt(2))
 
 d <- 0 #To keep track of dof iterations, whilst easily changing the range above
 
@@ -152,7 +151,10 @@ for(dof in dofs) { #Repeat over all model complexities
     
     #Training data
     x_train <- runif(n, -2, 2)
-    y_train <- x_train + 2*cos(5*x_train) + rnorm(n, sd = sqrt(2))
+    y_train <- x_train + 2*cos(5*x_train) + rnorm(n, sd = sqrt(var_eps))
+
+    #Add the noise
+    y_test <- f_test + rnorm(n, sd = sqrt(var_eps))
     
     #Fit cubic spline
     spline_mod <- smooth.spline(x_train, y_train, df = dof)
@@ -166,25 +168,51 @@ for(dof in dofs) { #Repeat over all model complexities
     mses[iter] <- mean((y_test - yhat)^2)
   }
   
-  var_fhat <- mean(apply(pred_mat, 2, var)) #E[\hat{f} - E(\hat{f})]^2
-  bias2_fhat <- mean((colMeans(pred_mat) - f_test)^2) #[E(\hat{f}) - f]^2
-  reducible <- mean(red_err) #E[f - \hat{f}]^2
-  MSE <- mean(mses)          #E[y_0 - \hat{f}]^2
+  var_fhat <- mean(apply(pred_mat, 2, var))           #E[\hat{f} - E(\hat{f})]^2
+  bias2_fhat <- mean((colMeans(pred_mat) - f_test)^2) #E[E(\hat{f}) - f]^2
+  reducible <- mean(red_err)                          #E[f - \hat{f}]^2
+  MSE <- mean(mses)                                   #E[y_0 - \hat{f}]^2
   
   results[d, ] <- c(var_fhat, bias2_fhat, reducible, MSE)
 }
 
 #Plot the results
-
-plot(dofs, results$Var, 'l', col = 'orange', lwd = 2,
-     xlab = 'Model complexity', ylab = '', ylim = c(0, max(results[,-4])))
+plot(dofs, results$MSE, 'l', col = 'darkred', lwd = 2,
+     xlab = 'Model complexity', ylab = '', ylim = c(0, max(results)))
 lines(dofs, results$Bias2, 'l', col = 'lightblue', lwd = 2)
-lines(dofs, results$Red_err, 'l', col = 'darkred', lwd = 2)
-abline(v = dofs[which.min(results$Red_err)], lty = 2)
-# lines(dofs, results[, 4], 'l', lwd = 2)
+lines(dofs, results$Var, 'l', col = 'orange', lwd = 2)
+lines(dofs, results$Red_err, 'l', lty = 2, lwd = 2)
+legend('topright', 
+       c('MSE', expression(Bias^2 ~ (hat(f))), expression(Var(hat(f))), 'Reducible Error'), 
+       col = c('darkred', 'lightblue', 'orange', 'black'), lty = c(rep(1, 3), 2), lwd = 2)
+
+abline(v = dofs[which.min(results$MSE)], lty = 3) #Complexity minimising MSE
+abline(h = var_eps, lty = 3)                      #MSE lower bound
 ```
 
+As a quick sanity check before interpreting this result, let us add up the components -- which were calculated separately -- and see whether we indeed observe that $E\left[f - \hat{f} \right]^2 = Var\left[\hat{f}\right] + Bias^2\left[\hat{f}\right]$ and $\text{Test MSE} = E\left[y_0 - \hat{f}\right]^2 = E\left[f - \hat{f} \right]^2 + Var(\epsilon)$. Note that we will need to have a small tolerance for discrepancy, since we have approximated the expected values by averaging over only 1000 realisations. This approximation will become more accurate as the number of iterations are increased. 
 
+```{r}
+#Is reducible error = var(fhat) + bias^2(fhat)?
+ifelse(isTRUE(all.equal(results$Red_err, 
+                        results$Var + results$Bias2, 
+                        tolerance = 0.001)),
+       'Happy days! :D', 
+       'Haibo...')
+
+#Is Test MSE = var(fhat) + bias^2(fhat) + var(eps)?
+ifelse(isTRUE(all.equal(results$MSE, 
+                        results$Var + results$Bias2 + var_eps, 
+                        tolerance = 0.01)),
+       'Happy days! :D', 
+       'Haibo...')
+```
+
+Figure \@ref(fig:b-v-trade) illustrates the general error pattern when learning from data: As model complexity/flexibility increases, the variance across multiple training samples increases, whilst the (squared) bias decreases as the estimated function gets closer to the true pattern on average. Note that $E(\epsilon^2) = Var(\epsilon)$ remains constant. This decrease in bias$^2$ initially offsets the increase in variance such that the test MSE initially decreases. However, from some complexity/flexibility of $\hat{f}$, the decrease in bias$^2\left(\hat{f}\right)$ is offset by the increase in $Var\left(\hat{f}\right)$, at which point the test MSE starts increasing. This is the **bias-variance trade-off**. In this particular example, we see that of all the cubic splines, one with 13 degrees of freedom most closely captures the underlying pattern in the data, as measured by the test MSE.
+
+The fundamental challenge in statistical learning is to postulate a model of the data that yields both a low bias and variance, whilst policing the model complexity such that the sum of these error components are minimised.
+
+In the above example, we knew what the underlying function was as well as the residual variance. However, when modelling data generated in some real-world environment, we do not observe $f$ and therefore cannot explicitly compute the test MSE. In order to estimate the test MSE, we make use of model validation procedures. 
 
 ## Model validation
 
