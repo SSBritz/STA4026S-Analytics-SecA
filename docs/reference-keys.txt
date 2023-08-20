@@ -8,7 +8,7 @@ example-1-simulation
 model-validation
 validation-set
 k-fold-cv
-example-1-simulation-1
+example-1-simulation-cont
 side-note-statistical-learning-vs-machine-learning
 homework-exercises
 model-selection-regularisation

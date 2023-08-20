@@ -250,7 +250,7 @@ Also note that as $k$ increases, the computational cost increase proportionally,
 
 To illustrate the implementation, let us return to the earlier example, where we will pretend that we do not know the underlying relationship we are trying to estimate. 
 
-### Example 1 -- Simulation
+### Example 1 -- Simulation (cont)
 
 Before using the CV error to determine the ideal model complexity, let us first illustrate the concept of cross-validation for a single model, say a cubic spline with 8 degrees of freedom, with $k = 10$. 
 
@@ -299,47 +299,46 @@ for(k in 1:10){
 Here we see that, as expected, the validation error is noticeably more variable than the training error across the folds.  We can calculate the CV MSE as `r round(mean(cv_k), 2)`, although on its own this value is not particularly insightful. When comparing it to that of other models, though, we can determine which model complexity is estimated to yield the lowest test error.
 
 ```{r}
-#dofs <- 5:20 #Don't need to go overboard, the min will be in this range
+#Keep track of MSE per fold, per model
 fold_mses <- matrix(nrow = 10, ncol = length(dofs))
 
 for(k in 1:10){
-  valid_ind <- ind[seq((1+10*(k-1)), 10*k)]
+  cv_ind <- ind[seq((1+10*(k-1)), 10*k)]
   d <- 0
   for(dof in dofs){ #Using the same dofs as earlier
     d <- d + 1
-    fit <- smooth.spline(x[-valid_ind], y[-valid_ind], df = dof)
-    test <- predict(fit, x[valid_ind])$y
-    fold_mses[k, d] <- mean((test - y[valid_ind])^2)
+    fit <- smooth.spline(x[-cv_ind], y[-cv_ind], df = dof)
+    test <- predict(fit, x[cv_ind])$y
+    fold_mses[k, d] <- mean((test - y[cv_ind])^2)
   }
 }
+#Average over all folds
+cv_mses <- colMeans(fold_mses)
 
-valid_mses <- colMeans(fold_mses)
-
-# Add the true MSE from earlier
+# Compare the true MSE from earlier
 plot(dofs, results$MSE, 'l', col = 'darkred', lwd = 2,
-     xlab = 'Model complexity', ylab = '', ylim = c(0, max(valid_mses)))
-lines(dofs, valid_mses, 'l', lwd = 2)
-legend('bottomright', c('CV MSE', 'True test MSE'), col = c('black', 'darkred'), lty = 1, lwd = 2)
+     xlab = 'Model complexity', ylab = '', ylim = c(0, max(cv_mses)))
+lines(dofs, cv_mses, 'l', col = 'grey', lwd = 2)
+legend('bottomright', c('CV MSE', 'True test MSE'), col = c('gray', 'darkred'), lty = 1, lwd = 2)
 abline(v = dofs[which.min(results$MSE)], lty = 3)
-points(dofs[which.min(valid_mses)], min(valid_mses), pch = 13, cex = 2.5, lwd = 2)
+points(dofs[which.min(cv_mses)], min(cv_mses), pch = 13, cex = 2.5, lwd = 2)
 ```
 
-Because we simulated these data, we know that the cubic spline yielding the lowest expected test MSE, is one with 13 degrees of freedom. Applying 10-fold CV to our 100 training data points resulted in an estimated optimal model with 12 degrees of freedom. It is interesting to note that the CV error consistently *overestimated* the true error. This is likely due to the relatively small dataset; remember that we only tested on 10 observations per fold! The shape of the true MSE curve was captured relatively well by the CV process in this example.
+Because we simulated these data, we know that the cubic spline yielding the lowest expected test MSE is one with 13 degrees of freedom. Applying 10-fold CV to our 100 training data points resulted in an estimated optimal model with 12 degrees of freedom. It is interesting to note that the CV error consistently *overestimated* the true error. This is likely due to the relatively small dataset; remember that we only tested on 10 observations per fold! The shape of the true MSE curve was captured relatively well by the CV process in this example.
 
 This section provided a succinct illustration of model validation. For a detailed discussion, see Section 5.1 of @james2013introduction. In the following chapters we will move beyond simulated data and apply these methods to various datasets as we encounter different classes of models and other techniques. Although there is much value in coding the CV procedure from scratch, it is built into various R packages, which we will leverage going forward.
 
 ## Side note: Statistical learning vs machine learning
 
-Statistical Learning:
+It may seem that we use the terms "statistical learning" and "machine learning" interchangeably, so is there a difference? The distinction between these two concepts can sometimes be blurred with the paradigms largely overlapping, and some might argue that the difference is mostly semantic. 
 
-Foundation: Statistical learning is rooted in the field of statistics and builds upon principles of probability, inference, and hypothesis testing. Objective: The primary objective of statistical learning is to understand and model relationships between variables in order to make predictions or draw insights from data. Emphasis: Statistical learning places a strong emphasis on understanding the underlying data-generating process and making inferences about population characteristics based on sample data. Assumptions: It often involves making explicit assumptions about the underlying statistical distributions and relationships between variables. Interpretability: Statistical models tend to be more interpretable, as they often involve understanding the impact and significance of individual variables on the outcome.
+In essence, statistical learning often focuses on understanding the probabilistic relationships between variables, while machine learning places greater emphasis on developing algorithms that can learn patterns directly from data, sometimes sacrificing interpretability for predictive performance. However, the principles discussed in this chapter forms the core of both approaches -- both are concerned with extracting insights from data and making predictions, although they may approach these goals with slightly different philosophical and methodological perspectives. 
 
-Foundation: Machine learning draws from various fields, including computer science, artificial intelligence, and statistical learning, but with a stronger emphasis on algorithmic and computational aspects. Objective: The primary objective of machine learning is to develop algorithms that can automatically learn patterns and relationships from data, with an emphasis on predictive accuracy and generalization to new, unseen data. Emphasis: While understanding the underlying data-generating process is important, machine learning is often more focused on achieving optimal predictive performance. Assumptions: Machine learning methods often work in a more agnostic manner and may not rely heavily on explicit statistical assumptions. Interpretability: Some machine learning models, like deep neural networks, can be highly complex and challenging to interpret due to their architecture and the multitude of learned features.
+Statistical learning places a strong emphasis on understanding the underlying data-generating process and making inferences about population characteristics based on sample data. While understanding the underlying data-generating process is still important in machine learning, the focus is often more on achieving optimal predictive performance. Statistical learning approaches are also characterised by explicit assumptions about the underlying statistical distributions and relationships between variables, whereas machine learning methods often work in a more agnostic manner and may not rely heavily on explicit statistical assumptions.
 
-It's important to note that the distinction between statistical learning and machine learning can sometimes be blurred, and the two fields have evolved to influence each other over time. Many modern machine learning techniques, such as ensemble methods and regularization, have strong roots in statistical learning theory. Additionally, both fields share common goals of extracting insights from data and making predictions, but they may approach these goals with different philosophical and methodological perspectives.
-
-In essence, statistical learning often focuses on understanding the probabilistic relationships between variables, while machine learning places greater emphasis on developing algorithms that can learn patterns directly from data, sometimes sacrificing interpretability for predictive performance.
+For the purposes of our study throughout this course, these distinctions are not of consequence and we will adopt both perspectives throughout. 
 
 ## Homework exercises
 
-1. For Example 1, edit the provided code such that LOOCV is applied. Does this method suggest a different model complexity? What about 5-fold CV?
+1. For Example 1, edit the provided code such that LOOCV is applied. Does this method suggest a different model complexity? 
+2. Now do the same for 5-fold CV. What changes in the CV curve do you observe as $k$ changes?

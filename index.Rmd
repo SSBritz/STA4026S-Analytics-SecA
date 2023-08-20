@@ -1,6 +1,5 @@
 ---
 title: |  
-  ![](figs/Dept_Logo.jpg){width=50%}![](figs/UCTLogo.jpg){width=20%}  
   STA4026S -- Honours Analytics  
   Section B: Theory and Application of Supervised Learning
 author: 'Stefan S. Britz'
@@ -9,6 +8,9 @@ site: bookdown::bookdown_site
 bibliography: references.bib
 csl: apa.csl
 ---
+
+<!-- Will add the logos once I can figure out to disable the hove-over: -->
+<!-- ![](figs/Dept_Logo.jpg){width=50%}![](figs/UCTLogo.jpg){width=20%} -->
 
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(
