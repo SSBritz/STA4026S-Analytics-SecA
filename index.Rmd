@@ -1,5 +1,5 @@
 ---
-title: |  
+title: |
   STA4026S -- Honours Analytics  
   Section B: Theory and Application of Supervised Learning
 author: 'Stefan S. Britz'
@@ -8,9 +8,6 @@ site: bookdown::bookdown_site
 bibliography: references.bib
 csl: apa.csl
 ---
-
-<!-- Will add the logos once I can figure out to disable the hove-over: -->
-<!-- ![](figs/Dept_Logo.jpg){width=50%}![](figs/UCTLogo.jpg){width=20%} -->
 
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -23,6 +20,11 @@ library(cowplot) #Gives more control for figures
 ```
 
 # Introduction
+
+```{js, echo = FALSE}
+title=document.getElementById('header');
+title.innerHTML = '<img src="figs/Dept_Logo.jpg" alt="">' + title.innerHTML
+```
 
 Welcome to an introduction to **supervised learning**! In this set of course notes we will:
 

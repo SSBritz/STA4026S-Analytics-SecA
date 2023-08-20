@@ -159,7 +159,7 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">Supervised Learning</a></li>
+<li class="toc-logo"><a href="./"><img src="figs/UCTLogo.jpg"></a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
@@ -173,7 +173,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="2.2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#validation-set"><i class="fa fa-check"></i><b>2.2.1</b> Validation set</a></li>
 <li class="chapter" data-level="2.2.2" data-path="supervised-learning.html"><a href="supervised-learning.html#k-fold-cv"><i class="fa fa-check"></i><b>2.2.2</b> <span class="math inline">\(k\)</span>-fold CV</a></li>
-<li class="chapter" data-level="2.2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#example-1-simulation-cont"><i class="fa fa-check"></i><b>2.2.3</b> Example 1 – Simulation (cont)</a></li>
+<li class="chapter" data-level="2.2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#example-1-simulation-continued"><i class="fa fa-check"></i><b>2.2.3</b> Example 1 – Simulation (continued)</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#side-note-statistical-learning-vs-machine-learning"><i class="fa fa-check"></i><b>2.3</b> Side note: Statistical learning vs machine learning</a></li>
 <li class="chapter" data-level="2.4" data-path="supervised-learning.html"><a href="supervised-learning.html#homework-exercises"><i class="fa fa-check"></i><b>2.4</b> Homework exercises</a></li>
@@ -209,7 +209,6 @@ div.csl-indent {
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
-
 </ul>
 
       </nav>
@@ -236,6 +235,10 @@ Section B: Theory and Application of Supervised Learning</p></h1>
 </div>
 <div id="introduction" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Introduction<a href="index.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<script type="text/javascript">
+title=document.getElementById('header');
+title.innerHTML = '<img src="figs/Dept_Logo.jpg" alt="">' + title.innerHTML
+</script>
 <p>Welcome to an introduction to <strong>supervised learning</strong>! In this set of course notes we will:</p>
 <ol style="list-style-type: lower-alpha">
 <li>cover some of the fundamental theoretical principles underpinning supervised statistical and machine learning;</li>
@@ -246,7 +249,7 @@ Section B: Theory and Application of Supervised Learning</p></h1>
 <p>The fields of statistical learning/AI/machine learning/data science/analytics/data mining/deep learning/[insert new buzzword here] are constantly evolving at a rapid pace. Although the core theory and methodology will (should) always be relevant, adaptations to the methods are regularly being developed, along with more efficient and convenient packages for implementation. Therefore, although these notes attempt to introduce you to up-to-date modern frameworks, note that these things change over time.</p>
 <p>Also note that this is by no means an exhaustive exploration of either theory, methods, or application, but it will imbue you with a skill set with which to tackle various problems and provide a solid foundation for further learning.</p>
 <p>These notes draw from various sources, with the theoretical aspects largely relying on <strong>An Introduction to Statistical Learning with Applications in R</strong> <span class="citation">(James et al., 2013)</span> and <strong>Elements of Statistical Learning</strong> <span class="citation">(Hastie et al., 2009)</span>, both of which are freely available <a href="https://www.statlearning.com/">here</a> and <a href="https://hastie.su.domains/ElemStatLearn/">here</a>, respectively.</p>
-<p><img src="figs/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figs/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>It is recommended that you keep the former on hand, as you will be referred to sections therein for reading. Other sources will be referenced as and when they are used.</p>
 <!-- Perhaps leave the following just for the slides: -->
 <!-- Before we delve into the content, a brief look at the bigger picture might help to contextualise where supervised learning fits in. -->
@@ -303,7 +306,7 @@ gitbook.start({
 "link": "https://github.com/SSBritz/STA4026S-Analytics-SecB/blob/main/index.Rmd",
 "text": null
 },
-"download": ["bookdownproj.pdf", "bookdownproj.epub"],
+"download": null,
 "search": {
 "engine": "fuse",
 "options": null

@@ -1,5 +1,6 @@
 ---
 csl: apa.csl
+output: pdf_document
 ---
 
 # Supervised Learning
@@ -250,7 +251,7 @@ Also note that as $k$ increases, the computational cost increase proportionally,
 
 To illustrate the implementation, let us return to the earlier example, where we will pretend that we do not know the underlying relationship we are trying to estimate. 
 
-### Example 1 -- Simulation (cont)
+### Example 1 -- Simulation (continued)
 
 Before using the CV error to determine the ideal model complexity, let us first illustrate the concept of cross-validation for a single model, say a cubic spline with 8 degrees of freedom, with $k = 10$. 
 
