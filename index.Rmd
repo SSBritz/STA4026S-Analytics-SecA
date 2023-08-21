@@ -48,13 +48,5 @@ ggdraw() +
 
 It is recommended that you keep the former on hand, as you will be referred to sections therein for reading. Other sources will be referenced as and when they are used.
 
-<!-- Perhaps leave the following just for the slides: -->
-
-<!-- Before we delve into the content, a brief look at the bigger picture might help to contextualise where supervised learning fits in. -->
-
-<!-- ## Analytics -- different levels -->
-
-<!-- ## Statistical or machine learning? -->
-
 Happy learning!
 
