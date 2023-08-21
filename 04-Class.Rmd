@@ -1,9 +1,0 @@
-# Classification Models
-
-## Logistic regression
-
-## Model evaluation
-
-### ROC Curves
-
-### PR curves

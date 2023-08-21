@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Linear Model Selection &amp; Regularisation | STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning</title>
+  <meta name="description" content="STA4026S – Honours Analytics<br />
+Section B: Theory and Application of Supervised Learning</p>" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Linear Model Selection &amp; Regularisation | STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Linear Model Selection &amp; Regularisation | STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning" />
+  
+  
+  
+
+<meta name="author" content="Stefan S. Britz" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="supervised-learning.html"/>
+<link rel="next" href="classification-models.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="toc-logo"><a href="./"><img src="figs/UCTLogo.jpg"></a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="supervised-learning.html"><a href="supervised-learning.html"><i class="fa fa-check"></i><b>2</b> Supervised Learning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-Variance trade-off</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="supervised-learning.html"><a href="supervised-learning.html#example-1-simulation"><i class="fa fa-check"></i><b>2.1.1</b> Example 1 – Simulation</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="supervised-learning.html"><a href="supervised-learning.html#model-validation"><i class="fa fa-check"></i><b>2.2</b> Model validation</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#validation-set"><i class="fa fa-check"></i><b>2.2.1</b> Validation set</a></li>
+<li class="chapter" data-level="2.2.2" data-path="supervised-learning.html"><a href="supervised-learning.html#k-fold-cv"><i class="fa fa-check"></i><b>2.2.2</b> <span class="math inline">\(k\)</span>-fold CV</a></li>
+<li class="chapter" data-level="2.2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#example-1-simulation-continued"><i class="fa fa-check"></i><b>2.2.3</b> Example 1 – Simulation (continued)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#side-note-statistical-learning-vs-machine-learning"><i class="fa fa-check"></i><b>2.3</b> Side note: Statistical learning vs machine learning</a></li>
+<li class="chapter" data-level="2.4" data-path="supervised-learning.html"><a href="supervised-learning.html#homework-exercises"><i class="fa fa-check"></i><b>2.4</b> Homework exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html"><i class="fa fa-check"></i><b>3</b> Linear Model Selection &amp; Regularisation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#linear-regression-models"><i class="fa fa-check"></i><b>3.1</b> Linear Regression Models</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#l1-and-l2"><i class="fa fa-check"></i><b>3.2</b> L1 and L2</a></li>
+<li class="chapter" data-level="3.3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#elasticnet"><i class="fa fa-check"></i><b>3.3</b> ElasticNet</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#pcr-pls"><i class="fa fa-check"></i><b>3.4</b> PCR &amp; PLS</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="classification-models.html"><a href="classification-models.html"><i class="fa fa-check"></i><b>4</b> Classification Models</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="classification-models.html"><a href="classification-models.html#logistic-regression"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a></li>
+<li class="chapter" data-level="4.2" data-path="classification-models.html"><a href="classification-models.html#model-evaluation"><i class="fa fa-check"></i><b>4.2</b> Model evaluation</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="classification-models.html"><a href="classification-models.html#roc-curves"><i class="fa fa-check"></i><b>4.2.1</b> ROC Curves</a></li>
+<li class="chapter" data-level="4.2.2" data-path="classification-models.html"><a href="classification-models.html#pr-curves"><i class="fa fa-check"></i><b>4.2.2</b> PR curves</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="beyond-linearity.html"><a href="beyond-linearity.html"><i class="fa fa-check"></i><b>5</b> Beyond Linearity</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="beyond-linearity.html"><a href="beyond-linearity.html#polynomial"><i class="fa fa-check"></i><b>5.1</b> Polynomial</a></li>
+<li class="chapter" data-level="5.2" data-path="beyond-linearity.html"><a href="beyond-linearity.html#gams"><i class="fa fa-check"></i><b>5.2</b> GAMs</a></li>
+<li class="chapter" data-level="5.3" data-path="beyond-linearity.html"><a href="beyond-linearity.html#wls---loesslowess"><i class="fa fa-check"></i><b>5.3</b> WLS - LOESS/LOWESS???</a></li>
+<li class="chapter" data-level="5.4" data-path="beyond-linearity.html"><a href="beyond-linearity.html#knn"><i class="fa fa-check"></i><b>5.4</b> KNN</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="tree-based-methods.html"><a href="tree-based-methods.html"><i class="fa fa-check"></i><b>6</b> Tree-based Methods</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#cart"><i class="fa fa-check"></i><b>6.1</b> CART</a></li>
+<li class="chapter" data-level="6.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#bagging-rf"><i class="fa fa-check"></i><b>6.2</b> Bagging &amp; RF</a></li>
+<li class="chapter" data-level="6.3" data-path="tree-based-methods.html"><a href="tree-based-methods.html#boosting"><i class="fa fa-check"></i><b>6.3</b> Boosting</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"><p>STA4026S – Honours Analytics<br />
+Section B: Theory and Application of Supervised Learning</p></a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="linear-model-selection-regularisation" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Linear Model Selection &amp; Regularisation<a href="linear-model-selection-regularisation.html#linear-model-selection-regularisation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>In the previous chapter we discussed cross-validation (CV) as a procedure for estimating the out-of-sample performance of models of the same form, but different complexity, where each model was considered a separate hypothesised representation of the underlying function – <span class="math inline">\(f\)</span> – mapping all the explanatory variables (features) to the dependent (target) variable. In the following sections we will start by fitting a linear model, with the focus then on <strong>variable selection</strong>, i.e. deciding which features to include in the model. Instead of deciding on the model “settings” beforehand – which we will in later chapters come to know as <strong>hyperparameters</strong> – we will rather adjust the fitted model parameters by means of <strong>regularisation</strong>, also referred to as <strong>shrinkage methods</strong>. Following that, we will cover <strong>dimension reduction</strong> methods.</p>
+<p>This chapter is loosely based on chapter 6 of <span class="citation">James et al. (2013)</span> and assumes some basic knowledge of linear regression models.</p>
+<div id="linear-regression-models" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Linear Regression Models<a href="linear-model-selection-regularisation.html#linear-regression-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Although few real-world relationships can be considered truly linear, the linear model offers some distinct advantages, most notably in the clear interpretation of features<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Furthermore, they often perform surprisingly well on a range of problems.</p>
+<p>For some real-valued output <span class="math inline">\(Y\)</span> and input vector <span class="math inline">\(\boldsymbol{X}&#39; = [X_1, X_2, \ldots, X_p]\)</span>, the model is defined as:</p>
+<span class="math display" id="eq:lm">\[\begin{equation}
+Y = \beta_0 + \sum_{j=1}^p\beta_jX_j + \epsilon,
+\tag{3.1}
+\end{equation}\]</span>
+<p>where <span class="math inline">\(\epsilon \sim N(0, \sigma^2)\)</span>.</p>
+<p>The most popular method of estimating the regression parameters based on the training set <span class="math inline">\(\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n\)</span>, is <strong>least squares</strong>, where we find the coefficients <span class="math inline">\(\boldsymbol{\beta} = [\beta_0, \beta_1, \ldots, \beta_p]&#39;\)</span> to minimise the residual sum of squares</p>
+<span class="math display" id="eq:rss-beta">\[\begin{equation}
+RSS(\boldsymbol{\beta}) = \sum_{i=1}^n\left( y_i - \beta_0 - \sum_{j=1}^px_{ij}\beta_j \right)^2,
+\tag{3.2}
+\end{equation}\]</span>
+<p>noting that this does not imply any assumptions on the validity of the model.</p>
+</div>
+<div id="l1-and-l2" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> L1 and L2<a href="linear-model-selection-regularisation.html#l1-and-l2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Bring teorie in vir <span class="math inline">\(\hat{\beta_{RIDGE}}\)</span> en Lasso. Kyk na Othonormal covariates op Lasso wiki</p>
+<p>D314A3Q2</p>
+</div>
+<div id="elasticnet" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> ElasticNet<a href="linear-model-selection-regularisation.html#elasticnet" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="pcr-pls" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> PCR &amp; PLS<a href="linear-model-selection-regularisation.html#pcr-pls" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Sal sien oor die PLS, hang af van die tyd en scope.Versigtig vir ISLR, nie noodwendig reg nie.</p>
+<p>A3Q2</p>
+
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>In this context, statisticians often prefer the term <strong>co-variates</strong>.<a href="linear-model-selection-regularisation.html#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="supervised-learning.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="classification-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/SSBritz/STA4026S-Analytics-SecB/edit/main/03-ModeSelecReg.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": "https://github.com/SSBritz/STA4026S-Analytics-SecB/blob/main/03-ModeSelecReg.Rmd",
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

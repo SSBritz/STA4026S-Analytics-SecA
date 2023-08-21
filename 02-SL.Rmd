@@ -27,7 +27,7 @@ Hypothesising $\hat{f}$ can be done in two ways, namely via a parametric or a no
 
 **Parametric approach**
 
-Here an assumption is made about the the functional form of $f$, for example
+Here an assumption is made about the the functional form of $f$, for example the linear model
 
 $$f(\boldsymbol{X}) = \beta_0 + \sum_{j=1}^p\beta_jX_j.$$
 
@@ -99,6 +99,7 @@ $$Y = X + 2\cos(5X) + \epsilon,$$ where $\epsilon \sim N(0, 2)$.
 Below we simulate $n = 100$ observations from $X \sim U(-2,2)$, to which we fit cubic smoothing splines of increasing complexity. [Splines are beyond the scope of this course, but provide an easy-to-see illustration of "flexibility"]
 
 ```{r, animation.hook='gifski', interval=0.333}
+rm(list = ls())
 set.seed(4026)
 
 #Simulated data
@@ -290,9 +291,9 @@ for(k in 1:10){
          pch = c(16, 16, NA),
          lty = c(NA, NA, 3),
          lwd = c(NA, NA, 2))
-  plot(1:k, cv_k, 'b', col = 'red', lwd = 2, xlab = 'Fold', ylab = 'MSE', 
+  plot(1:k, cv_k, 'b', pch = 16, col = 'red', lwd = 2, xlab = 'Fold', ylab = 'MSE', 
        xlim = c(1, 10), ylim = c(1, 5.5))
-  lines(1:k, train_err, 'b', lwd = 2)
+  lines(1:k, train_err, 'b', pch = 16, lwd = 2)
   legend('topright', c('Training', 'Validation'), col = c('black', 'red'), lwd = 2)
 }
 ```
