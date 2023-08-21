@@ -1,6 +1,6 @@
-<h1>University of Cape Town
-Department of Statistical Sciences
-STA4026S - Honours Analytics  
+<h1>University of Cape Town \
+Department of Statistical Sciences\
+STA4026S - Honours Analytics\
 Section B: Theory and Application of Supervised Learning</h1>
 
 
