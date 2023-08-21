@@ -1,6 +1,9 @@
 eq:test-mse-decomp
 eq:bias-var
+fig:unnamed-chunk-3
 fig:b-v-trade
+fig:unnamed-chunk-5
+fig:unnamed-chunk-6
 introduction
 supervised-learning
 bias-variance-trade-off

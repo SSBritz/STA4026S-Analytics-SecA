@@ -6,3 +6,4 @@ bookdown::gitbook:
         <li class="toc-logo"><a href="./"><img src="figs/UCTLogo.jpg"></a></li>
       after: |
         <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+    edit: null

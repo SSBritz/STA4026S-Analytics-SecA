@@ -98,7 +98,7 @@ $$Y = X + 2\cos(5X) + \epsilon,$$ where $\epsilon \sim N(0, 2)$.
 
 Below we simulate $n = 100$ observations from $X \sim U(-2,2)$, to which we fit cubic smoothing splines of increasing complexity. [Splines are beyond the scope of this course, but provide an easy-to-see illustration of "flexibility"]
 
-```{r, animation.hook='gifski', interval=0.333}
+```{r, animation.hook='gifski', interval=0.333, fig.align='center', fig.cap='Cubic splines with varying degrees of freedom fitted to a sample of 100 datapoints drawn from $Y = X + 2\\cos(5X) + \\epsilon$, with $\\epsilon \\sim N(0, 2)$.'}
 rm(list = ls())
 set.seed(4026)
 
@@ -126,7 +126,7 @@ This serves to illustrate how the model's degrees of freedom is directly proport
 
 In the following simulation we again observe $n=100$ training observations at a time, to which the same models of varying complexity as above are fitted. Each model's fit is then assessed on a set of 100 testing observations, where the $\boldsymbol{x}_0$ (and, therefore, true $f(\boldsymbol{x}_0)$) are fixed, but random noise is added. This process is repeated 1000 times, such that we can keep track of how each test observation's predictions vary across the iterations, as well as the errors.
 
-```{r b-v-trade, warning=FALSE, fig.dim=c(6,6), fig.align='center', fig.cap='I must still write this figure caption!!'}
+```{r b-v-trade, warning=FALSE, fig.dim=c(6,6), fig.align='center', fig.cap='Averaged error components over 1000 simulations of samples of $n=100$. The horizontal dashed line represent the minimum lower bound for the test MSE. The vertical dashed line indicates the point at which both the test MSE and reducible error are minimised.'}
 set.seed(1)
 
 n <- 100          #Sample size
@@ -193,7 +193,7 @@ abline(v = dofs[which.min(results$MSE)], lty = 3) #Complexity minimising MSE
 abline(h = var_eps, lty = 3)                      #MSE lower bound
 ```
 
-As a quick sanity check before interpreting this result, let us add up the components -- which were calculated separately -- and see whether we indeed observe that $E\left[f - \hat{f} \right]^2 = Var\left[\hat{f}\right] + Bias^2\left[\hat{f}\right]$ and $\text{Test MSE} = E\left[y_0 - \hat{f}\right]^2 = E\left[f - \hat{f} \right]^2 + Var(\epsilon)$. Note that we will need to have a small tolerance for discrepancy, since we have approximated the expected values by averaging over only 1000 realisations. This approximation will become more accurate as the number of iterations is increased.
+As a quick sanity check before interpreting this result, let us add up the components -- which were calculated separately -- and see whether we indeed observe that $E\left[f - \hat{f} \right]^2 = Var\left[\hat{f}\right] + Bias^2\left[\hat{f}\right]$ as per Equation \@ref(eq:test-mse-decomp) and $\text{Test MSE} = E\left[y_0 - \hat{f}\right]^2 = E\left[f - \hat{f} \right]^2 + Var(\epsilon)$ as per Equation \@ref(eq:bias-var). Note that we will need to have a small tolerance for discrepancy, since we have approximated the expected values by averaging over only 1000 realisations. This approximation will become more accurate as the number of iterations is increased.
 
 ```{r}
 #Is reducible error = var(fhat) + bias^2(fhat)?
@@ -256,7 +256,7 @@ To illustrate the implementation, let us return to the earlier example, where we
 
 Before using the CV error to determine the ideal model complexity, let us first illustrate the concept of cross-validation for a single model, say a cubic spline with 8 degrees of freedom, with $k = 10$. 
 
-```{r, animation.hook='gifski', interval=1, out.width='150%'}
+```{r, animation.hook='gifski', interval=1, out.width='150%', fig.align='center', fig.cap='Left: The training (black) and validation (grey) portions of the dataset across 10 folds, with the fitted cubic spline with 8 degrees of freedom in blue. Right: The resulting training (black) and validation (red) MSEs across 10 folds.'}
 set.seed(4026)
 
 #Simulated data
@@ -300,7 +300,7 @@ for(k in 1:10){
 
 Here we see that, as expected, the validation error is noticeably more variable than the training error across the folds.  We can calculate the CV MSE as `r round(mean(cv_k), 2)`, although on its own this value is not particularly insightful. When comparing it to that of other models, though, we can determine which model complexity is estimated to yield the lowest test error.
 
-```{r}
+```{r, fig.align='center', fig.cap='10-fold cross-validation error curve (grey) for cubic splines with varying degrees of freedom, with the minimum point indicated by the crossed circle. The red line indicates the true test MSE being estimated.'}
 #Keep track of MSE per fold, per model
 fold_mses <- matrix(nrow = 10, ncol = length(dofs))
 
