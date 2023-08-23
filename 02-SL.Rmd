@@ -17,7 +17,7 @@ Given a quantitative response $Y$ and a set of $p$ predictors $X_1, X_2, \ldots,
 
 $$Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},$$
 
-where $f(.)$ represents the fixed, but unknown function and $\epsilon$ is a random error term, independent of $X$, with $E(X) = 0$. By estimating $f$ such that
+where $f(.)$ represents the fixed, but unknown function and $\epsilon$ is a random error term, independent of $X$, with $E(\epsilon) = 0$. By estimating $f$ such that
 
 $$\hat{Y} = \hat{f}(X),$$
 
@@ -86,13 +86,13 @@ E\left\{\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right]\right\} &=
 ```
 Therefore, in order to minimise the expected test MSE we need to find a model that has the lowest combined variance and (squared) bias.
 
-The **variance** represents the extent to which $\hat{f}$ changes between different training samples taken from the same population. The bias of $\hat{f}$ is simply the error that is introduced by approximating the real-world relationship with a simpler representation. Note, however, that since $f$ is generally unknown, the bias component cannot be directly observed or measured outside of simulations. However, these simulations may help us illustrate how the bias and variance change as model complexity increases.
+The **variance** represents the extent to which $\hat{f}$ changes between different training samples taken from the same population. The **bias** of $\hat{f}$ is simply the error that is introduced by approximating the real-world relationship with a simpler representation. Note, however, that since $f$ is generally unknown, the bias component cannot be directly observed or measured outside of simulations. However, these simulations may help us illustrate how the bias and variance change as model complexity increases.
 
 Although the concepts of model complexity and flexibility are not necessarily perfectly defined -- depending on the class of model being hypothesised -- the following example should provide an intuitive understanding.
 
 ### Example 1 -- Simulation
 
-To allow for easy visualisation, let us consider a simple model with only one feature:
+To allow for easy visualisation, let us consider a simple function with only one feature:
 
 $$Y = X + 2\cos(5X) + \epsilon,$$ where $\epsilon \sim N(0, 2)$.
 
@@ -238,7 +238,7 @@ We will not go into any more detail than this on the validation set approach, bu
 
 ### $k$-fold CV
 
-With this approach, the training set is randomly divided in to $k$ groups, or folds, of (approximately) the same size. Each fold gets a turn to act as the validation set, with the model trained on the remaining $k-1$ folds. Therefore, the training process is repeated $k$ times, each yielding an estimate of the test error, denoted as $MSE_1,\ MSE_2,\ldots,\ MSE_k$. These values are then averaged over all $k$ folds to yield the **$k$-fold CV estimate**:
+With this approach, the training set is randomly divided into $k$ groups, or folds, of (approximately) the same size. Each fold gets a turn to act as the validation set, with the model trained on the remaining $k-1$ folds. Therefore, the training process is repeated $k$ times, each yielding an estimate of the test error, denoted as $MSE_1,\ MSE_2,\ldots,\ MSE_k$. These values are then averaged over all $k$ folds to yield the **$k$-fold CV estimate**:
 
 $$CV_{(k)} = \frac{1}{k}\sum_{i=1}^k MSE_i$$
 The next obvious question is: What value of $k$ should we choose? Start by considering the lowest value, $k=2$. This would be the same as the validation set approach with a 50% split, except that each half of the data will get a chance to act as training and validation set. Therefore, we still expect the validation error to overestimate the test error, or in other words, there will be some bias. As we increase $k$, the estimated error will become more unbiased, since each fold will allow the model to capture more of the underlying pattern. 
@@ -248,7 +248,7 @@ However, just as with model complexity we also need to consider the variance asp
 $$Var(X+Y) = \sigma^2_X + \sigma^2_Y + 2\frac{\rho_{XY}}{\sigma_X\sigma_Y}$$
 Therefore, larger $k$ implies larger variation of the estimated error. This means that the same bias-variance trade-off applies to $k$-fold CV! In practice, it has been shown that $k = 5$ or $k = 10$ yields a good balance such that the test error estimate does not suffer from excessively high bias nor variance. 
 
-Also note that as $k$ increases, the computational cost increase proportionally, since $k$ separate models must be fitted to $k$ different data splits. This could cause unnecessarily long training times for large datasets/complicated models, such that a smaller $k$ might be preferable. 
+Also note that as $k$ increases, the computational cost increases proportionally, since $k$ separate models must be fitted to $k$ different data splits. This could cause unnecessarily long training times for large datasets/complicated models, such that a smaller $k$ might be preferable. 
 
 To illustrate the implementation, let us return to the earlier example, where we will pretend that we do not know the underlying relationship we are trying to estimate. 
 

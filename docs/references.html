@@ -7,7 +7,7 @@
   <title>References | STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning</title>
   <meta name="description" content="STA4026S – Honours Analytics<br />
 Section B: Theory and Application of Supervised Learning</p>" />
-  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
   <meta property="og:title" content="References | STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning" />
   <meta property="og:type" content="book" />
@@ -30,7 +30,7 @@ Section B: Theory and Application of Supervised Learning</p>" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="supervised-learning.html"/>
+<link rel="prev" href="linear-model-selection-regularisation.html"/>
 
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -120,6 +120,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
 <style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
 div.csl-bib-body { }
 div.csl-entry {
@@ -174,6 +178,19 @@ div.csl-indent {
 <li class="chapter" data-level="2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#side-note-statistical-learning-vs-machine-learning"><i class="fa fa-check"></i><b>2.3</b> Side note: Statistical learning vs machine learning</a></li>
 <li class="chapter" data-level="2.4" data-path="supervised-learning.html"><a href="supervised-learning.html#homework-exercises"><i class="fa fa-check"></i><b>2.4</b> Homework exercises</a></li>
 </ul></li>
+<li class="chapter" data-level="3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html"><i class="fa fa-check"></i><b>3</b> Linear Model Selection &amp; Regularisation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#linear-regression-models"><i class="fa fa-check"></i><b>3.1</b> Linear Regression Models</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#l_1-and-l_2-regularisation"><i class="fa fa-check"></i><b>3.2</b> <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularisation</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#ridge-regression-l_2"><i class="fa fa-check"></i><b>3.2.1</b> Ridge regression – <span class="math inline">\(L_2\)</span></a></li>
+<li class="chapter" data-level="3.2.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer"><i class="fa fa-check"></i><b>3.2.2</b> Example 2 – Prostate Cancer</a></li>
+<li class="chapter" data-level="3.2.3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#the-lasso-l_1"><i class="fa fa-check"></i><b>3.2.3</b> The Lasso – <span class="math inline">\(L_1\)</span></a></li>
+<li class="chapter" data-level="3.2.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer-continued"><i class="fa fa-check"></i><b>3.2.4</b> Example 2 – Prostate Cancer (continued)</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#elastic-net"><i class="fa fa-check"></i><b>3.3</b> Elastic-net</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#homework-exercises-1"><i class="fa fa-check"></i><b>3.4</b> Homework exercises</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -209,8 +226,15 @@ Hastie, T., Tibshirani, R., Friedman, J. H., &amp; Friedman, J. H. (2009). <em>T
 <div class="csl-entry">
 James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). <em>An introduction to statistical learning</em> (Vol. 112). Springer.
 </div>
+<div class="csl-entry">
+Zou, H., &amp; Hastie, T. (2005). Regularization and variable selection via the elastic net. <em>Journal of the Royal Statistical Society. Series B (Statistical Methodology)</em>, <em>67</em>(2), 301–320. <a href="http://www.jstor.org/stable/3647580">http://www.jstor.org/stable/3647580</a>
 </div>
 </div>
+</div>
+
+
+
+
 
 
 
@@ -222,7 +246,7 @@ James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). <em>An introdu
           </div>
         </div>
       </div>
-<a href="supervised-learning.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="linear-model-selection-regularisation.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>

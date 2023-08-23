@@ -7,7 +7,7 @@
   <title>Chapter 2 Supervised Learning | STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning</title>
   <meta name="description" content="STA4026S – Honours Analytics<br />
 Section B: Theory and Application of Supervised Learning</p>" />
-  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 Supervised Learning | STA4026S – Honours Analytics Section B: Theory and Application of Supervised Learning" />
   <meta property="og:type" content="book" />
@@ -31,7 +31,7 @@ Section B: Theory and Application of Supervised Learning</p>" />
   
   
 <link rel="prev" href="index.html"/>
-<link rel="next" href="references.html"/>
+<link rel="next" href="linear-model-selection-regularisation.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -120,6 +120,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
 <style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
 /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
 div.csl-bib-body { }
 div.csl-entry {
@@ -174,6 +178,19 @@ div.csl-indent {
 <li class="chapter" data-level="2.3" data-path="supervised-learning.html"><a href="supervised-learning.html#side-note-statistical-learning-vs-machine-learning"><i class="fa fa-check"></i><b>2.3</b> Side note: Statistical learning vs machine learning</a></li>
 <li class="chapter" data-level="2.4" data-path="supervised-learning.html"><a href="supervised-learning.html#homework-exercises"><i class="fa fa-check"></i><b>2.4</b> Homework exercises</a></li>
 </ul></li>
+<li class="chapter" data-level="3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html"><i class="fa fa-check"></i><b>3</b> Linear Model Selection &amp; Regularisation</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#linear-regression-models"><i class="fa fa-check"></i><b>3.1</b> Linear Regression Models</a></li>
+<li class="chapter" data-level="3.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#l_1-and-l_2-regularisation"><i class="fa fa-check"></i><b>3.2</b> <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularisation</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#ridge-regression-l_2"><i class="fa fa-check"></i><b>3.2.1</b> Ridge regression – <span class="math inline">\(L_2\)</span></a></li>
+<li class="chapter" data-level="3.2.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer"><i class="fa fa-check"></i><b>3.2.2</b> Example 2 – Prostate Cancer</a></li>
+<li class="chapter" data-level="3.2.3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#the-lasso-l_1"><i class="fa fa-check"></i><b>3.2.3</b> The Lasso – <span class="math inline">\(L_1\)</span></a></li>
+<li class="chapter" data-level="3.2.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer-continued"><i class="fa fa-check"></i><b>3.2.4</b> Example 2 – Prostate Cancer (continued)</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#elastic-net"><i class="fa fa-check"></i><b>3.3</b> Elastic-net</a></li>
+<li class="chapter" data-level="3.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#homework-exercises-1"><i class="fa fa-check"></i><b>3.4</b> Homework exercises</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -203,7 +220,7 @@ Section B: Theory and Application of Supervised Learning</p></a>
 <p>The basic distinction is that <strong>supervised learning</strong> refers to cases where there is some <strong>target variable</strong>, usually indicated as <span class="math inline">\(Y\)</span>, whereas if we are interested in the structures and patterns in explanatory variables<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> only, we refer to unsupervised learning.</p>
 <p>Given a quantitative response <span class="math inline">\(Y\)</span> and a set of <span class="math inline">\(p\)</span> predictors <span class="math inline">\(X_1, X_2, \ldots, X_p\)</span>, we are interested in the assumed, unobserved function that maps the inputs to the outputs:</p>
 <p><span class="math display">\[Y = \underbrace{f(X)}_{systematic} + \underbrace{\epsilon}_{random},\]</span></p>
-<p>where <span class="math inline">\(f(.)\)</span> represents the fixed, but unknown function and <span class="math inline">\(\epsilon\)</span> is a random error term, independent of <span class="math inline">\(X\)</span>, with <span class="math inline">\(E(X) = 0\)</span>. By estimating <span class="math inline">\(f\)</span> such that</p>
+<p>where <span class="math inline">\(f(.)\)</span> represents the fixed, but unknown function and <span class="math inline">\(\epsilon\)</span> is a random error term, independent of <span class="math inline">\(X\)</span>, with <span class="math inline">\(E(\epsilon) = 0\)</span>. By estimating <span class="math inline">\(f\)</span> such that</p>
 <p><span class="math display">\[\hat{Y} = \hat{f}(X),\]</span></p>
 <p>we allow for both prediction of <span class="math inline">\(Y\)</span> – which is the primary goal in forecasting – and inference, i.e. describing how <span class="math inline">\(Y\)</span> is affected by changes in <span class="math inline">\(X\)</span>.</p>
 <p>Hypothesising <span class="math inline">\(\hat{f}\)</span> can be done in two ways, namely via a parametric or a non-parametric approach.</p>
@@ -245,11 +262,11 @@ E\left\{\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right]\right\} &a
 &amp;= 0
 \end{align}\]</span>
 <p>Therefore, in order to minimise the expected test MSE we need to find a model that has the lowest combined variance and (squared) bias.</p>
-<p>The <strong>variance</strong> represents the extent to which <span class="math inline">\(\hat{f}\)</span> changes between different training samples taken from the same population. The bias of <span class="math inline">\(\hat{f}\)</span> is simply the error that is introduced by approximating the real-world relationship with a simpler representation. Note, however, that since <span class="math inline">\(f\)</span> is generally unknown, the bias component cannot be directly observed or measured outside of simulations. However, these simulations may help us illustrate how the bias and variance change as model complexity increases.</p>
+<p>The <strong>variance</strong> represents the extent to which <span class="math inline">\(\hat{f}\)</span> changes between different training samples taken from the same population. The <strong>bias</strong> of <span class="math inline">\(\hat{f}\)</span> is simply the error that is introduced by approximating the real-world relationship with a simpler representation. Note, however, that since <span class="math inline">\(f\)</span> is generally unknown, the bias component cannot be directly observed or measured outside of simulations. However, these simulations may help us illustrate how the bias and variance change as model complexity increases.</p>
 <p>Although the concepts of model complexity and flexibility are not necessarily perfectly defined – depending on the class of model being hypothesised – the following example should provide an intuitive understanding.</p>
 <div id="example-1-simulation" class="section level3 hasAnchor" number="2.1.1">
 <h3><span class="header-section-number">2.1.1</span> Example 1 – Simulation<a href="supervised-learning.html#example-1-simulation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>To allow for easy visualisation, let us consider a simple model with only one feature:</p>
+<p>To allow for easy visualisation, let us consider a simple function with only one feature:</p>
 <p><span class="math display">\[Y = X + 2\cos(5X) + \epsilon,\]</span> where <span class="math inline">\(\epsilon \sim N(0, 2)\)</span>.</p>
 <p>Below we simulate <span class="math inline">\(n = 100\)</span> observations from <span class="math inline">\(X \sim U(-2,2)\)</span>, to which we fit cubic smoothing splines of increasing complexity. [Splines are beyond the scope of this course, but provide an easy-to-see illustration of “flexibility”]</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="supervised-learning.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
@@ -388,13 +405,13 @@ Figure 2.2: Averaged error components over 1000 simulations of samples of <span 
 </div>
 <div id="k-fold-cv" class="section level3 hasAnchor" number="2.2.2">
 <h3><span class="header-section-number">2.2.2</span> <span class="math inline">\(k\)</span>-fold CV<a href="supervised-learning.html#k-fold-cv" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>With this approach, the training set is randomly divided in to <span class="math inline">\(k\)</span> groups, or folds, of (approximately) the same size. Each fold gets a turn to act as the validation set, with the model trained on the remaining <span class="math inline">\(k-1\)</span> folds. Therefore, the training process is repeated <span class="math inline">\(k\)</span> times, each yielding an estimate of the test error, denoted as <span class="math inline">\(MSE_1,\ MSE_2,\ldots,\ MSE_k\)</span>. These values are then averaged over all <span class="math inline">\(k\)</span> folds to yield the <strong><span class="math inline">\(k\)</span>-fold CV estimate</strong>:</p>
+<p>With this approach, the training set is randomly divided into <span class="math inline">\(k\)</span> groups, or folds, of (approximately) the same size. Each fold gets a turn to act as the validation set, with the model trained on the remaining <span class="math inline">\(k-1\)</span> folds. Therefore, the training process is repeated <span class="math inline">\(k\)</span> times, each yielding an estimate of the test error, denoted as <span class="math inline">\(MSE_1,\ MSE_2,\ldots,\ MSE_k\)</span>. These values are then averaged over all <span class="math inline">\(k\)</span> folds to yield the <strong><span class="math inline">\(k\)</span>-fold CV estimate</strong>:</p>
 <p><span class="math display">\[CV_{(k)} = \frac{1}{k}\sum_{i=1}^k MSE_i\]</span>
 The next obvious question is: What value of <span class="math inline">\(k\)</span> should we choose? Start by considering the lowest value, <span class="math inline">\(k=2\)</span>. This would be the same as the validation set approach with a 50% split, except that each half of the data will get a chance to act as training and validation set. Therefore, we still expect the validation error to overestimate the test error, or in other words, there will be some bias. As we increase <span class="math inline">\(k\)</span>, the estimated error will become more unbiased, since each fold will allow the model to capture more of the underlying pattern.</p>
 <p>However, just as with model complexity we also need to consider the variance aspect. Consider now the other extreme, when <span class="math inline">\(k = n\)</span>. Here we have what is referred to as <strong>Leave-one-out cross-validation (LOOCV)</strong>, since we have <span class="math inline">\(n\)</span> folds, each leaving out just one observation for validation. Each of these <span class="math inline">\(n\)</span> training sets will be almost identical, such that there will be very high correlation between them. Now, remember that when we add correlated random variables (note that averaging involves summation), then the correlation affects the resulting variance:</p>
 <p><span class="math display">\[Var(X+Y) = \sigma^2_X + \sigma^2_Y + 2\frac{\rho_{XY}}{\sigma_X\sigma_Y}\]</span>
 Therefore, larger <span class="math inline">\(k\)</span> implies larger variation of the estimated error. This means that the same bias-variance trade-off applies to <span class="math inline">\(k\)</span>-fold CV! In practice, it has been shown that <span class="math inline">\(k = 5\)</span> or <span class="math inline">\(k = 10\)</span> yields a good balance such that the test error estimate does not suffer from excessively high bias nor variance.</p>
-<p>Also note that as <span class="math inline">\(k\)</span> increases, the computational cost increase proportionally, since <span class="math inline">\(k\)</span> separate models must be fitted to <span class="math inline">\(k\)</span> different data splits. This could cause unnecessarily long training times for large datasets/complicated models, such that a smaller <span class="math inline">\(k\)</span> might be preferable.</p>
+<p>Also note that as <span class="math inline">\(k\)</span> increases, the computational cost increases proportionally, since <span class="math inline">\(k\)</span> separate models must be fitted to <span class="math inline">\(k\)</span> different data splits. This could cause unnecessarily long training times for large datasets/complicated models, such that a smaller <span class="math inline">\(k\)</span> might be preferable.</p>
 <p>To illustrate the implementation, let us return to the earlier example, where we will pretend that we do not know the underlying relationship we are trying to estimate.</p>
 </div>
 <div id="example-1-simulation-continued" class="section level3 hasAnchor" number="2.2.3">
@@ -507,7 +524,7 @@ Figure 2.4: 10-fold cross-validation error curve (grey) for cubic splines with v
         </div>
       </div>
 <a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="linear-model-selection-regularisation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

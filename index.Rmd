@@ -9,10 +9,11 @@ bibliography: references.bib
 csl: apa.csl
 ---
 
-```{r, setup, include=FALSE}
+```{r, setup1, include=FALSE}
 knitr::opts_chunk$set(
   warnings = FALSE,
-  fig.path = 'figs/'
+  fig.path = 'figs/', 
+  message = F
 )
 
 library(knitr)
