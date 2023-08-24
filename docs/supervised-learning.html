@@ -290,8 +290,8 @@ E\left\{\left[\hat{f} - E(\hat{f})\right] \left[E(\hat{f}) - f\right]\right\} &a
 <span id="cb1-19"><a href="supervised-learning.html#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">&#39;bottomright&#39;</span>, <span class="fu">c</span>(<span class="st">&#39;f(x) - True&#39;</span>, <span class="fu">expression</span>(<span class="fu">hat</span>(f)(x) <span class="sc">~</span> <span class="st">&#39;- Cubic spline&#39;</span>)), </span>
 <span id="cb1-20"><a href="supervised-learning.html#cb1-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&#39;black&#39;</span>, <span class="st">&#39;blue&#39;</span>), <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb1-21"><a href="supervised-learning.html#cb1-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-3"></span>
-<img src="figs/unnamed-chunk-3-.gif" alt="Cubic splines with varying degrees of freedom fitted to a sample of 100 datapoints drawn from $Y = X + 2\cos(5X) + \epsilon$, with $\epsilon \sim N(0, 2)$." width="672" />
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-4"></span>
+<img src="figs/unnamed-chunk-4-.gif" alt="Cubic splines with varying degrees of freedom fitted to a sample of 100 datapoints drawn from $Y = X + 2\cos(5X) + \epsilon$, with $\epsilon \sim N(0, 2)$." width="672" />
 <p class="caption">
 Figure 2.1: Cubic splines with varying degrees of freedom fitted to a sample of 100 datapoints drawn from <span class="math inline">\(Y = X + 2\cos(5X) + \epsilon\)</span>, with <span class="math inline">\(\epsilon \sim N(0, 2)\)</span>.
 </p>
@@ -456,8 +456,8 @@ Therefore, larger <span class="math inline">\(k\)</span> implies larger variatio
 <span id="cb7-37"><a href="supervised-learning.html#cb7-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span>k, train_err, <span class="st">&#39;b&#39;</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb7-38"><a href="supervised-learning.html#cb7-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">&#39;topright&#39;</span>, <span class="fu">c</span>(<span class="st">&#39;Training&#39;</span>, <span class="st">&#39;Validation&#39;</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&#39;black&#39;</span>, <span class="st">&#39;red&#39;</span>), <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb7-39"><a href="supervised-learning.html#cb7-39" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-5"></span>
-<img src="figs/unnamed-chunk-5-.gif" alt="Left: The training (black) and validation (grey) portions of the dataset across 10 folds, with the fitted cubic spline with 8 degrees of freedom in blue. Right: The resulting training (black) and validation (red) MSEs across 10 folds." width="150%" />
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-6"></span>
+<img src="figs/unnamed-chunk-6-.gif" alt="Left: The training (black) and validation (grey) portions of the dataset across 10 folds, with the fitted cubic spline with 8 degrees of freedom in blue. Right: The resulting training (black) and validation (red) MSEs across 10 folds." width="150%" />
 <p class="caption">
 Figure 2.3: Left: The training (black) and validation (grey) portions of the dataset across 10 folds, with the fitted cubic spline with 8 degrees of freedom in blue. Right: The resulting training (black) and validation (red) MSEs across 10 folds.
 </p>
@@ -486,8 +486,8 @@ Figure 2.3: Left: The training (black) and validation (grey) portions of the dat
 <span id="cb8-21"><a href="supervised-learning.html#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&#39;bottomright&#39;</span>, <span class="fu">c</span>(<span class="st">&#39;CV MSE&#39;</span>, <span class="st">&#39;True test MSE&#39;</span>), <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&#39;gray&#39;</span>, <span class="st">&#39;darkred&#39;</span>), <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
 <span id="cb8-22"><a href="supervised-learning.html#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> dofs[<span class="fu">which.min</span>(results<span class="sc">$</span>MSE)], <span class="at">lty =</span> <span class="dv">3</span>)</span>
 <span id="cb8-23"><a href="supervised-learning.html#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(dofs[<span class="fu">which.min</span>(cv_mses)], <span class="fu">min</span>(cv_mses), <span class="at">pch =</span> <span class="dv">13</span>, <span class="at">cex =</span> <span class="fl">2.5</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-6"></span>
-<img src="figs/unnamed-chunk-6-1.png" alt="10-fold cross-validation error curve (grey) for cubic splines with varying degrees of freedom, with the minimum point indicated by the crossed circle. The red line indicates the true test MSE being estimated." width="672" />
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-7"></span>
+<img src="figs/unnamed-chunk-7-1.png" alt="10-fold cross-validation error curve (grey) for cubic splines with varying degrees of freedom, with the minimum point indicated by the crossed circle. The red line indicates the true test MSE being estimated." width="672" />
 <p class="caption">
 Figure 2.4: 10-fold cross-validation error curve (grey) for cubic splines with varying degrees of freedom, with the minimum point indicated by the crossed circle. The red line indicates the true test MSE being estimated.
 </p>
