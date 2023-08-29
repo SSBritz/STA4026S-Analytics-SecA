@@ -5,6 +5,16 @@ output: pdf_document
 
 # Supervised Learning
 
+```{r, setup2, include=FALSE}
+rm(list =ls())
+library(knitr)
+knitr::opts_chunk$set(
+  warnings = F,
+  fig.path = 'figs/', 
+  message = F
+)
+```
+
 This chapter aims to briefly summarise the key aspects of supervised learning that will be relevant for the following sections, some of which you should be familiar with already. Whereas there are many good sources that provide a more comprehensive discussion, Chapter 2 of @james2013introduction is sufficient for the level and scope of this course.
 
 Using a set of observations to uncover some underlying process in the real world is the basic premise of "learning from data" [@Mostafa2012, p. 11]. By discerning patterns, relationships, and trends within the data, machines become capable of making informed decisions and predictions in various domains. Different learning paradigms have developed to address different problems and data structures, and are generally divided into three broad classes: supervised learning, unsupervised learning, and reinforcement learning. We will not discuss the latter in this course.

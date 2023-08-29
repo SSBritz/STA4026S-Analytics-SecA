@@ -1,0 +1,558 @@
+# Classification Models
+
+```{r, setup4, include=F}
+rm(list =ls())
+library(knitr)
+library(rgl)
+knitr::opts_chunk$set(
+  warnings = F,
+  fig.path = 'figs/', 
+  message = F
+)
+knitr::knit_hooks$set(webgl = hook_webgl)
+```
+
+Thus far we have only been considering numeric response variables, generally referred to as regression problems. In this chapter we discuss **classification**, i.e. supervised learning problems where the response variable is **categorical**. More specifically, we will focus on methods of evaluating a classification model's performance.
+
+For the sake of illustration in this chapter we will only consider the **logistic regression** as linear classifier, although other classification models will be introduced in later chapters. The following section is based in part on section 4.3 of @james2013introduction.
+
+For now, let us consider a **binary** classification task, for example:
+
+-   Determining whether a person will test positive or negative for the SARS-CoV-2 virus, based on a range of physiological metrics.
+-   Identifying a bank transaction as either fraudulent or legitimate on the basis of the user's IP address, past transaction history, etc.
+-   Classifying email as spam or legitimate, depending on the features of the content and sender.
+
+We will code the target variable as follows:
+
+$$Y = \begin{cases}
+1 & \mbox{if the outcome is "class A"}\\
+0 & \mbox{if the outcome is "class B"}\\
+\end{cases}$$
+
+Given data from some set of $p$ features, we would like to define a decision rule based on a p-dimensional **decision boundary** that splits the feature space into two prediction regions corresponding to classes $A$ and $B$ respectively. When this decision boundary is linear -- i.e. a straight line in two dimensions; a plane when $p = 3$; and a hyperplane for higher dimensions -- then the classifier yielding this decision boundary is considered linear. Some of the most widely applied linear classifiers include *linear discriminant analysis*, *naive Bayes*, *support vector machine (with linear kernel)*, the *perceptron*, and *logistic regression*.
+
+## Logistic regression
+
+In the previous chapter we touched on the benefits provided by the simplicity of a linear model, particularly in interpreting the regression coefficients. Using that same, simple additive structure:
+
+```{=tex}
+\begin{equation}
+g(\boldsymbol{X}) = \beta_0 + \sum_{j=1}^p\beta_jX_j,
+(\#eq:lm)
+\end{equation}
+```
+we would like to relate the linear combination of input parameters to a classification of 0 or 1. We do so by **modelling the probability** that an observation belongs to some reference class:
+
+$$\Pr(Y = j|\boldsymbol{X} = \boldsymbol{x}) = 
+\begin{cases}
+p(\boldsymbol{x}) & \mbox{if }j = 1\\
+1 - p(\boldsymbol{x}) & \mbox{if }j = 0\\
+\end{cases},$$
+
+or in other words, $Y \sim \text{Bernoulli}(p)$. Therefore, $p(\boldsymbol{x})$ represents the probability that an observation is in class A given $\boldsymbol{X} = \boldsymbol{x}$.
+
+Now we need to define an appropriate function in order to map the linear function $g(X)$ in Equation \@ref(eq:lm) to $p(x) \in [0, 1]$. One option is the **logistic function**, yielding a logistic regression model:
+
+```{=tex}
+\begin{equation}
+p(\boldsymbol{X}) = \frac{e^{\beta_0+\beta_1X_1+\ldots+\beta_pX_p}}{1+e^{\beta_0+\beta_1X_1+\ldots+\beta_pX_p}}.
+(\#eq:log)
+\end{equation}
+```
+Also referred to as the logistic map or sigmoidal curve, this S-shaped function has asymptotes at 0 and 1, as later examples will illustrate. Through some simple manipulation, we can rewrite \@ref(eq:log) as follows:
+
+```{=tex}
+\begin{equation}
+\log \left( \frac{p(\boldsymbol{X})}{1 - p(\boldsymbol{X})} \right) = \beta_0 + \sum_{j=1}^p\beta_jX_j .
+(\#eq:logit)
+\end{equation}
+```
+The left-hand is referred to as the **log odds** or **logit**, and here we see that the logistic regression model has a logit that is linear in $\boldsymbol{X}$.
+
+Consider now the exponent of the log odds, i.e. the **odds**:
+
+```{=tex}
+\begin{equation}
+\text{odds} = \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} = \exp(\beta_0 + \beta_1x_1 + \ldots + \beta_px_p).
+(\#eq:odds)
+\end{equation}
+```
+This quantity -- which we note can take on any value from 0 to $\infty$ -- can be interpreted as the odds that $Y = 1$ vs $Y = 0$, given $\boldsymbol{x}$. In other words, "how many times more likely" we are to observe $Y = 1$ than $Y = 0$ for that particular set of $\boldsymbol{x}$ values.
+
+Before considering how to interpret the individual regression coefficients, we will briefly discuss their estimation.
+
+### Estimation
+
+The most common approach for estimating the parameters $\boldsymbol{\beta}$ is by way of **maximising the likelihood**. The likelihood, a function of the parameters, is simply the joint probability of observing the responses:
+
+```{=tex}
+\begin{align}
+L(\boldsymbol{\beta}) &= \Pr(Y = y_1|\boldsymbol{X} = \boldsymbol{X}_1)\times \Pr(Y = y_2|\boldsymbol{X} = \boldsymbol{x}_2)\times \ldots \times \Pr(Y = y_n|\boldsymbol{X} = \boldsymbol{x}_n) \\
+&= \prod_{i=1}^np(\boldsymbol{x}_i)^{y_i}(1 - p(\boldsymbol{x}_i))^{1 - y_i}
+(\#eq:L)
+\end{align}
+```
+Maximising this quantity is akin to maximising the log-likelihood:
+
+```{=tex}
+\begin{equation}
+\ell(\boldsymbol{\beta}) = \sum_{i=1}^n \left[ y_i\log(p(\boldsymbol{x}_i)) + (1 - y_i)\log(1 - p(\boldsymbol{x}_i)) \right],
+(\#eq:l)
+\end{equation}
+```
+or, equivalently, minimising the **negative log-likelihood** (NLL), also referred to as the **cross-entropy error** function.
+
+Finding the maximum is done in the usual way of setting the derivative of the log-likelihood equal to zero, yielding the so-called *score* equations. Since these equations are nonlinear in $\boldsymbol{\beta}$, solving for $\hat{\boldsymbol{\beta}}$ requires an optimisation procedure such as iteratively reweighted least squares. The details of this procedure are beyond the scope of this course, but can be found in pages 120-121 of @hastie2009elements.
+
+### Interpretation
+
+The model parameters (regression coefficients) can be interpreted in a similar way to the linear model, by considering how a specific change in a coefficient's corresponding parameters relates to the outcome. The simplest way of considering this effect is via the odds, given in Equation \@ref(eq:odds).
+
+For example, consider the case where $X_1$ increases by one unit, i.e. from $x_1$ to $x_1 + 1$. Then:
+
+```{=tex}
+\begin{align}
+\text{odds}(X_1 = x_1 + 1) &= \exp(\beta_0 + \beta_1(x_1 + 1) + \ldots + \beta_px_p) \\
+&= e^{\beta_1}\exp(\beta_0 + \beta_1x_1 + \ldots + \beta_px_p) \\
+&= e^{\beta_1}\text{odds}(X_1 = x_1)
+(\#eq:oddschange)
+\end{align} 
+```
+Therefore, increasing $X_1$ by one unit (whilst holding all predictors constant), increases the odds of $Y = 1$ by a multiple of $e^{\beta_1}$.
+
+Note that the linear predictor may still take predictors with various measurement scales, including categorical variables represented by dummy variables, in which case we can interpret the change in odds for a specific category of the predictor against the reference category.
+
+### Prediction
+
+Prediction for logistic regression is carried out in exactly the same way as with linear regression. We use the parameter estimates to evaluate the **probabilities** associated with each outcome:
+
+```{=tex}
+\begin{equation}
+\hat{\Pr}(Y=1|\boldsymbol{X}) = \hat{p}(\boldsymbol{X}) = \frac{e^{\hat{\beta}_0+\hat{\beta}_1X_1+\ldots+\hat{\beta}_pX_p}}{1+e^{\hat{\beta}_0+\hat{\beta}_1X_1+\ldots+\hat{\beta}_pX_p}}
+\end{equation}
+(\#eq:pred)
+```
+
+In order to classify a new observation as belonging to a specific class, we need to apply a **decision rule** to this probability. For multiclass classification with $K$ different levels, we will classify an observation to the class with the highest estimated probability:
+
+$$\hat{Y} = \underset{k}{\text{argmax}} \left[ \hat{p}_k(\boldsymbol{X}) \right],$$ where $k = 1, \ldots, K$.
+
+In the binary case, this implies that the decision rule has a threshold of 0.5:
+
+```{=tex}
+\begin{equation}
+\hat{Y} = \begin{cases}
+1 & \mbox{if } \hat{p}(\boldsymbol{X}) \geq 0.5\\
+0 & \mbox{if } \hat{p}(\boldsymbol{X}) < 0.5\\
+\end{cases}
+\end{equation}
+(\#eq:dec-rule)
+```
+We will return to this decision rule when considering model evaluation in section \@ref(model-evaluation).
+
+The threshold determines the exact decision boundary, although for logistic regression this boundary will always be linear, since the logit function is linear in the predictors. The decision boundary is best illustrated by means of an example.
+
+### Example 3 -- Default data
+
+This example entails the simulated (fictitious) dataset `Default` from the `ISLR` package. In this binary classification problem, we aim to predict whether or not an individual will `default` on their credit card payment based on three features:
+
+-   `student`: Whether they are a student (yes/no)
+-   `balance`: The average balance that the customer has remaining on their credit card after making their monthly payment
+-   `income`: Annual income
+
+**Exploration**
+
+Ignoring the `student` variable for now, we see a very strong (somewhat exaggerated!) relationship between `balance` and `default`. Since the overall default rate is approximately 3%, we will only plot a random subsample of the non-defaulters, similar to what was done in Figure 4.1 of @james2013introduction.
+
+```{r scatter, fig.align='center', fig.dim=c(6,6), fig.cap='Annual incomes and monthly credit card balances of a subsample from the Default dataset'}
+library(ISLR)
+data(Default)
+
+def_prop <- mean(as.numeric(Default$default) - 1) #Proportion of defaulters...only 0.0333
+
+#Let's plot non-defaulters to defaulters at a 4:1 ratio
+def_rows <- which(Default$default == 'No')
+set.seed(4026)
+Default_plot <- Default[-sample(def_rows, length(def_rows)*(1 - def_prop*4)),]
+
+# Using base R plotting
+plot(Default_plot$balance, Default_plot$income,
+     col = ifelse(Default_plot$default == 'Yes', 'darkorange', 'lightblue'),
+     pch = ifelse(Default_plot$default == 'Yes', 3, 1),
+     xlab = 'Balance', ylab = 'Income')
+legend('topright', c('Default', 'Non-default'), 
+       col = c('darkorange', 'lightblue'), 
+       pch = c(3, 1))
+```
+
+```{r boxes, fig.align='center', fig.cap='Boxplots of balance and income as a function of default status'}
+library(ggplot2)
+library(gridExtra)
+# Using ggplot2:
+box_bal <- ggplot(Default_plot, aes(x = default, y = balance, group = default)) + 
+  geom_boxplot(aes(fill = default)) +
+  scale_fill_manual(values=c('lightblue', 'darkorange')) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        legend.position = 'none') 
+
+box_inc <- ggplot(Default_plot, aes(x = default, y = income, group = default)) + 
+  geom_boxplot(aes(fill = default)) +
+  scale_fill_manual(values=c('lightblue', 'darkorange')) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        legend.position = 'none') 
+
+grid.arrange(box_bal, box_inc, ncol = 2)
+```
+
+**Model fit**
+
+Now let's fit a logistic regression model to the entire dataset, using all three features, and print the results.
+
+```{r}
+library(kableExtra) 
+library(broom) #For nice tables
+log_mod <- glm(default ~ ., data = Default, family = binomial)
+
+log_mod %>% 
+  tidy() %>%
+  kable(digits = 2, caption = 'Logistic regression model fitted to the Default dataset') %>% 
+  kable_styling(full_width = F)
+```
+
+As expected based on the visual exploration, we observe that `balance` is a highly significant predictor, whilst `income` is decidedly non-significant. The `student` indicator variable is also highly significant.
+
+**Interpretation**
+
+In order to interpret the regression coefficients, we calculate the exponent thereof.
+
+```{r warning=FALSE}
+exp(coef(log_mod)) %>%
+  tidy() %>%
+  kable(digits = 3,col.names = c('$X_j$', '$e^{\\beta_j}$'), escape = F,
+        caption = 'Logistic regression model fitted to the Default dataset') %>%
+  kable_styling(full_width = F)
+```
+
+The coefficient corresponding to `studentYes` is with regards to the reference category "No". Therefore, a student is approximately half as likely to default on their payment than a non-student when holding balance and income constant.
+
+A one unit increase in the account `balance` increases the odds of defaulting by a factor of 1.006. Note, however, the scale of measurement -- a one dollar increase amounts to very little. Instead consider that for every 100 unit increase in `balance`, the odds of defaulting increase by a factor of $e^{100\beta_2} =$ `r round(exp(100*coef(log_mod)[3]), 3)`.
+
+In section \@ref(regularisation) we show how to use the model for prediction on a different example. First, however, let us illustrate what is meant by "the decision boundary being linear", together with a visual depiction of the logistic regression curve.
+
+### Decision boundaries
+
+Continuing with the previous example, first consider the case where $p = 1$, where we only include the `balance` variable. Applying the decision rule shown in Equation \@ref(eq:dec-rule), i.e. applying a threshold predicted probability of 0.5, we observe the following fit and classifications:
+
+```{r d1, fig.align='center', fig.dim=c(6,6), fig.cap='Logistic curve fitted to the default dataset using only balance as predictor. A decision rule based on a threshold of 0.5 is applied.'}
+
+# 1-dimensional fit
+mod1 <- glm(default ~ balance, 'binomial', Default)
+
+#Calculate curve values from fit
+Y <- as.numeric(Default$default) - 1
+x_range <- seq(0, max(Default$balance)*1.2, length.out = 1000)
+coefs_1 <- mod1$coefficients
+logit_1 <- coefs_1[1] + coefs_1[2]*x_range
+sigmoid <- exp(logit_1)/(1 + exp(logit_1))
+
+#Plot the fit
+plot(x_range, sigmoid, type = 'l', lwd = 2, col = 'gray', xlab = 'Balance', ylab = 'p(x)')
+tau <- 0.5 #Threshold
+x_cutoff <- (log(tau/(1-tau)) - coefs_1[1])/(coefs_1[2])
+abline(v = x_cutoff, lwd = 2, col = 'navy')
+points(x_cutoff, 0, pch = 4, col = 'navy', cex = 2)
+segments(-500, tau, x_cutoff, tau, col = 'gray', lty = 4)
+points(Default$balance, Y, pch = 16, col = ifelse(Default$balance < x_cutoff, 'green', 'black'), cex = 0.5)
+legend('right', c(expression(paste(hat(Y), ' = 1')), '', expression(paste(hat(Y), ' = 0'))),
+       pch = 16, col = c('black', 'white', 'green'))
+```
+
+For the 1-dimensional case, the decision boundary is just a single point. In this instance, observations with balance $\geq$ `r round(x_cutoff)` will yield $\hat{p}(x) \geq 0.5$ and will be classified as defaulters.
+
+The linearity of the decision boundary is better illustrated for $p = 2$, so let's add the `income` variable to the model.
+
+```{r d2, webgl=T, fig.align='center', fig.cap='Logistic curve fitted to the default dataset using balance and income as predictors. A decision rule based on a threshold of 0.5 is applied.'}
+
+# 2-dimensional fit
+mod2 <- glm(default ~ balance + income, 'binomial', Default)
+coefs_2 <- coef(mod2)
+
+x1s <- seq(0, max(Default$balance)*1.2, length.out = 100)
+x2s <- seq(min(Default$income)*0.8, max(Default$income)*1.2, length.out = 100)
+
+sigmoid2 <- function(x1s, x2s) exp(cbind(1, x1s, x2s)%*%coef(mod2))/(1 + exp(cbind(1, x1s, x2s)%*%coef(mod2)))
+
+#Plot the curve
+plot2 <- persp3d(x1s, x2s, outer(x1s, x2s, sigmoid2), aspect = c(1, 1, 0.5), col = 'gray', alpha = 0.5,
+                 xlab = 'balance', ylab = 'income', zlab = 'p(x)')
+view3d(theta = 0, phi = -75, fov = 45, zoom = 0.75)  #Initial view settings
+
+#Add vertical plane, just based on g(X) = 0
+planes3d(coefs_2[2], coefs_2[3], 0, coefs_2[1], col = 'navy', lwd = 3, alpha = 0.5)
+
+#Lines are tricky...
+x2min <- min(x2s)
+x1min <- -(coefs_2[1] + coefs_2[3]*x2min)/coefs_2[2]
+abclines3d(x1min, x2min, 0, -1, coefs_2[2]/coefs_2[3], 0, col = 'navy', lwd = 3)
+abclines3d(x1min, x2min, 0.5, -1, coefs_2[2]/coefs_2[3], 0, col = 'navy', lwd = 3)
+#Why doesn't this add the lines???
+
+#Use predict() for the classifications
+p2 <- predict(mod2, type = 'response') 
+points3d(Default$balance, Default$income, Y, col = ifelse(p2 >= 0.5, 'green', 'black'), size = 6)
+```
+
+**Note that this figure is interactive in html.**
+
+Here we can see that the contour on the sigmoid surface corresponding to a constant threshold yields a straight line. Projecting this line orthogonally onto a plane together with the observations yields our original plot of the data in Figure \@ref(fig:scatter) (this time with all the data, not just a subset) with the resulting linear decision boundary.
+
+```{r d2-bound, fig.align='center', fig.dim=c(6,6), fig.cap='The logistic regression decision boundary for the default dataset using balance and income as predictors.'}
+
+#Same plot as above, but all the data
+plot(Default$balance, Default$income,
+     col = ifelse(Default$default == 'Yes', 'darkorange', 'lightblue'),
+     pch = ifelse(Default$default == 'Yes', 3, 1),
+     xlab = 'Balance', ylab = 'Income')
+legend('topright', c('Default', 'Non-default'), 
+       col = c('darkorange', 'lightblue'), 
+       pch = c(3, 1))
+#Add the decision boundary
+abline(coefs_2[1]/(-coefs_2[3]), coefs_2[2]/(-coefs_2[3]), col = 'navy', lwd = 3) #Do the math!!
+```
+
+Note that the decision boundary for the decision rule threshold $\hat{p}(\boldsymbol{X}) \geq 0.5$ corresponds to the set of points in the parameters space for which the odds are 1 (or, equivalently, the log-odds are zero). Showing this is left as a homework exercise. Using this fact allows us to easily determine the boundary in Figure \@ref(fig:d2-bound).
+
+Finally, we will now add the `student` variable (coded as 0 and 1) to the model. The following plot shows a 3-dimensional image of the data, with the decision boundary added as a plane. Note that the sigmoidal curve will be 4-dimensional here.
+
+```{r, webgl=T, fig.cap='These chunk settings dont seem to work for rgl plots...'}
+
+# 3-dimensional fit
+mod3 <- glm(default ~ balance + income + student, 'binomial', Default)
+coefs_3 <- coef(mod3)
+
+#Plot the data
+plot3d(Default$student, Default$balance, Default$income,
+       xlab = 'student', ylab = 'balance', zlab = 'income',
+       col = ifelse(Default$default == 'Yes', 'orange', 'lightblue'),
+       size = 5)
+view3d(theta = 45, phi = 45, fov = 45, zoom = 0.9)  #Initial view settings
+
+#Add the decision boundary. Easy with planes3d, since it is set up similarly
+planes3d(coefs_3[4], coefs_3[2], coefs_3[3], coefs_3[1], col = 'navy', lwd = 3, alpha = 0.5)
+```
+
+**Note that this figure is interactive in html.**
+
+Now that we have sufficiently explored the logistic regression's decision boundaries, we turn our attention to measuring the accuracy of the classifications resulting from these decision boundaries.
+
+## Model evaluation
+
+Any classification method yields a set of predicted outcomes that can be compared to the observed outcomes to quantify the model's performance. The simplest loss function for measuring a classification model's accuracy is the **misclassification rate**, which is simply the proportion of observations for which the classified label does not match the actual label:
+
+```{=tex}
+\begin{equation}
+\text{Error} = \frac{1}{n}\sum_{i=1}^{n}\mathbb{I}\left(Y_i \ne \hat{Y}_i \right) = \frac{\text{\# of misclassifications}}{n}
+(\#eq:misc)
+\end{equation}
+```
+A useful way of representing a fitted model's predicted labels against the observed, is by means of a **confusion matrix**, which is just a table showing the number of observations in each combination of observed and predicted label. Returning to the `Default` example above, let's use the model with all three predictors and the decision rule $\hat{p}(\boldsymbol{X}) \geq 0.5$ to create this table.
+
+```{r conf-mat1}
+
+#First get predictions (probabilities) from the model
+phat3 <- predict(mod3, Default, 'response')
+
+#Then apply the decision rule
+yhat3 <- ifelse(phat3 >= 0.5, 'Yes', 'No')
+
+y <- Default$default #True labels
+
+#Using table(). Caret package has a function too
+confmat3 <- table(yhat3, y, dnn = c('Predicted label', 'True label'))
+
+#Calculate training error
+error3 <- mean(yhat3 != y)
+
+# confmat3 %>% kable(caption = 'Confusion matrix for the saturated logistic regression model fitted to the Default dataset') %>% kable_styling(full_width = F) #Failing to preserve the headers
+
+confmat3
+```
+
+The values on the diagonals represent the correct classifications, whilst the off-diagonals are the **misclassifications**. Here we observe an error rate of `r round(error3*100, 1)`%, or equivalently a **classification accuracy** of `r round((1-error3)*100, 1)`%.
+
+Although this sounds excellent, we need to bear in mind that the data were quite severely imbalanced, since the vast majority of individuals were non-defaulters. In fact, if we had simply predicted every observations to be "No", then our training error would only have been `r round(def_prop*100, 1)`%. This does not seem like a massive difference compared to `r round(error3*100, 1)`%, yet we would not correctly identify a single defaulter with this approach!
+
+Clearly we need to be more nuanced in our calculation of misclassifications. Therefore, define the following errors:
+
+-   False Positive (FP): Classify $\hat{Y} =1$ when $Y =0$
+-   False Negative (FN): Classify $\hat{Y} =0$ when $Y =1$
+
+These quantities, together with the True Positives (TP) and True Negatives (TN), make up the **confusion matrix**:
+
+|            |          |            |          |
+|------------|----------|------------|----------|
+|            |          | True state |          |
+|            |          | Negative   | Positive |
+| Prediction | Negative | TN         | FN       |
+|            | Positive | FP         | TP       |
+|            |          | Tot Neg    | Tot Pos  |
+
+We can now define several metrics to describe the performance of a classification algorithm across various aspects, some of which have several equivalent names:
+
+-   True Positive Rate = TPR = Sensitivity = Recall = $\frac{TP}{Tot Pos}$
+-   True Negative Rate = TNR = Specificity = $\frac{TN}{Tot Neg}$
+-   Positive Predictive Value = PPV = Precision = $\frac{TP}{TP + FP}$
+-   Negative Predictive Value = NPV = $\frac{TN}{TN + FN}$
+
+Note that the complements of these values yield the corresponding errors. Various other metrics exist for specific testing purposes. For example, the F~1~ score -- which represents the harmonic mean of precision and sensitivity -- is a popular performance metric, especially in computer vision and in the case of imbalanced data:
+
+F~1~ = $2\frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$
+
+This metric ranges from 0 to 1, with higher being better. 
+
+All of these metrics can be calculated manually from a confusion matrix. Alternatively, we could use packages like `caret` or `MLmetrics` to set up the confusion matrix and get the measurements directly, as shown here:
+
+```{r}
+library(MLmetrics)
+library(caret)
+
+#Example using MLMetrics function, caret has similar
+f1_mod3 <- MLmetrics::F1_Score(y, yhat3)
+
+#Confusion matrix and metrics using caret
+caretmat3 <- confusionMatrix(as.factor(yhat3), y, positive = 'Yes') #NB to set the ref category!
+caretmat3
+```
+
+Our logistic regression model on the `Default` dataset yielded a training F~1~ score of `r round(f1_mod3, 3)`, indicating excellent performance (as is expected on such a well separable simulated example!)
+
+We have noted that the confusion matrix yields the metrics, regardless of the underlying model at that point. But the exact confusion matrix is determined by the predictions, which in turn depend on the decision rule threshold. Now that we know all errors are not equal, can we perhaps change the threshold to adjust certain metrics? Note that, for now, all of this is applied to just the training set in order to illustrate the principle.
+
+### Changing the threshold
+
+By setting $\hat{Y} = 1$ if $\hat{p}(X) > 0.5$, we are actually being naive about our choice of decision threshold when attempting to map probabilities to classifications. This decision rule attempts to approximate the Bayes classifier, which minimises the total error rate. However, this implicitly assumes that the two error types (FP & FN) are equally bad, which will not necessarily be the case, depending on the problem at hand. For the `Default` example, we might be specifically interested in classifying default events (TP), perhaps at the (lesser) cost of false positives. By adjusting the threshold level, we can accommodate this asymmetric cost of misclassification.
+
+To illustrate this, let's use the same saturated model on the `Default` data as previously, but lower the decision rule threshold to 0.2, such that $\hat{Y} = 1$ if $\hat{p}(X) > 0.2$. Therefore, we are more liberal in our classification of defaulters. 
+
+```{r}
+yhat3_2 <- ifelse(phat3 >= 0.2, 'Yes', 'No')
+confmat3_2 <- table(yhat3_2, y, dnn = c('Predicted label', 'True label'))
+confmat3_2
+```
+
+By manual inspection, we can see that the number of correctly classified defaulters almost doubled from 105 to 203. Therefore, the **true positive rate** (recall or sensitivity) increased, although it would have come at the cost of a worse **false positive rate** (fallout or 1 - specificity), as we see in Table \@ref(tab:comp). Note that the overall accuracy slightly decreased.
+
+```{r comp}
+tprs <- c(sensitivity(as.factor(yhat3), y, 'Yes'),
+          sensitivity(as.factor(yhat3_2), y, 'Yes'))
+#Note that the following function requires the negative label specified! Always check help files.
+fprs <- c(1 - specificity(as.factor(yhat3), y, 'No'),     
+          1 - specificity(as.factor(yhat3_2), y, 'No'))
+accs <- c(mean(yhat3 == y), mean(yhat3_2 == y))
+
+compar <- rbind(tprs, fprs, accs) 
+colnames(compar) <- c('0.5 Thresh', '0.2 Thresh')
+rownames(compar) <- c('TPR', 'FPR', 'Accuracy')
+
+compar %>% kable(digits = 3, caption = 'Comparison of the TPR, FPR, and accuracy for two different decision rule thresholds - 0.5 and 0.2 - applied to the saturated logistic regression model fitted to the Default dataset.')
+```
+
+Another way of measuring how well the classifier is performing, is by varying the threshold, $\tau$ over a range of values and keeping track of the TPR and FPR. To illustrate this, consider again the 1-variable model where we include only `Balance`. For speed, convenience and easier illustration, Figure \@ref(fig:thresh-anim) only displays a subsample of 200 observations.
+
+```{r thresh-anim, animation.hook='gifski', interval=0.333, fig.align='center', fig.dim=c(8, 6), fig.cap='The effect of varying the decision rule threshold on the TPR and FPR'}
+taus <- seq(0, 1, 0.01)
+TPR <- vector(length = length(taus))
+FPR <- vector(length = length(taus))
+
+set.seed(1)
+sub_Default <- Default[sample.int(nrow(Default), 200),] #Only 200 obs
+mod_t <- glm(default ~ balance, data = sub_Default, family = 'binomial')
+Y_sub <- as.numeric(sub_Default$default) - 1
+x_range <- seq(0, max(sub_Default$balance)*1.2, length.out = 1000)
+coefs_t <- mod_t$coefficients
+logit_t <- coefs_t[1] + coefs_t[2]*x_range
+sigmoid <- exp(logit_t)/(1 + exp(logit_t))
+phat_t <- predict(mod_t, type = 'response')
+
+par(mfrow=c(1,2))
+
+iter <- 0
+for (tau in taus){
+  iter <- iter + 1
+  yhat_t <- ifelse(phat_t >= tau, 1, 0)
+  x_cutoff <- (log(tau/(1-tau)) - coefs_t[1])/(coefs_t[2]) #solve from logit 
+  
+  #Left plot (curve)
+  plot(x_range, sigmoid, type = 'l', lwd = 2, col = 'orangered', xlab = 'Balance', ylab = 'p(x)')
+  abline(v = x_cutoff, lwd = 2, col = 'navy')
+  segments(-500, tau, x_cutoff, tau, col = 'gray', lty = 4)
+  points(sub_Default$balance, Y_sub, pch = 16, col = ifelse(sub_Default$balance < x_cutoff, 'green', 'black'))
+  legend('right', c(expression(paste(hat(Y), ' = 1')), '', expression(paste(hat(Y), ' = 0'))), 
+         pch = 16, col = c('black', 'white', 'green'))
+  
+  TPR[iter] <- sum(yhat_t*Y_sub == 1)/sum(Y_sub)
+  FPR[iter] <- sum(yhat_t == 1 & Y_sub == 0)/sum(Y_sub == 0)
+  E <- mean(yhat_t != Y_sub)
+  text(0, 0.9, pos = 4, substitute(paste('Tau = ', tau), list(tau = tau)), cex = 1.2)
+  text(0, 0.8, pos = 4, substitute(paste('TPR = ', TPR), list(TPR = round(TPR[iter], 3))), cex = 1.2)
+  text(0, 0.7, pos = 4, substitute(paste('FPR = ', FPR), list(FPR = round(FPR[iter], 3))), cex = 1.2)
+  text(0, 0.6, pos = 4, substitute(paste('Misclass = ', E), list(E = round(E, 3))), cex = 1.2)
+  
+  #Right plot (errors)
+  plot(0,0, 'n', xlim = c(0,1), ylim = c(0,1), ylab = '', xlab = 'Threshold')
+  lines(seq(0, tau, length.out = iter), TPR[1:iter], 'l', lwd = 2, col = 'orange')
+  lines(seq(0, tau, length.out = iter), FPR[1:iter], 'l', lwd = 2, col = 'lightblue')
+  legend('topright', c('TPR', 'FPR'), lty = 1, lwd = 2, col = c('orange', 'lightblue'))
+}
+
+```
+
+This relationship can now be combined in the Receiver Operating Characteristic (ROC) curve.
+
+### ROC Curve
+
+The most common way of displaying how TPR and FPR change as the threshold changes, is by plotting each on an axis for different values of the threshold. This yields the ROC curve, which provides an indication of the performance of a classifier over the entire range of decision rules allowing us to compare different classifiers in a more rigorous way.
+
+Figure \@ref(fig:roc) shows the ROC curve for the saturated model fitted to the entire `Default` dataset with the points corresponding to $\tau = 0.2$ and $\tau = 0.5$ -- for which we calculated the confusion matrices earlier -- highlighted on the curve. We will make use of the `ROCR` package.
+
+```{r roc, fig.align='center', fig.dim=c(6,6), fig.cap = 'ROC curve for the full model fitted to the Default dataset. Thresholds of 0.2 and 0.5 are highlighted.'}
+library(ROCR)
+
+# Using the full model
+pred <- prediction(phat3, Y)
+perf  <- performance(pred, 'tpr', 'fpr')
+plot(perf, colorize = FALSE, col = 'black')
+lines(c(0,1), c(0,1), col = 'gray', lty = 4)
+
+# tau = 0.5
+points(compar[1,1] ~ compar[2,1], col = 'red', pch = 16)
+text(compar[1,1] ~ compar[2,1], labels = 0.5, pos = 4)
+
+# tau = 0.2
+points(compar[1,2] ~ compar[2,2], col = 'red', pch = 16)
+text(compar[1,2] ~ compar[2,2], labels = 0.2, pos = 4)
+```
+
+A completely random classifier would (on average) lie on the diagonal of the ROC curve, whilst a classifier exclusively predicting one category would lie exactly on the diagonal. A perfect classifier would perfectly predict all positive cases and never falsely identify an observation as positive, although note that this would only be possible in the case of perfectly linearly separable data. 
+
+For real-world data, an ideal classifier would lie as close as possible to the top left corner of the plot and we compare models by measuring how close they are to this ideal. The way to identify this is by calculating the **area under the curve** (AUC), which is simply a value between 0.5 and 1 (technically 0 and 1) measuring a binary classification model's ability to distinguish between positive and negative responses.
+
+```{r}
+auc <- performance(pred, measure = 'auc')@y.values[[1]]
+```
+
+Using `ROCR`, we can calculate the AUC for the ROC curve in Figure \@ref(fig:roc) as `r round(auc, 3)`. Although this metric can be objectively interpreted, the real value lies in comparing metrics across different models, ideally in a way that estimates out-of-sample performance.
+
+One way of potentially improving the fit of a logistic regression model, is once again through regularisation.
+
+## Regularisation
+
+## Homework exercises
+
+1.  Show that for binary classification, the logistic regression decision boundary for the decision threshold $\hat{p}(\boldsymbol{X}) \geq 0.5$ corresponds to the set of points in the parameters space for which the odds are 1 (or, equivalently, the log-odds are zero).

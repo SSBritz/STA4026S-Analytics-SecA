@@ -31,7 +31,7 @@ Section B: Theory and Application of Supervised Learning</p>" />
   
   
 <link rel="prev" href="supervised-learning.html"/>
-<link rel="next" href="references.html"/>
+<link rel="next" href="classification-models.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -52,6 +52,367 @@ Section B: Theory and Application of Supervised Learning</p>" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<script src="libs/rglWebGL-binding-1.0.1/rglWebGL.js"></script>
+<link href="libs/rglwidgetClass-1.0.1/rgl.css" rel="stylesheet" />
+<script src="libs/rglwidgetClass-1.0.1/rglClass.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/utils.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/buffer.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/subscenes.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/shaders.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/textures.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/projection.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/mouse.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/init.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/pieces.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/draw.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/controls.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/selection.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/rglTimer.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/pretty.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/axes.src.js"></script>
+<script src="libs/rglwidgetClass-1.0.1/animation.src.js"></script>
+<!--html_preserve--><script type = "text/plain" id = "rgl-vertex-shader">
+#line 2 1
+// File 1 is the vertex shader
+#ifdef GL_ES
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+#endif
+
+attribute vec3 aPos;
+attribute vec4 aCol;
+uniform mat4 mvMatrix;
+uniform mat4 prMatrix;
+varying vec4 vCol;
+varying vec4 vPosition;
+
+#ifdef NEEDS_VNORMAL
+attribute vec3 aNorm;
+uniform mat4 normMatrix;
+varying vec4 vNormal;
+#endif
+
+#if defined(HAS_TEXTURE) || defined (IS_TEXT)
+attribute vec2 aTexcoord;
+varying vec2 vTexcoord;
+#endif
+
+#ifdef FIXED_SIZE
+uniform vec3 textScale;
+#endif
+
+#ifdef FIXED_QUADS
+attribute vec3 aOfs;
+#endif
+
+#ifdef IS_TWOSIDED
+#ifdef HAS_NORMALS
+varying float normz;
+uniform mat4 invPrMatrix;
+#else
+attribute vec3 aPos1;
+attribute vec3 aPos2;
+varying float normz;
+#endif
+#endif // IS_TWOSIDED
+
+#ifdef FAT_LINES
+attribute vec3 aNext;
+attribute vec2 aPoint;
+varying vec2 vPoint;
+varying float vLength;
+uniform float uAspect;
+uniform float uLwd;
+#endif
+
+
+void main(void) {
+  
+#ifndef IS_BRUSH
+#if defined(NCLIPPLANES) || !defined(FIXED_QUADS) || defined(HAS_FOG)
+  vPosition = mvMatrix * vec4(aPos, 1.);
+#endif
+  
+#ifndef FIXED_QUADS
+  gl_Position = prMatrix * vPosition;
+#endif
+#endif // !IS_BRUSH
+  
+#ifdef IS_POINTS
+  gl_PointSize = POINTSIZE;
+#endif
+  
+  vCol = aCol;
+  
+#ifdef NEEDS_VNORMAL
+  vNormal = normMatrix * vec4(-aNorm, dot(aNorm, aPos));
+#endif
+  
+#ifdef IS_TWOSIDED
+#ifdef HAS_NORMALS
+  /* normz should be calculated *after* projection */
+  normz = (invPrMatrix*vNormal).z;
+#else
+  vec4 pos1 = prMatrix*(mvMatrix*vec4(aPos1, 1.));
+  pos1 = pos1/pos1.w - gl_Position/gl_Position.w;
+  vec4 pos2 = prMatrix*(mvMatrix*vec4(aPos2, 1.));
+  pos2 = pos2/pos2.w - gl_Position/gl_Position.w;
+  normz = pos1.x*pos2.y - pos1.y*pos2.x;
+#endif
+#endif // IS_TWOSIDED
+  
+#ifdef NEEDS_VNORMAL
+  vNormal = vec4(normalize(vNormal.xyz/vNormal.w), 1);
+#endif
+  
+#if defined(HAS_TEXTURE) || defined(IS_TEXT)
+  vTexcoord = aTexcoord;
+#endif
+  
+#if defined(FIXED_SIZE) && !defined(ROTATING)
+  vec4 pos = prMatrix * mvMatrix * vec4(aPos, 1.);
+  pos = pos/pos.w;
+  gl_Position = pos + vec4(aOfs*textScale, 0.);
+#endif
+  
+#if defined(IS_SPRITES) && !defined(FIXED_SIZE)
+  vec4 pos = mvMatrix * vec4(aPos, 1.);
+  pos = pos/pos.w + vec4(aOfs,  0.);
+  gl_Position = prMatrix*pos;
+#endif
+  
+#ifdef FAT_LINES
+  /* This code was inspired by Matt Deslauriers' code in 
+   https://mattdesl.svbtle.com/drawing-lines-is-hard */
+  vec2 aspectVec = vec2(uAspect, 1.0);
+  mat4 projViewModel = prMatrix * mvMatrix;
+  vec4 currentProjected = projViewModel * vec4(aPos, 1.0);
+  currentProjected = currentProjected/currentProjected.w;
+  vec4 nextProjected = projViewModel * vec4(aNext, 1.0);
+  vec2 currentScreen = currentProjected.xy * aspectVec;
+  vec2 nextScreen = (nextProjected.xy / nextProjected.w) * aspectVec;
+  float len = uLwd;
+  vec2 dir = vec2(1.0, 0.0);
+  vPoint = aPoint;
+  vLength = length(nextScreen - currentScreen)/2.0;
+  vLength = vLength/(vLength + len);
+  if (vLength > 0.0) {
+    dir = normalize(nextScreen - currentScreen);
+  }
+  vec2 normal = vec2(-dir.y, dir.x);
+  dir.x /= uAspect;
+  normal.x /= uAspect;
+  vec4 offset = vec4(len*(normal*aPoint.x*aPoint.y - dir), 0.0, 0.0);
+  gl_Position = currentProjected + offset;
+#endif
+  
+#ifdef IS_BRUSH
+  gl_Position = vec4(aPos, 1.);
+#endif
+}
+</script>
+<script type = "text/plain" id = "rgl-fragment-shader">
+#line 2 2
+// File 2 is the fragment shader
+#ifdef GL_ES
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+#endif
+varying vec4 vCol; // carries alpha
+varying vec4 vPosition;
+#if defined(HAS_TEXTURE) || defined (IS_TEXT)
+varying vec2 vTexcoord;
+uniform sampler2D uSampler;
+#endif
+
+#ifdef HAS_FOG
+uniform int uFogMode;
+uniform vec3 uFogColor;
+uniform vec4 uFogParms;
+#endif
+
+#if defined(IS_LIT) && !defined(FIXED_QUADS)
+varying vec4 vNormal;
+#endif
+
+#if NCLIPPLANES > 0
+uniform vec4 vClipplane[NCLIPPLANES];
+#endif
+
+#if NLIGHTS > 0
+uniform mat4 mvMatrix;
+#endif
+
+#ifdef IS_LIT
+uniform vec3 emission;
+uniform float shininess;
+#if NLIGHTS > 0
+uniform vec3 ambient[NLIGHTS];
+uniform vec3 specular[NLIGHTS]; // light*material
+uniform vec3 diffuse[NLIGHTS];
+uniform vec3 lightDir[NLIGHTS];
+uniform bool viewpoint[NLIGHTS];
+uniform bool finite[NLIGHTS];
+#endif
+#endif // IS_LIT
+
+#ifdef IS_TWOSIDED
+uniform bool front;
+varying float normz;
+#endif
+
+#ifdef FAT_LINES
+varying vec2 vPoint;
+varying float vLength;
+#endif
+
+void main(void) {
+  vec4 fragColor;
+#ifdef FAT_LINES
+  vec2 point = vPoint;
+  bool neg = point.y < 0.0;
+  point.y = neg ? (point.y + vLength)/(1.0 - vLength) :
+                 -(point.y - vLength)/(1.0 - vLength);
+#if defined(IS_TRANSPARENT) && defined(IS_LINESTRIP)
+  if (neg && length(point) <= 1.0) discard;
+#endif
+  point.y = min(point.y, 0.0);
+  if (length(point) > 1.0) discard;
+#endif // FAT_LINES
+  
+#ifdef ROUND_POINTS
+  vec2 coord = gl_PointCoord - vec2(0.5);
+  if (length(coord) > 0.5) discard;
+#endif
+  
+#if NCLIPPLANES > 0
+  for (int i = 0; i < NCLIPPLANES; i++)
+    if (dot(vPosition, vClipplane[i]) < 0.0) discard;
+#endif
+    
+#ifdef FIXED_QUADS
+    vec3 n = vec3(0., 0., 1.);
+#elif defined(IS_LIT)
+    vec3 n = normalize(vNormal.xyz);
+#endif
+    
+#ifdef IS_TWOSIDED
+    if ((normz <= 0.) != front) discard;
+#endif
+    
+#ifdef IS_LIT
+    vec3 eye = normalize(-vPosition.xyz/vPosition.w);
+    vec3 lightdir;
+    vec4 colDiff;
+    vec3 halfVec;
+    vec4 lighteffect = vec4(emission, 0.);
+    vec3 col;
+    float nDotL;
+#ifdef FIXED_QUADS
+    n = -faceforward(n, n, eye);
+#endif
+    
+#if NLIGHTS > 0
+    for (int i=0;i<NLIGHTS;i++) {
+      colDiff = vec4(vCol.rgb * diffuse[i], vCol.a);
+      lightdir = lightDir[i];
+      if (!viewpoint[i])
+        lightdir = (mvMatrix * vec4(lightdir, 1.)).xyz;
+      if (!finite[i]) {
+        halfVec = normalize(lightdir + eye);
+      } else {
+        lightdir = normalize(lightdir - vPosition.xyz/vPosition.w);
+        halfVec = normalize(lightdir + eye);
+      }
+      col = ambient[i];
+      nDotL = dot(n, lightdir);
+      col = col + max(nDotL, 0.) * colDiff.rgb;
+      col = col + pow(max(dot(halfVec, n), 0.), shininess) * specular[i];
+      lighteffect = lighteffect + vec4(col, colDiff.a);
+    }
+#endif
+    
+#else // not IS_LIT
+    vec4 colDiff = vCol;
+    vec4 lighteffect = colDiff;
+#endif
+    
+#ifdef IS_TEXT
+    vec4 textureColor = lighteffect*texture2D(uSampler, vTexcoord);
+#endif
+    
+#ifdef HAS_TEXTURE
+#ifdef TEXTURE_rgb
+    vec4 textureColor = lighteffect*vec4(texture2D(uSampler, vTexcoord).rgb, 1.);
+#endif
+    
+#ifdef TEXTURE_rgba
+    vec4 textureColor = lighteffect*texture2D(uSampler, vTexcoord);
+#endif
+    
+#ifdef TEXTURE_alpha
+    vec4 textureColor = texture2D(uSampler, vTexcoord);
+    float luminance = dot(vec3(1.,1.,1.), textureColor.rgb)/3.;
+    textureColor =  vec4(lighteffect.rgb, lighteffect.a*luminance);
+#endif
+    
+#ifdef TEXTURE_luminance
+    vec4 textureColor = vec4(lighteffect.rgb*dot(texture2D(uSampler, vTexcoord).rgb, vec3(1.,1.,1.))/3., lighteffect.a);
+#endif
+    
+#ifdef TEXTURE_luminance_alpha
+    vec4 textureColor = texture2D(uSampler, vTexcoord);
+    float luminance = dot(vec3(1.,1.,1.),textureColor.rgb)/3.;
+    textureColor = vec4(lighteffect.rgb*luminance, lighteffect.a*textureColor.a);
+#endif
+    
+    fragColor = textureColor;
+
+#elif defined(IS_TEXT)
+    if (textureColor.a < 0.1)
+      discard;
+    else
+      fragColor = textureColor;
+#else
+    fragColor = lighteffect;
+#endif // HAS_TEXTURE
+    
+#ifdef HAS_FOG
+    // uFogParms elements: x = near, y = far, z = fogscale, w = (1-sin(FOV/2))/(1+sin(FOV/2))
+    // In Exp and Exp2: use density = density/far
+    // fogF will be the proportion of fog
+    // Initialize it to the linear value
+    float fogF;
+    if (uFogMode > 0) {
+      fogF = (uFogParms.y - vPosition.z/vPosition.w)/(uFogParms.y - uFogParms.x);
+      if (uFogMode > 1)
+        fogF = mix(uFogParms.w, 1.0, fogF);
+      fogF = fogF*uFogParms.z;
+      if (uFogMode == 2)
+        fogF = 1.0 - exp(-fogF);
+      // Docs are wrong: use (density*c)^2, not density*c^2
+      // https://gitlab.freedesktop.org/mesa/mesa/-/blob/master/src/mesa/swrast/s_fog.c#L58
+      else if (uFogMode == 3)
+        fogF = 1.0 - exp(-fogF*fogF);
+      fogF = clamp(fogF, 0.0, 1.0);
+      gl_FragColor = vec4(mix(fragColor.rgb, uFogColor, fogF), fragColor.a);
+    } else gl_FragColor = fragColor;
+#else
+    gl_FragColor = fragColor;
+#endif // HAS_FOG
+    
+}
+</script><!--/html_preserve-->
+<script src="libs/CanvasMatrix4-1.0.1/CanvasMatrix.src.js"></script>
 
 
 <style type="text/css">
@@ -184,12 +545,30 @@ div.csl-indent {
 <li class="chapter" data-level="3.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#l_1-and-l_2-regularisation"><i class="fa fa-check"></i><b>3.2</b> <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularisation</a>
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#ridge-regression-l_2"><i class="fa fa-check"></i><b>3.2.1</b> Ridge regression – <span class="math inline">\(L_2\)</span></a></li>
-<li class="chapter" data-level="3.2.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer"><i class="fa fa-check"></i><b>3.2.2</b> Example 2 – Prostate Cancer</a></li>
+<li class="chapter" data-level="3.2.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer"><i class="fa fa-check"></i><b>3.2.2</b> Example 2 – Prostate cancer</a></li>
 <li class="chapter" data-level="3.2.3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#the-lasso-l_1"><i class="fa fa-check"></i><b>3.2.3</b> The Lasso – <span class="math inline">\(L_1\)</span></a></li>
-<li class="chapter" data-level="3.2.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer-continued"><i class="fa fa-check"></i><b>3.2.4</b> Example 2 – Prostate Cancer (continued)</a></li>
+<li class="chapter" data-level="3.2.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#example-2-prostate-cancer-continued"><i class="fa fa-check"></i><b>3.2.4</b> Example 2 – Prostate cancer (continued)</a></li>
 </ul></li>
 <li class="chapter" data-level="3.3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#elastic-net"><i class="fa fa-check"></i><b>3.3</b> Elastic-net</a></li>
 <li class="chapter" data-level="3.4" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#homework-exercises-1"><i class="fa fa-check"></i><b>3.4</b> Homework exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="classification-models.html"><a href="classification-models.html"><i class="fa fa-check"></i><b>4</b> Classification Models</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="classification-models.html"><a href="classification-models.html#logistic-regression"><i class="fa fa-check"></i><b>4.1</b> Logistic regression</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="classification-models.html"><a href="classification-models.html#estimation"><i class="fa fa-check"></i><b>4.1.1</b> Estimation</a></li>
+<li class="chapter" data-level="4.1.2" data-path="classification-models.html"><a href="classification-models.html#interpretation"><i class="fa fa-check"></i><b>4.1.2</b> Interpretation</a></li>
+<li class="chapter" data-level="4.1.3" data-path="classification-models.html"><a href="classification-models.html#prediction"><i class="fa fa-check"></i><b>4.1.3</b> Prediction</a></li>
+<li class="chapter" data-level="4.1.4" data-path="classification-models.html"><a href="classification-models.html#example-3-default-data"><i class="fa fa-check"></i><b>4.1.4</b> Example 3 – Default data</a></li>
+<li class="chapter" data-level="4.1.5" data-path="classification-models.html"><a href="classification-models.html#decision-boundaries"><i class="fa fa-check"></i><b>4.1.5</b> Decision boundaries</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="classification-models.html"><a href="classification-models.html#model-evaluation"><i class="fa fa-check"></i><b>4.2</b> Model evaluation</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="classification-models.html"><a href="classification-models.html#changing-the-threshold"><i class="fa fa-check"></i><b>4.2.1</b> Changing the threshold</a></li>
+<li class="chapter" data-level="4.2.2" data-path="classification-models.html"><a href="classification-models.html#roc-curve"><i class="fa fa-check"></i><b>4.2.2</b> ROC Curve</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="classification-models.html"><a href="classification-models.html#regularisation"><i class="fa fa-check"></i><b>4.3</b> Regularisation</a></li>
+<li class="chapter" data-level="4.4" data-path="classification-models.html"><a href="classification-models.html#homework-exercises-2"><i class="fa fa-check"></i><b>4.4</b> Homework exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -250,7 +629,7 @@ RSS(\boldsymbol{\beta}) = \left(\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta
 \end{align}\]</span>
 <p>If <span class="math inline">\(\boldsymbol{X}\)</span> is of full column rank – a reasonable assumption when <span class="math inline">\(n \geq p\)</span> – then <span class="math inline">\(\boldsymbol{X}&#39;\boldsymbol{X}\)</span> is positive definite. We can then set the first derivative to zero to obtain the unique solution</p>
 <span class="math display" id="eq:beta-hat">\[\begin{equation}
-\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}&#39;\boldsymbol{X}\right)^{-1}\boldsymbol{X}\boldsymbol{y}
+\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}&#39;\boldsymbol{X}\right)^{-1}\boldsymbol{X}&#39;\boldsymbol{y}
 \tag{3.6}
 \end{equation}\]</span>
 <p>These coefficient estimates define a fitted linear regression model. The focus of this section is on methods for improving predictive accuracy, therefore we will not cover inference on the regression parameters or likelihood ratio tests here.</p>
@@ -297,7 +676,7 @@ RSS(\lambda) = \left(\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta} \right)&#
 \end{equation}\]</span>
 <p>yielding the ridge regression solution</p>
 <span class="math display" id="eq:bridge-hat">\[\begin{equation}
-\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}&#39;\boldsymbol{X} + \lambda\boldsymbol{I}\right)^{-1}\boldsymbol{X}\boldsymbol{y}
+\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}&#39;\boldsymbol{X} + \lambda\boldsymbol{I}\right)^{-1}\boldsymbol{X}&#39;\boldsymbol{y}
 \tag{3.10},
 \end{equation}\]</span>
 <p>where <span class="math inline">\(\boldsymbol{I}\)</span> is the <span class="math inline">\(p \times p\)</span> identity matrix.</p>
@@ -305,9 +684,9 @@ RSS(\lambda) = \left(\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta} \right)&#
 <p>Although all of the above can be neatly explored via simulated examples, our focus will now move away from this controlled environment and towards using R packages to implement this methodology on some real-world data.</p>
 </div>
 <div id="example-2-prostate-cancer" class="section level3 hasAnchor" number="3.2.2">
-<h3><span class="header-section-number">3.2.2</span> Example 2 – Prostate Cancer<a href="linear-model-selection-regularisation.html#example-2-prostate-cancer" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<h3><span class="header-section-number">3.2.2</span> Example 2 – Prostate cancer<a href="linear-model-selection-regularisation.html#example-2-prostate-cancer" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>This dataset formed part of the now retired ElemStatLearn R package; it’s details can be found <a href="https://rdrr.io/cran/ElemStatLearn/man/prostate.html#heading-5">here</a>. The goal is to model the (log) prostate-specific antigen (lpsa) for men who were about to receive a radical prostatectomy, based on eigth clinical measurements. The data only contain 97 observations, 30 of which are set aside for testing purposes.</p>
-<p>Looking at the correlation between the features, we see that all the features are positively correlated with the response variable, ranging from weak to strong correlation. We also observe some strong correlation between features, which could be of concern for a regression model. <strong>Note</strong>! <span class="math inline">\(\texttt{svi}\)</span> and <span class="math inline">\(\texttt{gleason}\)</span> are actually binary and ordinal variables respectively, but we will treat them as numeric for the sake of simplicity in this illustration.</p>
+<p>Looking at the correlation between the features, we see that all the features are positively correlated with the response variable, ranging from weak to strong correlation. We also observe some strong correlation between features, which could be of concern for a regression model. <strong>Note</strong>! <code>svi</code> and <code>gleason</code> are actually binary and ordinal variables respectively, but we will treat them as numeric for the sake of simplicity in this illustration.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="linear-model-selection-regularisation.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(corrplot) <span class="co">#For correlation plot</span></span>
 <span id="cb9-2"><a href="linear-model-selection-regularisation.html#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="linear-model-selection-regularisation.html#cb9-3" aria-hidden="true" tabindex="-1"></a>dat_pros <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&#39;data/prostate.csv&#39;</span>)</span>
@@ -317,8 +696,8 @@ RSS(\lambda) = \left(\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta} \right)&#
 <span id="cb9-7"><a href="linear-model-selection-regularisation.html#cb9-7" aria-hidden="true" tabindex="-1"></a>test_pros <span class="ot">&lt;-</span> dat_pros[<span class="sc">!</span>dat_pros<span class="sc">$</span>train, <span class="sc">-</span><span class="dv">10</span>]</span>
 <span id="cb9-8"><a href="linear-model-selection-regularisation.html#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-9"><a href="linear-model-selection-regularisation.html#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(<span class="fu">cor</span>(train_pros), <span class="at">method =</span> <span class="st">&#39;number&#39;</span>, <span class="at">type =</span> <span class="st">&#39;upper&#39;</span>)</span></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-8"></span>
-<img src="figs/unnamed-chunk-8-1.png" alt="Correlations of all variables in the prostate cancer data" width="672" />
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-142"></span>
+<img src="figs/unnamed-chunk-142-1.png" alt="Correlations of all variables in the prostate cancer data" width="672" />
 <p class="caption">
 Figure 3.1: Correlations of all variables in the prostate cancer data
 </p>
@@ -340,7 +719,7 @@ Figure 3.1: Correlations of all variables in the prostate cancer data
 <span id="cb10-14"><a href="linear-model-selection-regularisation.html#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">&#39;Saturated linear model fitted to the prostate cancer dataset (features standardised)&#39;</span>)</span></code></pre></div>
 <table>
 <caption>
-<span id="tab:unnamed-chunk-9">Table 3.1: </span>Saturated linear model fitted to the prostate cancer dataset (features standardised)
+<span id="tab:unnamed-chunk-143">Table 3.1: </span>Saturated linear model fitted to the prostate cancer dataset (features standardised)
 </caption>
 <thead>
 <tr>
@@ -517,7 +896,7 @@ pgg45
 </tr>
 </tbody>
 </table>
-<p>The features <span class="math inline">\(\texttt{gleason}\)</span>, <span class="math inline">\(\texttt{age}\)</span>, and possibly <span class="math inline">\(\texttt{pgg45}\)</span> and <span class="math inline">\(\texttt{lcp}\)</span> are non-significant in this model, although note that these variables in particular were highly correlated with each other. This example also illustrates the adverse effect that this multicollinearity can have on a regression model. Even though <span class="math inline">\(\texttt{lcp}\)</span> was observed to have a fairly strong positive linear relationship with the response variable (<span class="math inline">\(r = 0.49\)</span>, third highest of all features), the coefficient estimate is in fact <strong>negative</strong>, relatively significantly (p = 0.07)! Likewise, even though <span class="math inline">\(\texttt{age}\)</span> is positively correlated with <span class="math inline">\(\texttt{lpsa}\)</span> (<span class="math inline">\(r = 0.23\)</span>), its coefficient estimate is negative.</p>
+<p>The features <code>gleason</code>, <code>age</code>, and possibly <code>pgg45</code> and <code>lcp</code> are non-significant in this model, although note that these variables in particular were highly correlated with each other. This example also illustrates the adverse effect that this multicollinearity can have on a regression model. Even though <code>lcp</code> was observed to have a fairly strong positive linear relationship with the response variable (r = 0.49, third highest of all features), the coefficient estimate is in fact <strong>negative</strong>, relatively significantly (p = 0.07)! Likewise, even though <code>age</code> is positively correlated with <code>lpsa</code> (r = 0.23), its coefficient estimate is negative.</p>
 <p>Let us now apply <span class="math inline">\(L_2\)</span> regularisation using the <code>glmnet</code> package in R. See section <a href="linear-model-selection-regularisation.html#elastic-net">3.3</a> for the discussion of the <span class="math inline">\(\alpha\)</span> parameter. For now, note that <span class="math inline">\(\alpha = 0\)</span> corresponds to ridge regression.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="linear-model-selection-regularisation.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
 <span id="cb11-2"><a href="linear-model-selection-regularisation.html#cb11-2" aria-hidden="true" tabindex="-1"></a>ridge <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">0</span>, <span class="at">standardize =</span> T,</span>
@@ -530,7 +909,7 @@ Figure 3.2: Coefficient profiles for ridge regression on the prostate cancer dat
 </p>
 </div>
 <p>Here we see how the coefficients vary as <span class="math inline">\(\log(\lambda)\)</span> is increased, whilst the labels at the top indicate the number of nonzero coefficients for various values of <span class="math inline">\(\log(\lambda)\)</span>. Note that none of the coefficients actually equal zero, illustrating that ridge regression does not necessarily perform variable selection per se.</p>
-<p>In Figure <a href="linear-model-selection-regularisation.html#fig:ridge-coeffs">3.2</a> we observe that the initially negative coefficient for <span class="math inline">\(\texttt{lcp}\)</span> <span class="math inline">\((\beta_6)\)</span> becomes both positive and more significant, relative to the other predictors. Therefore, the notion of “coefficients shrinking towards zero” is a slight misnomer, or perhaps an oversimplification of the effect <span class="math inline">\(L_2\)</span> regularisation has. Eventually, as <span class="math inline">\(\lambda \to \infty\)</span> (or, equivalently, <span class="math inline">\(\tau \to 0\)</span> as shown in <a href="linear-model-selection-regularisation.html#eq:bridget">(3.8)</a>), all coefficients will indeed be forced towards zero. However, the ideal model will usually correspond to a level of <span class="math inline">\(\lambda\)</span> that allows stronger predictors to be more prominent by diminishing the effect of their correlates.</p>
+<p>In Figure <a href="linear-model-selection-regularisation.html#fig:ridge-coeffs">3.2</a> we observe that the initially negative coefficient for <code>lcp</code> <span class="math inline">\((\beta_6)\)</span> becomes both positive and more significant, relative to the other predictors. Therefore, the notion of “coefficients shrinking towards zero” is a slight misnomer, or perhaps an oversimplification of the effect <span class="math inline">\(L_2\)</span> regularisation has. Eventually, as <span class="math inline">\(\lambda \to \infty\)</span> (or, equivalently, <span class="math inline">\(\tau \to 0\)</span> as shown in <a href="linear-model-selection-regularisation.html#eq:bridget">(3.8)</a>), all coefficients will indeed be forced towards zero. However, the ideal model will usually correspond to a level of <span class="math inline">\(\lambda\)</span> that allows stronger predictors to be more prominent by diminishing the effect of their correlates.</p>
 <p>So, how do we determine the appropriate level of <span class="math inline">\(\lambda\)</span>? By viewing this tuning parameter as a proxy for complexity and applying the same approach as in Chapter 2, we can use CV with the MSE as loss function to identify optimal complexity.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="linear-model-selection-regularisation.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Apply 10-fold CV</span></span>
 <span id="cb12-2"><a href="linear-model-selection-regularisation.html#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
@@ -546,7 +925,7 @@ Figure 3.3: 10-fold CV MSEs as a function of <span class="math inline">\(\log(\l
 </p>
 </div>
 <p>Figure <a href="linear-model-selection-regularisation.html#fig:ridge-cv">3.3</a> shows the CV errors (red dots), with the error bars indicating the extent of dispersion of the MSE across folds, the default display being one standard deviation above and below the average MSE. Two values of the tuning parameter are highlighted: the one yielding the minimum CV error (<code>lambda.min</code>), and the one corresponding to the most regularised model such that the error is within one standard error of the minimum (<code>lambda.1se</code>), which has been indicated on this plot with the horizontal dashed line.</p>
-<p>The choice of <span class="math inline">\(\lambda\)</span> depends on various factors, including the size of the data set, the length of the resultant error bars, and the profile of the coefficient estimates. In Figure <a href="linear-model-selection-regularisation.html#fig:ridge-coeffs">3.2</a> we saw that a more “reasonable” representation of the coefficients is achieved when <span class="math inline">\(\log(\lambda)\)</span> is closer to zero, rather than at the minimum CV MSE. Showing this explicitly, below we see that the coefficients corresponding to <code>lambda.min</code> (left) still preserves the contradictory coefficient sign for <span class="math inline">\(\texttt{lcp}\)</span>, whereas <code>lambda.1se</code> (right) rectifies this whilst mostly maintaining the overall relative importance across the features, hence we will use the latter.</p>
+<p>The choice of <span class="math inline">\(\lambda\)</span> depends on various factors, including the size of the data set, the length of the resultant error bars, and the profile of the coefficient estimates. In Figure <a href="linear-model-selection-regularisation.html#fig:ridge-coeffs">3.2</a> we saw that a more “reasonable” representation of the coefficients is achieved when <span class="math inline">\(\log(\lambda)\)</span> is closer to zero, rather than at the minimum CV MSE. Showing this explicitly, below we see that the coefficients corresponding to <code>lambda.min</code> (left) still preserves the contradictory coefficient sign for <code>lcp</code>, whereas <code>lambda.1se</code> (right) rectifies this whilst mostly maintaining the overall relative importance across the features, hence we will use the latter.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="linear-model-selection-regularisation.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cbind</span>(<span class="fu">coef</span>(ridge_cv, <span class="at">s =</span> <span class="st">&#39;lambda.min&#39;</span>), <span class="fu">coef</span>(ridge_cv, <span class="at">s =</span> <span class="st">&#39;lambda.1se&#39;</span>)), <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>## 9 x 2 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                 s1     s1
@@ -559,7 +938,7 @@ Figure 3.3: 10-fold CV MSEs as a function of <span class="math inline">\(\log(\l
 ## lcp         -0.140  0.038
 ## gleason      0.007  0.071
 ## pgg45        0.008  0.004</code></pre>
-<p>Note that although some predictors have <em>almost</em> been removed, these coefficients are still nonzero. Therefore, the ridge regression will include all <span class="math inline">\(p\)</span> predictors in the final model. The CV MSE for the chosen model, which is an estimate of out-of-sample performance, is 0.64.</p>
+<p>Note that although some predictors have <em>almost</em> been removed, these coefficients are still nonzero. Therefore, the ridge regression will include all <span class="math inline">\(p\)</span> predictors in the final model. The CV MSE for the chosen model, which is an estimate of out-of-sample performance, is 0.645.</p>
 <p>Before using the ridge regression to predict values for the test set, we will first consider the lasso as an approach for variable selection.</p>
 </div>
 <div id="the-lasso-l_1" class="section level3 hasAnchor" number="3.2.3">
@@ -579,7 +958,7 @@ Figure 3.3: 10-fold CV MSEs as a function of <span class="math inline">\(\log(\l
 <p>This constraint on the regression parameters makes the solutions nonlinear in the <span class="math inline">\(y_i\)</span>, such that there is no closed form expression for <span class="math inline">\(\hat{\boldsymbol{\beta}}_L\)</span> like there is for the ridge estimate, except in the case of orthonormal covariates. Computing the lasso estimate is a quadratic programming problem, although efficient algorithms have been developed to compute the solutions as a function of <span class="math inline">\(\lambda\)</span> at the same computational cost as for ridge regression. These solutions are beyond the scope of this course.</p>
 <p>Note that if we let <span class="math inline">\(\tau &gt; \sum_{j=1}^p|\hat{\beta}^{LS}_j|\)</span>, where <span class="math inline">\(\hat{\beta}^{LS}_j\)</span> denotes the least squares estimates, then the lasso estimates are exactly equal to the least squares estimates. If, for example, <span class="math inline">\(\tau = \frac{1}{2} \sum_{j=1}^p|\hat{\beta}^{LS}_j|\)</span>, then the least squares coefficients are shrunk by 50% <strong>on average</strong>. However, the nature of the shrinkage is not obvious.</p>
 <p>When comparing ridge regression with the lasso, we see that the nature of the constraints yield different trajectories for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> as <span class="math inline">\(\lambda\)</span> increases/<span class="math inline">\(\tau\)</span> decreases:</p>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-11"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-145"></span>
 <img src="figs/L1L2contours.png" alt="Estimation picture for the lasso (left) and ridge regression (right). Shown are contours of the error and constraint functions. The solid blue areas are the constraint regions $|\beta_1| + |\beta_2| \leq \tau$ and $\beta_1^2 + \beta_2^2 \leq \tau^2$, respectively, while the red ellipses are the contours of the least squares error function. Source: @hastie2009elements, p. 71." width="80%" />
 <p class="caption">
 Figure 3.4: Estimation picture for the lasso (left) and ridge regression (right). Shown are contours of the error and constraint functions. The solid blue areas are the constraint regions <span class="math inline">\(|\beta_1| + |\beta_2| \leq \tau\)</span> and <span class="math inline">\(\beta_1^2 + \beta_2^2 \leq \tau^2\)</span>, respectively, while the red ellipses are the contours of the least squares error function. Source: <span class="citation">Hastie et al. (2009)</span>, p. 71.
@@ -588,7 +967,7 @@ Figure 3.4: Estimation picture for the lasso (left) and ridge regression (right)
 <p>As the penalty increases, the lasso constraint sequentially forces the coefficients across the p dimensions onto their respective axes. Let us return to the previous example to illustrate this effect.</p>
 </div>
 <div id="example-2-prostate-cancer-continued" class="section level3 hasAnchor" number="3.2.4">
-<h3><span class="header-section-number">3.2.4</span> Example 2 – Prostate Cancer (continued)<a href="linear-model-selection-regularisation.html#example-2-prostate-cancer-continued" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<h3><span class="header-section-number">3.2.4</span> Example 2 – Prostate cancer (continued)<a href="linear-model-selection-regularisation.html#example-2-prostate-cancer-continued" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Applying <span class="math inline">\(L_1\)</span> regularisation via <code>glmnet</code> follows exactly the same process as for ridge regression, except that we now set <span class="math inline">\(\alpha = 1\)</span> within the <code>glmnet()</code> function.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="linear-model-selection-regularisation.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
 <span id="cb15-2"><a href="linear-model-selection-regularisation.html#cb15-2" aria-hidden="true" tabindex="-1"></a>lasso <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(x, y, <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">standardize =</span> T)</span>
@@ -599,7 +978,7 @@ Figure 3.4: Estimation picture for the lasso (left) and ridge regression (right)
 Figure 3.5: Coefficient profiles for lasso regression on the prostate cancer dataset
 </p>
 </div>
-<p>Figure <a href="linear-model-selection-regularisation.html#fig:lasso-coeffs">3.5</a> shows the coefficients shrinking and equaling zero as the regularisation penalty increases, as opposed to gradually decaying as in ridge regression, thereby performing <strong>variable selection</strong> in the process. Interestingly, here it seems that one of the first variables excluded from the model is <span class="math inline">\(\texttt{lcp}\)</span>, although it is quite difficult to see, even for this small example where <span class="math inline">\(p=8\)</span>. In order to determine which variables should be (de)selected, we will again implement CV using the MSE as loss function.</p>
+<p>Figure <a href="linear-model-selection-regularisation.html#fig:lasso-coeffs">3.5</a> shows the coefficients shrinking and equaling zero as the regularisation penalty increases, as opposed to gradually decaying as in ridge regression, thereby performing <strong>variable selection</strong> in the process. Interestingly, here it seems that one of the first variables excluded from the model is <code>lcp</code>, although it is quite difficult to see, even for this small example where <span class="math inline">\(p=8\)</span>. In order to determine which variables should be (de)selected, we will again implement CV using the MSE as loss function.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="linear-model-selection-regularisation.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Apply 10-fold CV</span></span>
 <span id="cb16-2"><a href="linear-model-selection-regularisation.html#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
 <span id="cb16-3"><a href="linear-model-selection-regularisation.html#cb16-3" aria-hidden="true" tabindex="-1"></a>lasso_cv <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(<span class="fu">as.matrix</span>(x), y, <span class="co">#this function requires x to be a matrix</span></span>
@@ -624,7 +1003,7 @@ Figure 3.6: 10-fold CV MSEs as a function of <span class="math inline">\(\log(\l
 ## lcp         .    
 ## gleason     .    
 ## pgg45       0.001</code></pre>
-<p>Once again, the CV MSE for the chosen model, is 0.64.</p>
+<p>Once again, the CV MSE for the chosen model, is 0.645.</p>
 <p>At this point, we have once again defined <span class="math inline">\(\hat{f}\)</span>, which is ultimately still a linear model with adjusted coefficient estimates. Now we can compare how the ridge and lasso models fare on the test set, which we can compare to the OLS linear model too.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="linear-model-selection-regularisation.html#cb19-1" aria-hidden="true" tabindex="-1"></a>test_y <span class="ot">&lt;-</span> test_pros[, <span class="dv">9</span>]</span>
 <span id="cb19-2"><a href="linear-model-selection-regularisation.html#cb19-2" aria-hidden="true" tabindex="-1"></a>test_x <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(test_pros[, <span class="sc">-</span><span class="dv">9</span>]) <span class="co">#need to extract just the x&#39;s for glmnet predict function</span></span>
@@ -643,13 +1022,13 @@ Figure 3.6: 10-fold CV MSEs as a function of <span class="math inline">\(\log(\l
 <span id="cb19-15"><a href="linear-model-selection-regularisation.html#cb19-15" aria-hidden="true" tabindex="-1"></a>ols_mse <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">mean</span>((test_y <span class="sc">-</span> ols_pred)<span class="sc">^</span><span class="dv">2</span>), <span class="dv">3</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="linear-model-selection-regularisation.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Unregularised linear model</span></span>
 <span id="cb20-2"><a href="linear-model-selection-regularisation.html#cb20-2" aria-hidden="true" tabindex="-1"></a>ols_mse</span></code></pre></div>
-<pre><code>## [1] 0.55</code></pre>
+<pre><code>## [1] 0.549</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="linear-model-selection-regularisation.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ridge regression</span></span>
 <span id="cb22-2"><a href="linear-model-selection-regularisation.html#cb22-2" aria-hidden="true" tabindex="-1"></a>ridge_mse</span></code></pre></div>
-<pre><code>## [1] 0.51</code></pre>
+<pre><code>## [1] 0.509</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="linear-model-selection-regularisation.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The lasso</span></span>
 <span id="cb24-2"><a href="linear-model-selection-regularisation.html#cb24-2" aria-hidden="true" tabindex="-1"></a>lasso_mse</span></code></pre></div>
-<pre><code>## [1] 0.45</code></pre>
+<pre><code>## [1] 0.454</code></pre>
 <p>The final results show that the unregularised linear model performed worst, and the lasso performed best in this example. It should be noted that the accuracy of these predictions in context of the application should always be evaluated in consultation with the subject experts, i.e. the oncologist in this instance.</p>
 </div>
 </div>
@@ -694,7 +1073,7 @@ Figure 3.6: 10-fold CV MSEs as a function of <span class="math inline">\(\log(\l
         </div>
       </div>
 <a href="supervised-learning.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="classification-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

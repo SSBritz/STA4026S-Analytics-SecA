@@ -1,13 +1,13 @@
 # Linear Model Selection & Regularisation
 
 ```{r, setup3, include=FALSE}
+rm(list =ls())
+library(knitr)
 knitr::opts_chunk$set(
   warnings = F,
   fig.path = 'figs/', 
   message = F
 )
-library(knitr)
-rm(list =ls())
 ```
 
 In the previous chapter we discussed cross-validation (CV) as a procedure for estimating the out-of-sample performance of models of the same form, but different complexity, where each model was considered a separate hypothesised representation of the underlying function -- $f$ -- mapping all the explanatory variables (features) to the dependent (target) variable. In the following sections we will start by fitting a linear model, with the focus then on **variable selection**, i.e. deciding which features to include in the model. Instead of deciding on the model "settings" beforehand -- which we will in later chapters come to know as **hyperparameters** -- we will rather adjust the fitted model parameters by means of **regularisation**, also referred to as **shrinkage methods**. Following that, we will cover **dimension reduction** methods.
@@ -70,7 +70,7 @@ If $\boldsymbol{X}$ is of full column rank -- a reasonable assumption when $n \g
 
 ```{=tex}
 \begin{equation}
-\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}'\boldsymbol{X}\right)^{-1}\boldsymbol{X}\boldsymbol{y}
+\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}'\boldsymbol{X}\right)^{-1}\boldsymbol{X}'\boldsymbol{y}
 (\#eq:beta-hat)
 \end{equation}
 ```
@@ -145,7 +145,7 @@ yielding the ridge regression solution
 
 ```{=tex}
 \begin{equation}
-\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}'\boldsymbol{X} + \lambda\boldsymbol{I}\right)^{-1}\boldsymbol{X}\boldsymbol{y}
+\hat{\boldsymbol{\beta}} = \left(\boldsymbol{X}'\boldsymbol{X} + \lambda\boldsymbol{I}\right)^{-1}\boldsymbol{X}'\boldsymbol{y}
 (\#eq:bridge-hat),
 \end{equation}
 ```
@@ -155,11 +155,11 @@ Equation \@ref(eq:bridge-hat) shows that the ridge regression addresses singular
 
 Although all of the above can be neatly explored via simulated examples, our focus will now move away from this controlled environment and towards using R packages to implement this methodology on some real-world data.
 
-### Example 2 -- Prostate Cancer
+### Example 2 -- Prostate cancer
 
 This dataset formed part of the now retired ElemStatLearn R package; it's details can be found [here](https://rdrr.io/cran/ElemStatLearn/man/prostate.html#heading-5). The goal is to model the (log) prostate-specific antigen (lpsa) for men who were about to receive a radical prostatectomy, based on eigth clinical measurements. The data only contain 97 observations, 30 of which are set aside for testing purposes.
 
-Looking at the correlation between the features, we see that all the features are positively correlated with the response variable, ranging from weak to strong correlation. We also observe some strong correlation between features, which could be of concern for a regression model. **Note**! $\texttt{svi}$ and $\texttt{gleason}$ are actually binary and ordinal variables respectively, but we will treat them as numeric for the sake of simplicity in this illustration. 
+Looking at the correlation between the features, we see that all the features are positively correlated with the response variable, ranging from weak to strong correlation. We also observe some strong correlation between features, which could be of concern for a regression model. **Note**! `svi` and `gleason` are actually binary and ordinal variables respectively, but we will treat them as numeric for the sake of simplicity in this illustration. 
 
 ```{r, fig.align='center', fig.cap='Correlations of all variables in the prostate cancer data'}
 library(corrplot) #For correlation plot
@@ -192,7 +192,7 @@ lm_full %>%
   kable(digits = 2, caption = 'Saturated linear model fitted to the prostate cancer dataset (features standardised)')
 ```
 
-The features $\texttt{gleason}$, $\texttt{age}$, and possibly $\texttt{pgg45}$ and $\texttt{lcp}$ are non-significant in this model, although note that these variables in particular were highly correlated with each other. This example also illustrates the adverse effect that this multicollinearity can have on a regression model. Even though $\texttt{lcp}$ was observed to have a fairly strong positive linear relationship with the response variable ($r = 0.49$, third highest of all features), the coefficient estimate is in fact **negative**, relatively significantly (p = 0.07)! Likewise, even though $\texttt{age}$ is positively correlated with $\texttt{lpsa}$ ($r = 0.23$), its coefficient estimate is negative.
+The features `gleason`, `age`, and possibly `pgg45` and `lcp` are non-significant in this model, although note that these variables in particular were highly correlated with each other. This example also illustrates the adverse effect that this multicollinearity can have on a regression model. Even though `lcp` was observed to have a fairly strong positive linear relationship with the response variable (r = 0.49, third highest of all features), the coefficient estimate is in fact **negative**, relatively significantly (p = 0.07)! Likewise, even though `age` is positively correlated with `lpsa` (r = 0.23), its coefficient estimate is negative.
 
 Let us now apply $L_2$ regularisation using the `glmnet` package in R. See section \@ref(elastic-net) for the discussion of the $\alpha$ parameter. For now, note that $\alpha = 0$ corresponds to ridge regression.
 
@@ -205,7 +205,7 @@ plot(ridge, xvar = 'lambda', label = T)
 
 Here we see how the coefficients vary as $\log(\lambda)$ is increased, whilst the labels at the top indicate the number of nonzero coefficients for various values of $\log(\lambda)$. Note that none of the coefficients actually equal zero, illustrating that ridge regression does not necessarily perform variable selection per se.
 
-In Figure \@ref(fig:ridge-coeffs) we observe that the initially negative coefficient for $\texttt{lcp}$ $(\beta_6)$ becomes both positive and more significant, relative to the other predictors. Therefore, the notion of "coefficients shrinking towards zero" is a slight misnomer, or perhaps an oversimplification of the effect $L_2$ regularisation has. Eventually, as $\lambda \to \infty$ (or, equivalently, $\tau \to 0$ as shown in \@ref(eq:bridget)), all coefficients will indeed be forced towards zero. However, the ideal model will usually correspond to a level of $\lambda$ that allows stronger predictors to be more prominent by diminishing the effect of their correlates.
+In Figure \@ref(fig:ridge-coeffs) we observe that the initially negative coefficient for `lcp` $(\beta_6)$ becomes both positive and more significant, relative to the other predictors. Therefore, the notion of "coefficients shrinking towards zero" is a slight misnomer, or perhaps an oversimplification of the effect $L_2$ regularisation has. Eventually, as $\lambda \to \infty$ (or, equivalently, $\tau \to 0$ as shown in \@ref(eq:bridget)), all coefficients will indeed be forced towards zero. However, the ideal model will usually correspond to a level of $\lambda$ that allows stronger predictors to be more prominent by diminishing the effect of their correlates.
 
 So, how do we determine the appropriate level of $\lambda$? By viewing this tuning parameter as a proxy for complexity and applying the same approach as in Chapter 2, we can use CV with the MSE as loss function to identify optimal complexity.
 
@@ -221,7 +221,7 @@ abline(h = ridge_cv$cvup[which.min(ridge_cv$cvm)], lty = 2)
 
 Figure \@ref(fig:ridge-cv) shows the CV errors (red dots), with the error bars indicating the extent of dispersion of the MSE across folds, the default display being one standard deviation above and below the average MSE. Two values of the tuning parameter are highlighted: the one yielding the minimum CV error (`lambda.min`), and the one corresponding to the most regularised model such that the error is within one standard error of the minimum (`lambda.1se`), which has been indicated on this plot with the horizontal dashed line. 
 
-The choice of $\lambda$ depends on various factors, including the size of the data set, the length of the resultant error bars, and the profile of the coefficient estimates. In Figure \@ref(fig:ridge-coeffs) we saw that a more "reasonable" representation of the coefficients is achieved when $\log(\lambda)$ is closer to zero, rather than at the minimum CV MSE. Showing this explicitly, below we see that the coefficients corresponding to `lambda.min` (left) still preserves the contradictory coefficient sign for $\texttt{lcp}$, whereas `lambda.1se` (right) rectifies this whilst mostly maintaining the overall relative importance across the features, hence we will use the latter.
+The choice of $\lambda$ depends on various factors, including the size of the data set, the length of the resultant error bars, and the profile of the coefficient estimates. In Figure \@ref(fig:ridge-coeffs) we saw that a more "reasonable" representation of the coefficients is achieved when $\log(\lambda)$ is closer to zero, rather than at the minimum CV MSE. Showing this explicitly, below we see that the coefficients corresponding to `lambda.min` (left) still preserves the contradictory coefficient sign for `lcp`, whereas `lambda.1se` (right) rectifies this whilst mostly maintaining the overall relative importance across the features, hence we will use the latter.
 
 ```{r}
 round(cbind(coef(ridge_cv, s = 'lambda.min'), coef(ridge_cv, s = 'lambda.1se')), 3)
@@ -268,7 +268,7 @@ include_graphics('figs/L1L2contours.png')
 
 As the penalty increases, the lasso constraint sequentially forces the coefficients across the p dimensions onto their respective axes. Let us return to the previous example to illustrate this effect.
 
-### Example 2 -- Prostate Cancer (continued)
+### Example 2 -- Prostate cancer (continued)
 
 Applying $L_1$ regularisation via `glmnet` follows exactly the same process as for ridge regression, except that we now set $\alpha = 1$ within the `glmnet()` function.
 
@@ -278,7 +278,7 @@ lasso <- glmnet(x, y, alpha = 1, standardize = T)
 plot(lasso, xvar = 'lambda', label = T)
 ```
 
-Figure \@ref(fig:lasso-coeffs) shows the coefficients shrinking and equaling zero as the regularisation penalty increases, as opposed to gradually decaying as in ridge regression, thereby performing **variable selection** in the process. Interestingly, here it seems that one of the first variables excluded from the model is $\texttt{lcp}$, although it is quite difficult to see, even for this small example where $p=8$. In order to determine which variables should be (de)selected, we will again implement CV using the MSE as loss function.
+Figure \@ref(fig:lasso-coeffs) shows the coefficients shrinking and equaling zero as the regularisation penalty increases, as opposed to gradually decaying as in ridge regression, thereby performing **variable selection** in the process. Interestingly, here it seems that one of the first variables excluded from the model is `lcp`, although it is quite difficult to see, even for this small example where $p=8$. In order to determine which variables should be (de)selected, we will again implement CV using the MSE as loss function.
 
 ```{r lasso-cv, fig.align='center', fig.cap='10-fold CV MSEs as a function of $\\log(\\lambda)$ for lasso regression applied to the prostate cancer dataset'}
 #Apply 10-fold CV
