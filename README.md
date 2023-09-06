@@ -8,33 +8,32 @@ A 6-lecture (double-period) section on supervised learning.
 
 The provisional outline for 2023 is as follows:
 
-L1: Introduction to supervised learning
-[x] Bias-Variance trade-off
-[x] Model validation
+L1: Introduction to supervised learning <br>
+- [x] Bias-Variance trade-off <br>
+- [x] Model validation
 
-L2: Model Selection & Regularisation
-[x] Linear regression models
-[x] L_1 & L_2 regularisation
-[x] ElasticNet
-~~PCR & PLS~~
+L2: Model Selection & Regularisation <br>
+- [x] Linear regression models <br>
+- [x] L_1 & L_2 regularisation <br>
+- [x] ElasticNet <br>
+- [ ] ~~PCR & PLS~~
 
-L3: Classification Models
-[x] Logistic regression
-[x] Model evaluation
-[x] ROC curves
-[x] Regularisation
+L3: Classification Models <br>
+- [x] Logistic regression <br>
+- [x] Model evaluation <br>
+- [x] ROC curves <br>
+- [x] Regularisation
 
-L4: Beyond Linearity
-[] Polynomial regression
-[] GAMs
-[] KNN
+L4: Beyond Linearity <br>
+- [ ] Polynomial regression <br>
+- [ ] GAMs <br>
+- [ ] KNN
 
-L5 & L6: Tree-based Methods
-[] CART
-[] Random forest
-[] Boosting
-[] Putting it all together
-
+L5 & L6: Tree-based Methods <br>
+- [ ] CART <br>
+- [ ] Random forest <br>
+- [ ] Boosting <br>
+- [ ] Putting it all together
 
 
 *This repo was initially generated from a bookdown template available here: https://github.com/jtr13/bookdown-template.*
