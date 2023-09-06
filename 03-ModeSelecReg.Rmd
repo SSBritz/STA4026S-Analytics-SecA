@@ -30,7 +30,7 @@ Y = \beta_0 + \sum_{j=1}^p\beta_jX_j + \epsilon,
 ```
 where $\epsilon \sim N(0, \sigma^2)$.
 
-The most popular method of estimating the regression parameters based on the training set $\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n$, is \*\* ordinary least squares\*\* (OLS), where we find the coefficients $\boldsymbol{\beta} = [\beta_0, \beta_1, \ldots, \beta_p]'$ to minimise the residual sum of squares
+The most popular method of estimating the regression parameters based on the training set $\mathcal{D}=\{\boldsymbol{x}_i, y_i\}_{i=1}^n$, is **ordinary least squares** (OLS), where we find the coefficients $\boldsymbol{\beta} = [\beta_0, \beta_1, \ldots, \beta_p]'$ to minimise the residual sum of squares
 
 ```{=tex}
 \begin{equation}
@@ -58,7 +58,7 @@ RSS(\boldsymbol{\beta}) = \left(\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta
 (\#eq:rss-mat)
 \end{equation}
 ```
-which is a quadratic function in the $p+1$ parameters. Differentiating with respect to \boldsymbol{\beta} yields
+which is a quadratic function in the $p+1$ parameters. Differentiating with respect to $\boldsymbol{\beta}$ yields
 
 ```{=tex}
 \begin{align}

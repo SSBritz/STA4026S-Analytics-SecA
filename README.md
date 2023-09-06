@@ -9,29 +9,31 @@ A 6-lecture (double-period) section on supervised learning.
 The provisional outline for 2023 is as follows:
 
 L1: Introduction to supervised learning
-- Bias-Variance trade-off
-- Model validation
+[x] Bias-Variance trade-off
+[x] Model validation
 
 L2: Model Selection & Regularisation
-- L_1 & L_2 regularisation
-- ElasticNet
-- PCR & PLS
+[x] Linear regression models
+[x] L_1 & L_2 regularisation
+[x] ElasticNet
+~~PCR & PLS~~
 
 L3: Classification Models
-- Logistic regression
-- Model evaluation
-- ROC curves
+[x] Logistic regression
+[x] Model evaluation
+[x] ROC curves
+[x] Regularisation
 
 L4: Beyond Linearity
-- Polynomial regression
-- GAMs
-- KNN
+[] Polynomial regression
+[] GAMs
+[] KNN
 
 L5 & L6: Tree-based Methods
-- CART
-- Random forest
-- Boosting
-- Putting it all together
+[] CART
+[] Random forest
+[] Boosting
+[] Putting it all together
 
 
 
