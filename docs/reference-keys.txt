@@ -48,7 +48,7 @@ tab:van-lr-tab
 fig:heart-l1
 fig:heart-l1-cv
 fig:heart-rocs
-tab:unnamed-chunk-22
+tab:unnamed-chunk-23
 eq:poly
 fig:auto-pairs
 fig:auto-fits

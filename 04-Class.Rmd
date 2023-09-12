@@ -346,6 +346,11 @@ view3d(theta = 45, phi = 45, fov = 45, zoom = 0.9)  #Initial view settings
 planes3d(coefs_3[4], coefs_3[2], coefs_3[3], coefs_3[1], col = 'navy', lwd = 3, alpha = 0.5)
 ```
 
+```{r, include=F}
+rgl.close()
+```
+
+
 **Note that this figure is interactive in html.**
 
 Now that we have sufficiently explored the logistic regression's decision boundaries, we turn our attention to measuring the accuracy of the classifications resulting from these decision boundaries.
