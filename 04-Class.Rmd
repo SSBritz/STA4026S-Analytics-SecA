@@ -63,7 +63,7 @@ Also referred to as the logistic map or sigmoidal curve, this S-shaped function 
 
 ```{=tex}
 \begin{equation}
-\log \left( \frac{p(\boldsymbol{X})}{1 - p(\boldsymbol{X})} \right) = \beta_0 + \sum_{j=1}^p\beta_jX_j .
+\log \left( \frac{p(\boldsymbol{X})}{1 - p(\boldsymbol{X})} \right) = \beta_0 + \sum_{j=1}^p\beta_jX_j.
 (\#eq:logit)
 \end{equation}
 ```
@@ -322,7 +322,7 @@ legend('topright', c('Default', 'Non-default'),
        col = c('darkorange', 'lightblue'), 
        pch = c(3, 1))
 # Add the decision boundary
-abline(coefs_2[1]/(-coefs_2[3]), coefs_2[2]/(-coefs_2[3]), col = 'navy', lwd = 3) #Do the math!!
+abline(-coefs_2[1]/coefs_2[3], -coefs_2[2]/coefs_2[3], col = 'navy', lwd = 3) #Do the math!!
 ```
 
 Note that the decision boundary for the decision rule threshold $\hat{p}(\boldsymbol{X}) \geq 0.5$ corresponds to the set of points in the parameters space for which the odds are 1 (or, equivalently, the log-odds are zero). Showing this is left as a homework exercise. Using this fact allows us to easily determine the boundary in Figure \@ref(fig:d2-bound).
@@ -720,6 +720,8 @@ In the following chapters we will move away from the linear class of models, con
 
 1. Show that for binary classification, the logistic regression decision boundary for the decision threshold $\hat{p}(\boldsymbol{X}) \geq 0.5$ corresponds to the set of points in the parameter space for which the odds are 1 (or, equivalently, the log-odds are zero).
 
-2. Replicate the methodology of @heart by repeating the modeling done in Example 4 100 times. Draw a boxplot for each metric across the 100 runs for each of the three models and report the averages.
+2. For Example 3 (Default data), create an animation showing how the decision boundary in Figure \@ref(fig:d2-bound) shifts as the decision threshold $\tau$ is varied from 0 to 1 (both excluded). 
 
-3. Continuing with Example 4: For a single train/test split, repeat the cross-validated regularisation (using both accuracy and AUC) 100 times and again visualise the resulting metrics via boxplots. Now repeat this procedure for 100 random train/test splits, whilst in each iteration keeping track of the mean and standard deviation of each metric across the 100 CV runs. How do the boxplots for the means compare to your results in Question 2? 
+3. Replicate the methodology of @heart by repeating the modeling done in Example 4 100 times. Draw a boxplot for each metric across the 100 runs for each of the three models and report the averages.
+
+4. Continuing with Example 4: For a single train/test split, repeat the cross-validated regularisation (using both accuracy and AUC) 100 times and again visualise the resulting metrics via boxplots. Now repeat this procedure for 100 random train/test splits, whilst in each iteration keeping track of the mean and standard deviation of each metric across the 100 CV runs. How do the boxplots for the means compare to your results in Question 2? 

@@ -25,9 +25,9 @@ L3: Classification Models <br>
 - [x] Regularisation
 
 L4: Beyond Linearity <br>
-- [ ] Polynomial regression <br>
-- [ ] GAMs <br>
-- [ ] KNN
+- [x] Polynomial regression <br>
+- [ ] ~GAMs~ <br>
+- [x] KNN
 
 L5 & L6: Tree-based Methods <br>
 - [ ] CART <br>
