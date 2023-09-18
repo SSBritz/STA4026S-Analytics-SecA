@@ -69,7 +69,7 @@ The primary goal of machine learning is to find an $\hat{f}$ that best approxima
 
 By now you will be familiar with the concept of bias-variance trade-off, according to which we attempt to find a sufficiently (but not overly) complex model. The reducible error component can be decomposed further to help illustrate this trade-off.
 
-## Bias-Variance trade-off
+## Bias-variance trade-off
 
 Consider again a fixed $\hat{f}$ and out-of-sample observations $\{\boldsymbol{x}_0, y_0\}$. For ease of notation, let $f = f(\boldsymbol{x}_0)$ and $\hat{f} = \hat{f}(\boldsymbol{x}_0)$. Also note that $f$ is deterministic such that $E\left[f\right] = f$.
 

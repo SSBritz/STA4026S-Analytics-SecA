@@ -30,7 +30,7 @@ Section B: Theory and Application of Supervised Learning</p>" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="non-linear-models.html"/>
+<link rel="prev" href="tree-based-methods.html"/>
 
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -419,6 +419,11 @@ void main(void) {
 <script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
 <link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.27/datatables.js"></script>
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
 
 
 <style type="text/css">
@@ -532,7 +537,7 @@ div.csl-indent {
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="supervised-learning.html"><a href="supervised-learning.html"><i class="fa fa-check"></i><b>2</b> Supervised Learning</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-Variance trade-off</a>
+<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-variance trade-off</a>
 <ul>
 <li class="chapter" data-level="2.1.1" data-path="supervised-learning.html"><a href="supervised-learning.html#example-1-simulation"><i class="fa fa-check"></i><b>2.1.1</b> Example 1 – Simulation</a></li>
 </ul></li>
@@ -547,7 +552,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html"><i class="fa fa-check"></i><b>3</b> Linear Model Selection &amp; Regularisation</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#linear-regression-models"><i class="fa fa-check"></i><b>3.1</b> Linear Regression Models</a></li>
+<li class="chapter" data-level="3.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#linear-regression-models"><i class="fa fa-check"></i><b>3.1</b> Linear regression models</a></li>
 <li class="chapter" data-level="3.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#l_1-and-l_2-regularisation"><i class="fa fa-check"></i><b>3.2</b> <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularisation</a>
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#ridge-regression-l_2"><i class="fa fa-check"></i><b>3.2.1</b> Ridge regression – <span class="math inline">\(L_2\)</span></a></li>
@@ -598,6 +603,24 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="5.3" data-path="non-linear-models.html"><a href="non-linear-models.html#homework-exercises-3"><i class="fa fa-check"></i><b>5.3</b> Homework exercises</a></li>
 </ul></li>
+<li class="chapter" data-level="6" data-path="tree-based-methods.html"><a href="tree-based-methods.html"><i class="fa fa-check"></i><b>6</b> Tree-based Methods</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#regression-trees"><i class="fa fa-check"></i><b>6.1</b> Regression trees</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#example-6-california-housing"><i class="fa fa-check"></i><b>6.1.1</b> Example 6 – California housing</a></li>
+<li class="chapter" data-level="6.1.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#cost-complexity-pruning"><i class="fa fa-check"></i><b>6.1.2</b> Cost complexity pruning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#classification-trees"><i class="fa fa-check"></i><b>6.2</b> Classification trees</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#splitting-criteria"><i class="fa fa-check"></i><b>6.2.1</b> Splitting criteria</a></li>
+<li class="chapter" data-level="6.2.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#link-between-deviance-and-rss"><i class="fa fa-check"></i><b>6.2.2</b> Link between deviance and RSS</a></li>
+<li class="chapter" data-level="6.2.3" data-path="tree-based-methods.html"><a href="tree-based-methods.html#cost-complexity-pruning-1"><i class="fa fa-check"></i><b>6.2.3</b> Cost complexity pruning</a></li>
+<li class="chapter" data-level="6.2.4" data-path="tree-based-methods.html"><a href="tree-based-methods.html#example-7-titanic"><i class="fa fa-check"></i><b>6.2.4</b> Example 7 – Titanic</a></li>
+<li class="chapter" data-level="6.2.5" data-path="tree-based-methods.html"><a href="tree-based-methods.html#example-8-iris"><i class="fa fa-check"></i><b>6.2.5</b> Example 8 – Iris</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="tree-based-methods.html"><a href="tree-based-methods.html#bagging-and-random-forests"><i class="fa fa-check"></i><b>6.3</b> Bagging and random forests</a></li>
+<li class="chapter" data-level="6.4" data-path="tree-based-methods.html"><a href="tree-based-methods.html#gradient-boosting"><i class="fa fa-check"></i><b>6.4</b> Gradient boosting</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -628,6 +651,9 @@ Section B: Theory and Application of Supervised Learning</p></a>
 Abu-Mostafa, Y. S., Magdon-Ismail, M., &amp; Lin, H.-T. (2012). <em>Learning from data</em>. AMLBook.
 </div>
 <div class="csl-entry">
+Bishop, C. M. (2006). <em>Pattern recognition and machine learning (information science and statistics)</em>. Springer-Verlag.
+</div>
+<div class="csl-entry">
 Chicco, D., &amp; Jurman, G. (2020). Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone. <em>BMC Medical Informatics and Decision Making</em>, <em>20 (16)</em>. <a href="https://doi.org/10.1186/s12911-020-1023-5">https://doi.org/10.1186/s12911-020-1023-5</a>
 </div>
 <div class="csl-entry">
@@ -635,6 +661,9 @@ Hastie, T., Tibshirani, R., Friedman, J. H., &amp; Friedman, J. H. (2009). <em>T
 </div>
 <div class="csl-entry">
 James, G., Witten, D., Hastie, T., Tibshirani, R., et al. (2013). <em>An introduction to statistical learning</em> (Vol. 112). Springer.
+</div>
+<div class="csl-entry">
+Murphy, K. P. (2013). <em>Machine learning : A probabilistic perspective</em>. MIT Press. <a href="https://www.amazon.com/Machine-Learning-Probabilistic-Perspective-Computation/dp/0262018020/ref=sr_1_2?ie=UTF8&amp;qid=1336857747&amp;sr=8-2">https://www.amazon.com/Machine-Learning-Probabilistic-Perspective-Computation/dp/0262018020/ref=sr_1_2?ie=UTF8&amp;qid=1336857747&amp;sr=8-2</a>
 </div>
 <div class="csl-entry">
 Zou, H., &amp; Hastie, T. (2005). Regularization and variable selection via the elastic net. <em>Journal of the Royal Statistical Society. Series B (Statistical Methodology)</em>, <em>67</em>(2), 301–320. <a href="http://www.jstor.org/stable/3647580">http://www.jstor.org/stable/3647580</a>
@@ -653,12 +682,15 @@ Zou, H., &amp; Hastie, T. (2005). Regularization and variable selection via the 
 
 
 
+
+
+
             </section>
 
           </div>
         </div>
       </div>
-<a href="non-linear-models.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="tree-based-methods.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>

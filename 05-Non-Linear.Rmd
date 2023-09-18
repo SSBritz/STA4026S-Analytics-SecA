@@ -18,7 +18,7 @@ In this chapter we will only cover one parametric approach in polynomial regress
 
 ## Polynomial regression
 
-Polynomial regression is simply a type of multiple regression in which the relationship between the independent variable(s) and the dependent variable is modeled as an $d^{th}$-degree polynomial. In contrast to linear regression, where the relationship is modeled as a straight line/hyperplane, polynomial regression allows us to capture more complex, nonlinear relationships between variables. Note that linear regression is the simplest case of polynomial regression, i.e. 1^st^-degree.
+Polynomial regression is simply a type of multiple regression in which the relationship between the independent variable(s) and the dependent variable is modelled as an $d^{th}$-degree polynomial. In contrast to linear regression, where the relationship is modeled as a straight line/hyperplane, polynomial regression allows us to capture more complex, non-linear relationships between variables. Note that linear regression is the simplest case of polynomial regression, i.e. 1^st^-degree.
 
 This approach can be applied to both regression (multiple linear regression) and classification problems (logistic regression).
 
@@ -190,7 +190,7 @@ To limit the scope of this section of the course, we will end our discussion on 
 
 ### Extension to basis functions and generalised additive models
 
-Although polynomial regression is a valuable tool for capturing nonlinear relationships, it has its limitations, especially when dealing with complex data patterns. To address these limitations and provide more flexible modeling options, one can apply a more general **basis function** approach, where any family of functions or transformations are applied to the features. 
+Although polynomial regression is a valuable tool for capturing nonlinear relationships, it has its limitations, especially when dealing with complex data patterns. To address these limitations and provide more flexible modelling options, one can apply a more general **basis function** approach, where any family of functions or transformations are applied to the features. 
 
 These functions can also be fitted piecewise (locally), defining **splines**, which are generally smoothed to be piecewise continuous and linear at the boundaries. 
 
@@ -344,7 +344,7 @@ knn_cv <- train(lpsa ~ lcavol + lweight + svi,
 plot(knn_cv) 
 ```
 
-As can be seen in \@ref(fig:knn-reg), the best KNN model according to the CV procedure (lowest RMSE) is one with $K = 6$. Remember that for this model, lower K increases flexibility, therefore the model starts overfitting for $K$ smaller than 6. Now we use this model to predict on the test set.
+As can be seen in \@ref(fig:knn-reg), the best KNN model according to the CV procedure (lowest RMSE) is one with $K = 6$. Remember that for this model, lower $K$ increases flexibility, therefore the model starts overfitting for $K$ smaller than 6. Now we use this model to predict on the test set.
 
 ```{r}
 test_y <- test_pros[, 9]

@@ -14,7 +14,7 @@ In the previous chapter we discussed cross-validation (CV) as a procedure for es
 
 This chapter is loosely based on chapter 6 of @james2013introduction and chapter 3 of @hastie2009elements and assumes some basic knowledge of linear regression models.
 
-## Linear Regression Models
+## Linear regression models
 
 Although few real-world relationships can be considered truly linear, the linear model offers some distinct advantages, most notably in the clear interpretation of features[^03-modeselecreg-1]. Furthermore, they often perform surprisingly well on a range of problems.
 

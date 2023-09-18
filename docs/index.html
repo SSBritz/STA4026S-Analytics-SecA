@@ -419,6 +419,11 @@ void main(void) {
 <script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
 <link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.27/datatables.js"></script>
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.12.1/js/jquery.dataTables.min.js"></script>
 
 
 <style type="text/css">
@@ -532,7 +537,7 @@ div.csl-indent {
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="supervised-learning.html"><a href="supervised-learning.html"><i class="fa fa-check"></i><b>2</b> Supervised Learning</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-Variance trade-off</a>
+<li class="chapter" data-level="2.1" data-path="supervised-learning.html"><a href="supervised-learning.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>2.1</b> Bias-variance trade-off</a>
 <ul>
 <li class="chapter" data-level="2.1.1" data-path="supervised-learning.html"><a href="supervised-learning.html#example-1-simulation"><i class="fa fa-check"></i><b>2.1.1</b> Example 1 – Simulation</a></li>
 </ul></li>
@@ -547,7 +552,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html"><i class="fa fa-check"></i><b>3</b> Linear Model Selection &amp; Regularisation</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#linear-regression-models"><i class="fa fa-check"></i><b>3.1</b> Linear Regression Models</a></li>
+<li class="chapter" data-level="3.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#linear-regression-models"><i class="fa fa-check"></i><b>3.1</b> Linear regression models</a></li>
 <li class="chapter" data-level="3.2" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#l_1-and-l_2-regularisation"><i class="fa fa-check"></i><b>3.2</b> <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> regularisation</a>
 <ul>
 <li class="chapter" data-level="3.2.1" data-path="linear-model-selection-regularisation.html"><a href="linear-model-selection-regularisation.html#ridge-regression-l_2"><i class="fa fa-check"></i><b>3.2.1</b> Ridge regression – <span class="math inline">\(L_2\)</span></a></li>
@@ -598,6 +603,24 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="5.3" data-path="non-linear-models.html"><a href="non-linear-models.html#homework-exercises-3"><i class="fa fa-check"></i><b>5.3</b> Homework exercises</a></li>
 </ul></li>
+<li class="chapter" data-level="6" data-path="tree-based-methods.html"><a href="tree-based-methods.html"><i class="fa fa-check"></i><b>6</b> Tree-based Methods</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#regression-trees"><i class="fa fa-check"></i><b>6.1</b> Regression trees</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#example-6-california-housing"><i class="fa fa-check"></i><b>6.1.1</b> Example 6 – California housing</a></li>
+<li class="chapter" data-level="6.1.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#cost-complexity-pruning"><i class="fa fa-check"></i><b>6.1.2</b> Cost complexity pruning</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#classification-trees"><i class="fa fa-check"></i><b>6.2</b> Classification trees</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#splitting-criteria"><i class="fa fa-check"></i><b>6.2.1</b> Splitting criteria</a></li>
+<li class="chapter" data-level="6.2.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#link-between-deviance-and-rss"><i class="fa fa-check"></i><b>6.2.2</b> Link between deviance and RSS</a></li>
+<li class="chapter" data-level="6.2.3" data-path="tree-based-methods.html"><a href="tree-based-methods.html#cost-complexity-pruning-1"><i class="fa fa-check"></i><b>6.2.3</b> Cost complexity pruning</a></li>
+<li class="chapter" data-level="6.2.4" data-path="tree-based-methods.html"><a href="tree-based-methods.html#example-7-titanic"><i class="fa fa-check"></i><b>6.2.4</b> Example 7 – Titanic</a></li>
+<li class="chapter" data-level="6.2.5" data-path="tree-based-methods.html"><a href="tree-based-methods.html#example-8-iris"><i class="fa fa-check"></i><b>6.2.5</b> Example 8 – Iris</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="tree-based-methods.html"><a href="tree-based-methods.html#bagging-and-random-forests"><i class="fa fa-check"></i><b>6.3</b> Bagging and random forests</a></li>
+<li class="chapter" data-level="6.4" data-path="tree-based-methods.html"><a href="tree-based-methods.html#gradient-boosting"><i class="fa fa-check"></i><b>6.4</b> Gradient boosting</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -642,7 +665,7 @@ title.innerHTML = '<img src="figs/Dept_Logo.jpg" alt="">' + title.innerHTML
 <p>The fields of statistical learning/AI/machine learning/data science/analytics/data mining/deep learning/[insert new buzzword here] are constantly evolving at a rapid pace. Although the core theory and methodology will (should) always be relevant, adaptations to the methods are regularly being developed, along with more efficient and convenient packages for implementation. Therefore, although these notes attempt to introduce you to up-to-date modern frameworks, note that these things change over time.</p>
 <p>Also note that this is by no means an exhaustive exploration of either theory, methods, or application, but it will imbue you with a skill set with which to tackle various problems and provide a solid foundation for further learning.</p>
 <p>These notes draw from various sources, with the theoretical aspects largely relying on <strong>An Introduction to Statistical Learning with Applications in R</strong> <span class="citation">(James et al., 2013)</span> and <strong>Elements of Statistical Learning</strong> <span class="citation">(Hastie et al., 2009)</span>, both of which are freely available <a href="https://www.statlearning.com/">here</a> and <a href="https://hastie.su.domains/ElemStatLearn/">here</a>, respectively.</p>
-<p><img src="figs/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figs/unnamed-chunk-92-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>It is recommended that you keep the former on hand, as you will be referred to sections therein for reading. Other sources will be referenced as and when they are used.</p>
 <p>Happy learning!</p>
 
