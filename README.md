@@ -30,7 +30,7 @@ L4: Beyond Linearity <br>
 - [x] KNN
 
 L5 & L6: Tree-based Methods <br>
-- [ ] CART <br>
+- [x] CART <br>
 - [ ] Random forest <br>
 - [ ] Boosting <br>
 - [ ] Putting it all together

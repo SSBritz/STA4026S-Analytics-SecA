@@ -358,7 +358,7 @@ Since we are effectively modelling the $\mu_m$, the likelihood of the means over
 ```{=tex}
 \begin{equation}
 L(\boldsymbol{\mu}|\boldsymbol{x}) = \prod_{m=1}^{M} f(\boldsymbol{y}_m) \propto \exp \left(-\frac{1}{2}\sum_{m=1}^{M}\sum_{i:x_i\in R_m} (y_i - \mu_m)^2 \right),
-(\#eq:L)
+(\#eq:L-tree)
 \end{equation}
 ```
 
@@ -377,7 +377,7 @@ Let us turn our attention back to classification trees and consider managing the
 
 ### Cost complexity pruning
 
-Just like with regression trees, we must prune a fully grown classification tree to avoid overfitting. However, as with the splitting rules, we cannot use the $RSS_{\alpha}$ criterion for pruning when the response is categorical. Similar to regression trees though, we will again penalise a selected cost complexity criterion according to the size of the tree, $|T|$: 
+Just like with regression trees, we must prune a fully grown classification tree to avoid overfitting. However, as with the splitting rules, we cannot use the $RSS_{\alpha}$ criterion for pruning when the response is categorical. Similar to regression trees though, we will again minimise a specified cost complexity criterion, penalised according to the size of the tree, $|T|$: 
 
 ```{=tex}
 \begin{equation}
@@ -453,12 +453,13 @@ titanic_tree
 
 Here we can see the path containing male passengers of class 2 or 3, age $\leq$ 9, and siblings $\leq$ 2, had a total of 16 passengers...all of whom survived! The best way to gauge whether this is indeed a pattern in the data (as opposed to a seemingly significant pocket of random variation), is to use cross-validation to estimate out-of-sample performance for pruned trees of different sizes.
 
-In the code below we see that one most specify the pruning cost complexity function, which we will set to the misclassification rate. 
+In the code below we see that one must specify the pruning cost complexity function, which we will set to the misclassification rate. 
 
 ```{r titanic-cv, fig.align='center', fig.cap='Cross-validated pruning results on a classification tree fitted to the Titanic dataset'}
 # First, grow a slightly larger tree
 titanic_bigtree <- tree(Survived ~ ., data = titanic, 
-                        control = tree.control(nobs = nrow(na.omit(titanic)), mindev = 0.005))
+                        control = tree.control(nobs = nrow(na.omit(titanic)), 
+                                               mindev = 0.005))
 
 # Then prune it down
 set.seed(28)
@@ -544,11 +545,11 @@ legend(x = 'topright', legend = levels(iris$Species),
 
 ```
 
-Although these boundaries capture the underlying pattern seemingly well, we might well ask whether non-orthogonal boundaries would not have been more appropriate -- either linear or non-linear. That raises the question of which approach/model is "best". 
+Although these boundaries capture the underlying pattern seemingly well, we might well ask whether non-orthogonal boundaries would not have been more appropriate -- either linear or non-linear. This raises the question of which approach/model is "best". 
 
 The answer is that it depends on the problem. For some cases, a particular method might work well, whilst it is entirely inappropriate for others. Figure \@ref(fig:log-vs-tree), taken from @james2013introduction, shows two hypothetical binary classification scenarios -- one where a logistic regression will yield perfect separation whilst the classification tree struggles (top), and one where a classification tree requires only two splits to perfectly capture the decision boundaries, whilst logistic regression performs poorly. 
 
-```{r log-vs-tree, echo=FALSE, fig.align='center', out.width='80%', fig.cap='Top row: A hypothetical binary classification scenario in which logistic regression would outperform a decision tree. Bottom row: A different scenario in which the decision would outperform logistic regression. Source: @james2013introduction, p. 339.'}
+```{r log-vs-tree, echo=FALSE, fig.align='center', out.width='80%', fig.cap='Top row: A hypothetical binary classification scenario in which logistic regression would outperform a decision tree. Bottom row: A different scenario in which the decision tree would outperform logistic regression. Source: @james2013introduction, p. 339.'}
 
 include_graphics('figs/tree-vs-lin.png')
 ```

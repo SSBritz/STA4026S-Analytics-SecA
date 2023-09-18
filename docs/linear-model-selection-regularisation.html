@@ -747,8 +747,8 @@ RSS(\lambda) = \left(\boldsymbol{y} - \boldsymbol{X}\boldsymbol{\beta} \right)&#
 <span id="cb9-7"><a href="linear-model-selection-regularisation.html#cb9-7" aria-hidden="true" tabindex="-1"></a>test_pros <span class="ot">&lt;-</span> dat_pros[<span class="sc">!</span>dat_pros<span class="sc">$</span>train, <span class="sc">-</span><span class="dv">10</span>]</span>
 <span id="cb9-8"><a href="linear-model-selection-regularisation.html#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-9"><a href="linear-model-selection-regularisation.html#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(<span class="fu">cor</span>(train_pros), <span class="at">method =</span> <span class="st">&#39;number&#39;</span>, <span class="at">type =</span> <span class="st">&#39;upper&#39;</span>)</span></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-97"></span>
-<img src="figs/unnamed-chunk-97-1.png" alt="Correlations of all variables in the prostate cancer data" width="672" />
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-7"></span>
+<img src="figs/unnamed-chunk-7-1.png" alt="Correlations of all variables in the prostate cancer data" width="672" />
 <p class="caption">
 Figure 3.1: Correlations of all variables in the prostate cancer data
 </p>
@@ -770,7 +770,7 @@ Figure 3.1: Correlations of all variables in the prostate cancer data
 <span id="cb10-14"><a href="linear-model-selection-regularisation.html#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>, <span class="at">caption =</span> <span class="st">&#39;Saturated linear model fitted to the prostate cancer dataset (features standardised)&#39;</span>)</span></code></pre></div>
 <table>
 <caption>
-<span id="tab:unnamed-chunk-98">Table 3.1: </span>Saturated linear model fitted to the prostate cancer dataset (features standardised)
+<span id="tab:unnamed-chunk-8">Table 3.1: </span>Saturated linear model fitted to the prostate cancer dataset (features standardised)
 </caption>
 <thead>
 <tr>
@@ -1009,7 +1009,7 @@ Figure 3.3: 10-fold CV MSEs as a function of <span class="math inline">\(\log(\l
 <p>This constraint on the regression parameters makes the solutions nonlinear in the <span class="math inline">\(y_i\)</span>, such that there is no closed form expression for <span class="math inline">\(\hat{\boldsymbol{\beta}}_L\)</span> like there is for the ridge estimate, except in the case of orthonormal covariates. Computing the lasso estimate is a quadratic programming problem, although efficient algorithms have been developed to compute the solutions as a function of <span class="math inline">\(\lambda\)</span> at the same computational cost as for ridge regression. These solutions are beyond the scope of this course.</p>
 <p>Note that if we let <span class="math inline">\(\tau &gt; \sum_{j=1}^p|\hat{\beta}^{LS}_j|\)</span>, where <span class="math inline">\(\hat{\beta}^{LS}_j\)</span> denotes the least squares estimates, then the lasso estimates are exactly equal to the least squares estimates. If, for example, <span class="math inline">\(\tau = \frac{1}{2} \sum_{j=1}^p|\hat{\beta}^{LS}_j|\)</span>, then the least squares coefficients are shrunk by 50% <strong>on average</strong>. However, the nature of the shrinkage is not obvious.</p>
 <p>When comparing ridge regression with the lasso, we see that the nature of the constraints yield different trajectories for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> as <span class="math inline">\(\lambda\)</span> increases/<span class="math inline">\(\tau\)</span> decreases:</p>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-100"></span>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-10"></span>
 <img src="figs/L1L2contours.png" alt="Estimation picture for the lasso (left) and ridge regression (right). Shown are contours of the error and constraint functions. The solid blue areas are the constraint regions $|\beta_1| + |\beta_2| \leq \tau$ and $\beta_1^2 + \beta_2^2 \leq \tau^2$, respectively, while the red ellipses are the contours of the least squares error function. Source: @hastie2009elements, p. 71." width="80%" />
 <p class="caption">
 Figure 3.4: Estimation picture for the lasso (left) and ridge regression (right). Shown are contours of the error and constraint functions. The solid blue areas are the constraint regions <span class="math inline">\(|\beta_1| + |\beta_2| \leq \tau\)</span> and <span class="math inline">\(\beta_1^2 + \beta_2^2 \leq \tau^2\)</span>, respectively, while the red ellipses are the contours of the least squares error function. Source: <span class="citation">Hastie et al. (2009)</span>, p. 71.

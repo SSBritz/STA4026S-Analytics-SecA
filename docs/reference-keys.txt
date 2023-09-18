@@ -1,9 +1,9 @@
 eq:test-mse-decomp
 eq:bias-var
-fig:unnamed-chunk-93
+fig:unnamed-chunk-3
 fig:b-v-trade
-fig:unnamed-chunk-95
-fig:unnamed-chunk-96
+fig:unnamed-chunk-5
+fig:unnamed-chunk-6
 eq:lm
 eq:rss-beta
 eq:lm-mat
@@ -14,13 +14,13 @@ eq:bridge
 eq:bridget
 eq:rss-lambda
 eq:bridge-hat
-fig:unnamed-chunk-97
-tab:unnamed-chunk-98
+fig:unnamed-chunk-7
+tab:unnamed-chunk-8
 fig:ridge-coeffs
 fig:ridge-cv
 eq:blasst
 eq:blass
-fig:unnamed-chunk-100
+fig:unnamed-chunk-10
 fig:lasso-coeffs
 fig:lasso-cv
 eq:elastic
@@ -34,8 +34,8 @@ eq:pred
 eq:dec-rule
 fig:scatter
 fig:boxes
-tab:unnamed-chunk-104
-tab:unnamed-chunk-105
+tab:unnamed-chunk-14
+tab:unnamed-chunk-15
 fig:d1
 fig:d2-bound
 eq:misc
@@ -48,7 +48,7 @@ tab:van-lr-tab
 fig:heart-l1
 fig:heart-l1-cv
 fig:heart-rocs
-tab:unnamed-chunk-113
+tab:unnamed-chunk-23
 eq:poly
 fig:auto-pairs
 fig:auto-fits
@@ -81,6 +81,7 @@ eq:dev-multin
 eq:dev-L
 eq:dev
 eq:py
+eq:L-tree
 eq:dev-reg
 eq:class-pen
 fig:titanic-gini
