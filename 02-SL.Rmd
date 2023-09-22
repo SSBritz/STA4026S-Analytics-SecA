@@ -108,7 +108,7 @@ $$Y = X + 2\cos(5X) + \epsilon,$$ where $\epsilon \sim N(0, 2)$.
 
 Below we simulate $n = 100$ observations from $X \sim U(-2,2)$, to which we fit cubic smoothing splines of increasing complexity. [Splines are beyond the scope of this course, but provide an easy-to-see illustration of "flexibility"]
 
-```{r, animation.hook='gifski', interval=0.333, fig.align='center', fig.cap='Cubic splines with varying degrees of freedom fitted to a sample of 100 datapoints drawn from $Y = X + 2\\cos(5X) + \\epsilon$, with $\\epsilon \\sim N(0, 2)$.'}
+```{r splines, animation.hook='gifski', interval=0.333, fig.align='center', fig.cap='Cubic splines with varying degrees of freedom fitted to a sample of 100 datapoints drawn from $Y = X + 2\\cos(5X) + \\epsilon$, with $\\epsilon \\sim N(0, 2)$.'}
 rm(list = ls())
 set.seed(4026)
 
@@ -266,7 +266,7 @@ To illustrate the implementation, let us return to the earlier example, where we
 
 Before using the CV error to determine the ideal model complexity, let us first illustrate the concept of cross-validation for a single model, say a cubic spline with 8 degrees of freedom, with $k = 10$. 
 
-```{r, animation.hook='gifski', interval=1, out.width='150%', fig.align='center', fig.cap='Left: The training (black) and validation (grey) portions of the dataset across 10 folds, with the fitted cubic spline with 8 degrees of freedom in blue. Right: The resulting training (black) and validation (red) MSEs across 10 folds.'}
+```{r CV, animation.hook='gifski', interval=1, out.width='150%', fig.align='center', fig.cap='Left: The training (black) and validation (grey) portions of the dataset across 10 folds, with the fitted cubic spline with 8 degrees of freedom in blue. Right: The resulting training (black) and validation (red) MSEs across 10 folds.'}
 set.seed(4026)
 
 #Simulated data
@@ -310,7 +310,7 @@ for(k in 1:10){
 
 Here we see that, as expected, the validation error is noticeably more variable than the training error across the folds.  We can calculate the CV MSE as `r round(mean(cv_k), 2)`, although on its own this value is not particularly insightful. When comparing it to that of other models, though, we can determine which model complexity is estimated to yield the lowest test error.
 
-```{r, fig.align='center', fig.cap='10-fold cross-validation error curve (grey) for cubic splines with varying degrees of freedom, with the minimum point indicated by the crossed circle. The red line indicates the true test MSE being estimated.'}
+```{r CV-min, fig.align='center', fig.cap='10-fold cross-validation error curve (grey) for cubic splines with varying degrees of freedom, with the minimum point indicated by the crossed circle. The red line indicates the true test MSE being estimated.'}
 #Keep track of MSE per fold, per model
 fold_mses <- matrix(nrow = 10, ncol = length(dofs))
 

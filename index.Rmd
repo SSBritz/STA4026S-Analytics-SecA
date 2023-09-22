@@ -41,7 +41,7 @@ Also note that this is by no means an exhaustive exploration of either theory, m
 
 These notes draw from various sources, with the theoretical aspects largely relying on **An Introduction to Statistical Learning with Applications in R** [@james2013introduction] and **Elements of Statistical Learning** [@hastie2009elements], both of which are freely available [here](https://www.statlearning.com/) and [here](https://hastie.su.domains/ElemStatLearn/), respectively.
 
-```{r echo=FALSE, fig.align='center', fig.cap='', fig.height=3}
+```{r books, echo=FALSE, fig.align='center', fig.cap='', fig.height=3}
 ggdraw() + 
   draw_image('figs/ISLR.png', width = 0.4) + 
   draw_image('figs/ESL.jpg', width = 0.4, x = 0.5)

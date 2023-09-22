@@ -161,7 +161,7 @@ This dataset formed part of the now retired ElemStatLearn R package; it's detail
 
 Looking at the correlation between the features, we see that all the features are positively correlated with the response variable, ranging from weak to strong correlation. We also observe some strong correlation between features, which could be of concern for a regression model. **Note**! `svi` and `gleason` are actually binary and ordinal variables respectively, but we will treat them as numeric for the sake of simplicity in this illustration. 
 
-```{r, fig.align='center', fig.cap='Correlations of all variables in the prostate cancer data'}
+```{r pros-cor, fig.align='center', fig.cap='Correlations of all variables in the prostate cancer data'}
 library(corrplot) #For correlation plot
 
 dat_pros <- read.csv('data/prostate.csv')

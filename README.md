@@ -31,9 +31,8 @@ L4: Beyond Linearity <br>
 
 L5 & L6: Tree-based Methods <br>
 - [x] CART <br>
-- [ ] Random forest <br>
+- [x] Random forest <br>
 - [ ] Boosting <br>
-- [ ] Putting it all together
 
 
 *This repo was initially generated from a bookdown template available here: https://github.com/jtr13/bookdown-template.*
