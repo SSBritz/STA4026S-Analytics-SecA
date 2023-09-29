@@ -21,7 +21,7 @@ Classification and regression trees -- often abbreviated as CART or just referre
 
 Let $Y$ denote a continuous outcome variable and let $X_1, X_2, \ldots, X_p$ be a set of predictors/features, of which we have $n$ observations. The regression tree algorithm entails repeatedly splitting the p-dimensional feature space into distinct, non-overlapping regions, with the splits orthogonal to the axes.
 
-Suppose that we partition the feature space into $M$ regions, $R_1 , R_2, \ldots, R_M$. Then for each region, we model the response as a **constant**, $c_m$:
+Suppose that we partition the feature space into $M$ regions, $R_1 , R_2, \ldots, R_M$. Then for each region we model the response as a **constant**, $c_m$:
 
 ```{=tex}
 \begin{equation}
@@ -29,6 +29,7 @@ f(\boldsymbol{x}) = \sum_{m=1}^Mc_mI(\boldsymbol{x} \in R_m).
 (\#eq:cart-f)
 \end{equation}
 ```
+
 As with other regression models, our goal is still to minimise
 
 ```{=tex}
@@ -37,6 +38,7 @@ RSS = \sum_{m=1}^{M}\sum_{i:x_i\in R_m}\left[y_i - \hat{f}(\boldsymbol{x} _i)\ri
 (\#eq:rss-tree)
 \end{equation}
 ```
+
 Therefore, the best $\hat{c}_m$ to minimise this criterion is simply the average of the $y_i$ in each region $R_j$:
 
 ```{=tex}
@@ -45,6 +47,7 @@ Therefore, the best $\hat{c}_m$ to minimise this criterion is simply the average
 (\#eq:cm-hat)
 \end{equation}
 ```
+
 Exhaustively searching over every possible combination of regions is computationally infeasible. Therefore, we use a top-down, greedy algorithm called **recursive binary splitting**:
 
 1.  First, select the predictor $X_j$ and split point $s$ such that the regions $R_1(j, s) = \{X|X_j < s\}$ and $R_2(j, s) = \{X|X_j \geq s\}$ lead to the greatest possible **reduction in RSS**. That is, we consider all predictors $X_1, \ldots, X_p$, and all possible values of the split point $s$ for each of the predictors, and then choose the predictor and split point such that Equation \@ref(eq:rss-tree) is minimised.
@@ -71,14 +74,14 @@ calif <- read.csv('data/calif.csv')
 datatable(calif, options = list(scrollX = T, pageLength = 6))
 ```
 
-\  
+\
 
 For now, we will only use the spatial information (latitude and longitude) to model the target variable: (log of) **median house price**.
 
 We begin by plotting a map of the data -- a 2-dimensional feature space -- using a colour scale to indicate the target variable.
 
 ```{r calif-map, warning=F, fig.align='center', fig.dim=c(6,6), fig.cap='Californian median neighbourhood house prices (logscale) in 1990.'}
-library(maps) 
+library(maps)
 library(RColorBrewer) # For colourblind friendly palettes
 
 # Replace with log
@@ -89,7 +92,7 @@ n_breaks <- 9
 my_cols <- brewer.pal(n_breaks, 'YlOrBr')[cut(calif$HousePrice, breaks = n_breaks)]
 
 # Plot the data
-plot(calif$Longitude, calif$Latitude, pch = 16, cex = 0.5, bty = 'L', 
+plot(calif$Longitude, calif$Latitude, pch = 16, cex = 0.5, bty = 'L',
      xlab = 'Longitude', ylab = 'Latitude', col = my_cols)
 legend(x = 'topright', bty = 'n', title = 'Log Median House Price', cex = 0.9,
        legend = round(seq(min(calif$HousePrice), max(calif$HousePrice), length.out = n_breaks), 2),
@@ -97,7 +100,7 @@ legend(x = 'topright', bty = 'n', title = 'Log Median House Price', cex = 0.9,
 
 # Add the state border
 map('state', 'california', add = T, lwd = 2)
-text(-123, 35, "Pacific Ocean")
+text(-123, 35, 'Pacific Ocean')
 ```
 
 We can now proceed to partition the feature space using recursive binary splitting, resulting in a regression tree. There are many packages in R that implement decision trees. We will be using one of the more basic ones: `tree`. For now we are not going to split into training and testing; for illustrative purposes we shall use the entire dataset.
@@ -106,7 +109,8 @@ Using the default stopping criteria, we fit the following decision tree shown be
 
 ```{r calif-tree, warning=F, fig.align='center', fig.dim=c(12, 9), fig.cap='Vanilla regression tree fitted to the Cailfornia dataset'}
 library(tree)
-#Easy as one two tree
+
+#Easy as one, two, tree
 calif_tree <- tree(HousePrice ~ Latitude + Longitude, data = calif)
 
 # Plot the tree
@@ -147,9 +151,10 @@ RSS_{\alpha} = \sum_{m=1}^{|T|}\sum_{i:x_i\in R_m}\left[y_i - \hat{f}(\boldsymbo
 (\#eq:rss-pen)
 \end{equation}
 ```
+
 where $\alpha \ge 0$ is a tuning parameter.
 
-When $\alpha = 0$, $RSS_{\alpha} = RSS$ and therefore $T=T_0$. For values of $\alpha > 0$, we seek the subtree $T$ that minimises $RSS_{\alpha}$. As $\alpha$ increases, subtrees with a large number of leaves are penalised more heavily and a smaller $T$ will be favoured such that branches are "pruned" off. This happens in a nested fastion, such that we can easily obtain subtrees as a function of $\alpha$.
+When $\alpha = 0$, $RSS_{\alpha} = RSS$ and therefore $T=T_0$. For values of $\alpha > 0$, we seek the subtree $T$ that minimises $RSS_{\alpha}$. As $\alpha$ increases, subtrees with a large number of leaves are penalised more heavily and a smaller $T$ will be favoured such that branches are "pruned" off. This happens in a nested fashion, such that we can easily obtain subtrees as a function of $\alpha$.
 
 By choosing $\alpha$, we are effectively selecting a subtree; that is, a more parsimonious model that does not overfit the sample data. We want the subtree (and hence $\alpha$ value) that has the lowest test error and therefore has the best predictive performance on unseen data. Therefore, we will once again use CV to determine this $\alpha$/subtree.
 
@@ -157,7 +162,6 @@ To illustrate this, we return to the California dataset, this time using all the
 
 ```{r}
 # First fit larger tree by relaxing stopping criteria
-
 # ?tree.control
 # minsize: will only consider split if at least so many observations in node
 # mincut: will only split if both child nodes then have at least so many
@@ -187,11 +191,12 @@ calif_cv <- cv.tree(calif_bigtree)
 # size = number of terminal nodes
 # dev = RSS
 # k = alpha (tuning parameter that determines tree size)
+
 calif_cv$k[1] <- 0 #First entry was -Inf
 
 # Plot everything
-plot(calif_cv$size, calif_cv$dev, type = 'o', 
-     pch = 16, col = 'navy', lwd = 2, 
+plot(calif_cv$size, calif_cv$dev, type = 'o',
+     pch = 16, col = 'navy', lwd = 2,
      xlab = 'Number of terminal nodes', ylab = 'CV RSS')
 axis(side = 1, at = 1:max(calif_cv$size), labels = 1:max(calif_cv$size))
 
@@ -201,7 +206,7 @@ axis(3, at = calif_cv$size, lab = alpha)
 mtext(expression(alpha), 3, line = 2.5, cex = 1.5)
 
 # Highlight the minimum CV Error
-T <- calif_cv$size[which.min(calif_cv$dev)] 
+T <- calif_cv$size[which.min(calif_cv$dev)]
 abline(v = T, lty = 2, lwd = 2, col = 'red')
 ```
 
@@ -211,7 +216,7 @@ We can see that the CV error did indeed keep decreasing. To check this, we show 
 calif_cv$size[which.min(calif_cv$dev)]
 ```
 
-However, the improvement in results is negligible from about 15. One could certainly also argue that a tree of size 5 might be preferable, given that it performs comparably to a tree of size 10, and the improvement from that point on is not drastic. In fact, decision trees will rarely be used for prediction purposes, since they will most often be outperformed by other algorithms. Their main value arguably lies in their interpretability, hence we will consider opting for the simpler model.
+However, the improvement in results is negligible from about 15 leaves. One could certainly also argue that a tree of size 5 might be preferable, given that it performs comparably to a tree of size 10, and the improvement from that point on is not drastic. In fact, decision trees will rarely be used for prediction purposes, since they will most often be outperformed by other algorithms. Their main value arguably lies in their interpretability, hence we will consider opting for the simpler model.
 
 ```{r calif-pruned5, fig.align='center', fig.cap='Cailfornia housing regression tree pruned to 5 terminal nodes'}
 # Prune the tree
@@ -243,6 +248,7 @@ The **class proportions** in each terminal node provide an indication of the rel
 (\#eq:class-p)
 \end{equation}
 ```
+
 where $N_m$ denotes the number of observations in region $R_m$.
 
 Although classification trees are also grown by recursive binary splitting, RSS cannot be used as splitting criterion. Now, we could grow the tree by choosing the split that minimises the classification error at each step, i.e. minimise the proportion of incorrectly predicted observations. In practice, however, splitting on the reduction in classification error does not produce good trees. We will instead consider the following three splitting criteria, all of which are designed to measure **node impurity**.
@@ -261,6 +267,7 @@ G = \sum_{m=1}^{M}\sum_{k=1}^{K} \hat{p}_{mk} (1-\hat{p}_{mk}),
 (\#eq:gini)
 \end{equation}
 ```
+
 where $\hat{p}_{mk}$ is the proportion of observations in response category $k = 1, \ldots, K$ within leaf node $m = 1, \ldots, M$. At each step during tree growth, we would therefore choose the split that produces the greatest reduction in the Gini index.
 
 For a binary response, for example, $G_m = 2\hat{p}_m(1 - \hat{p}_m)$. Note that the Gini index is minimised when leaf node $m$ is homogeneous, i.e. when $\hat{p}_m = 0$ or $\hat{p}_m = 1$.
@@ -275,12 +282,14 @@ H = -\sum_{m=1}^{M}\sum_{k=1}^{K}\hat{p}_{mk}\log(\hat{p}_{mk}).
 (\#eq:entropy)
 \end{equation}
 ```
+
 This measure, usually just referred to as **entropy**, stems from information theory and is equivalent to measuring information gain. Note that $\log_2$ is also often used in the definition, depending on the context. This yields units of "bits", whereas the natural logarithm in Equation \@ref(eq:entropy) yields "nats".
 
 Considering again the binary case, Figure \@ref(fig:gini-ent) shows the similarity between the Gini index and entropy, with the misclassification rate included for reference. Note that the entropy has been scaled to go through the point $(0.5, 0.5)$.
 
 ```{r gini-ent, fig.align='center', fig.dim=c(6,6), fig.cap='Gini index, (scaled) entropy, and classification error as a function of node impurity for a binary response.'}
 p <- seq(0, 1, 0.001)
+
 Gini <- 2*p*(1-p)
 Entropy <- -p*log(p) - (1-p)*log(1-p)
 Entropy <- Entropy/max(na.omit(Entropy))*0.5
@@ -293,7 +302,7 @@ legend('bottom', c('Entropy', 'Gini Index', 'Misclassification rate'),
        col = c('orange', 'lightblue', 'darkgreen'), lty = 1, lwd = 2)
 ```
 
-As seen in Figure \@ref(fig:gini-ent), the Gini index and entropy are computationally similar. In fact, the `tree` package in R uses Gini as a possible criterion, but not entropy.
+As seen in Figure \@ref(fig:gini-ent), the Gini index and entropy are computationally similar. In fact, the `tree` package in R uses Gini as a possible splitting criterion, but not entropy.
 
 There are several sources on the topic that use ambiguous and, at times, contradictory terminology to refer to Shannon entropy. For example, page 309 of @hastie2009elements refers to the measurement in Equation \@ref(eq:entropy) as "cross-entropy" or "deviance", whilst @murphy uses the term "entropy", but also equates it to deviance on page 547.
 
@@ -313,6 +322,7 @@ p(\boldsymbol{y}_m) = \binom{n_m}{n_{m1} \cdots n_{mK} } \prod_{k=1}^{K} p_{mk}^
 (\#eq:dev-multin)
 \end{equation}
 ```
+
 The likelihood over all $M$ leaf nodes is then given by
 
 ```{=tex}
@@ -321,6 +331,7 @@ L = \prod_{m=1}^{M} p(\boldsymbol{y}_m) \propto \prod_{m=1}^{M} \prod_{k=1}^{K} 
 (\#eq:dev-L)
 \end{equation}
 ```
+
 Now, the **deviance** is defined as
 
 ```{=tex}
@@ -329,6 +340,7 @@ D = -2\log(L) = -2 \sum_{m=1}^{M} \sum_{k=1}^{K} n_{mk} \log(p_{mk}).
 (\#eq:dev)
 \end{equation}
 ```
+
 We want the model that makes the data most probable, i.e. has the highest likelihood. This is equivalent to **minimising the deviance**. When we grow a classification tree, we therefore choose the split that reduces the deviance by the most at each step. Note that the deviance takes the number of observations in each terminal node into account, unlike the Gini index and entropy.
 
 ### Link between deviance and RSS
@@ -338,7 +350,6 @@ Returning to regression trees for a moment, if we inspect the object created by 
 ```{r}
 # Model summary
 (calif_s <- summary(calif_tree))
-
 # RSS (dev)
 calif_s$dev
 ```
@@ -351,6 +362,7 @@ f(\boldsymbol{y}_m) = \left(\frac{1}{\sigma \sqrt{2\pi}} \right)^{n_m} \exp \lef
 (\#eq:py)
 \end{equation}
 ```
+
 Since we are effectively modelling the $\mu_m$, the likelihood of the means over all $M$ leaf nodes is given by
 
 ```{=tex}
@@ -359,6 +371,7 @@ L(\boldsymbol{\mu}|\boldsymbol{x}) = \prod_{m=1}^{M} f(\boldsymbol{y}_m) \propto
 (\#eq:L-tree)
 \end{equation}
 ```
+
 such that the deviance can be expressed as
 
 ```{=tex}
@@ -367,6 +380,7 @@ D = -2\log(L) \propto \sum_{m=1}^{M}\sum_{i:x_i\in R_m} (y_i - \mu_m)^2 = RSS.
 (\#eq:dev-reg)
 \end{equation}
 ```
+
 Since the deviance is directly proportional to the RSS in this setting, minimising the one is equivalent to minimising the other.
 
 Let us turn our attention back to classification trees and consider managing their complexity.
@@ -381,22 +395,22 @@ C_{\alpha}(T) = C(T) + \alpha|T|,
 (\#eq:class-pen)
 \end{equation}
 ```
+
 where $C(T)$ represents a chosen cost function. Although we could use any of the aforementioned criteria, if prediction accuracy of the final pruned tree is the goal, then $C(T)$ should be taken as the **misclassification rate** of tree $T$.
 
 The following section illustrates the application to a binary classification problem.
 
 ### Example 7 -- Titanic
 
-The famous Titanic dataset contains information on 891 passengers that were aboard the Titanic on its one and only journey. The goal is to predict survival (yes/no) based on the predictors shown in the following table:
+The famous Titanic dataset contains information on 891 passengers that were aboard the Titanic on its one and only trans-Atlantic journey. The goal is to predict survival (yes/no) based on the predictors shown in the following table:
 
 ```{r, warning=F}
 titanic <- read.csv('data/titanic.csv', stringsAsFactors = T)
 titanic$Pclass <- as.factor(titanic$Pclass) #Class coded as integer, should be factor
-
 datatable(titanic, options = list(scrollX = T, pageLength = 6))
 ```
 
-\  
+\
 
 Most of the features are self-explanatory. `SibSp` refers to the passenger's number of siblings plus spouses on board; `Parch` to their number of parents and children; and `Embarked` to their port of embarkation[^06-tbm-3].
 
@@ -453,8 +467,8 @@ In the code below we see that one must specify the pruning cost complexity funct
 
 ```{r titanic-cv, fig.align='center', fig.cap='Cross-validated pruning results on a classification tree fitted to the Titanic dataset'}
 # First, grow a slightly larger tree
-titanic_bigtree <- tree(Survived ~ ., data = titanic, 
-                        control = tree.control(nobs = nrow(na.omit(titanic)), 
+titanic_bigtree <- tree(Survived ~ ., data = titanic,
+                        control = tree.control(nobs = nrow(na.omit(titanic)),
                                                mindev = 0.005))
 
 # Then prune it down
@@ -462,9 +476,10 @@ set.seed(28)
 titanic_cv <- cv.tree(titanic_bigtree, FUN = prune.misclass) #Use classification error rate for pruning
 
 # Make the CV plot
-plot(titanic_cv$size, titanic_cv$dev, type = 'o', 
+plot(titanic_cv$size, titanic_cv$dev, type = 'o',
      pch = 16, col = 'navy', lwd = 2,
      xlab = 'Number of terminal nodes', ylab='CV error')
+
 titanic_cv$k[1] <- 0 #Don't want no -Inf
 alpha <- round(titanic_cv$k,1)
 axis(3, at = titanic_cv$size, lab = alpha, cex.axis = 0.8)
@@ -502,6 +517,7 @@ ind <- as.numeric(iris$Species)
 plot(Sepal.Width ~ Sepal.Length, iris, xlab = 'Sepal Length', ylab = 'Sepal Width',
      col = c('red', 'green', 'blue')[ind],
      pch = c(1, 0, 5)[ind], lwd = 2, cex = 1.2)
+
 legend(x = 'topright', legend = levels(iris$Species),
        pch = c(1, 0, 5), col = c('red', 'green', 'blue'), cex = 1.2)
 ```
@@ -519,7 +535,6 @@ fgrid <- expand.grid(Sepal.Length = x, Sepal.Width = y)
 
 # Predict over entire space
 iris_pred <- predict(iris_tree, fgrid, type = 'class')
-
 ind_pred <- as.numeric(iris_pred)
 
 # Custom colours
@@ -536,6 +551,7 @@ plot(fgrid$Sepal.Width ~ fgrid$Sepal.Length,
 points(Sepal.Width ~ Sepal.Length, iris,
        col = c('red', 'green', 'blue')[ind],
        pch = c(1, 0, 5)[ind], lwd = 2, cex = 1.2)
+
 legend(x = 'topright', legend = levels(iris$Species),
        pch = c(1, 0, 5), col = c('red', 'green', 'blue'), cex = 1.2)
 ```
@@ -545,15 +561,17 @@ Although these boundaries capture the underlying pattern seemingly well, we migh
 The answer is that it depends on the problem. For some cases, a particular method might work well, whilst it is entirely inappropriate for others. Figure \@ref(fig:log-vs-tree), taken from @james2013introduction, shows two hypothetical binary classification scenarios -- one where a logistic regression will yield perfect separation whilst the classification tree struggles (top), and one where a classification tree requires only two splits to perfectly capture the decision boundaries, whilst logistic regression performs poorly.
 
 ```{r log-vs-tree, echo=FALSE, fig.align='center', out.width='80%', fig.cap='Top row: A hypothetical binary classification scenario in which logistic regression would outperform a decision tree. Bottom row: A different scenario in which the decision tree would outperform logistic regression. Source: @james2013introduction, p. 339.'}
-
 include_graphics('figs/tree-vs-lin.png')
 ```
 
 Decision trees have some definite advantages:
 
 -   They are very easy to explain and interpret -- easier than linear regression!
+
 -   Residual assumptions and multicollinearity are moot.
+
 -   It mirrors human decision making.
+
 -   Easily handle qualitative predictors without the need to create dummy variables.
 
 However, one major drawback is that their predictive accuracy is generally (for most problems) not as good as most other regression and classification approaches. We will now consider two ways of improving on their predictive accuracy, namely random forests and boosting.
@@ -606,10 +624,9 @@ The average prediction $\hat{y}_{\text{ave}}$ will therefore have a lower sampli
 
 However, we of course only have one sample in practice. This is where bootstrap sampling is useful: we can construct multiple bootstrap samples by repeated sampling **with replacement** from the training set, then grow $B$ **unpruned trees** on each of these samples. For a continuous response variable we simply average the $B$ predictions from the regression trees for each observation, whilst for categorical responses we take a majority vote, i.e. the overall prediction for an observation is the most commonly occurring category among the $B$ predictions.
 
-Figure \@ref(fig:bagging) illustrates the process for a simple binary classification example with 5 observations and 3 trees. The default number of trees in many R packages is 500, which generally tends to be enough for the error to stabilise, depending on the size of the data. One can add more trees at extra computational cost, although note that since we are only reducing the prediction variability, a large value of $B$ will **not** lead to overfitting.
+Figure \@ref(fig:bagging) illustrates the process for a simple binary classification example with 5 observations and 3 trees. The default number of trees in most R packages is 500, which generally tends to be enough for the error to stabilise, depending on the size of the data. One can add more trees at extra computational cost, although note that since we are only reducing the prediction variability, a large value of $B$ will **not** lead to overfitting.
 
 ```{r bagging, echo=FALSE, fig.align='center', fig.cap='A dummy example illustrating the bagging procedure.'}
-
 include_graphics('figs/bagging.png')
 ```
 
@@ -621,7 +638,6 @@ par(mfrow = c(1, 2))
 
 # Simulate random points
 set.seed(123)
-
 x1 <- runif(500, 0, 10)
 x2 <- runif(500, 0, 10)
 y <- as.factor(ifelse(x2 <= 10 - x1, 0, 1)) # With a linear decision boundary
@@ -636,7 +652,7 @@ plot(x1, x2, col = ifelse(y == 0, 'red', 'navy'), pch = 16, xlim = c(0, 10), yli
 title(ylab = expression(X[2]), line = 1.8, cex.lab = 1.5) #ylab was being cut off
 
 # Boundaries
-abline(10, -1, lwd=3) 
+abline(10, -1, lwd=3)
 partition.tree(pruned_tree, add = T, lwd = 6, col = 'darkgreen', cex = 2)
 x <- seq(0, 10, length = 100)
 fgrid <- expand.grid(x1 = x, x2 = x)
@@ -653,7 +669,7 @@ plot(x1, x2, col = ifelse(y == 0, 'red', 'navy'), pch = 16, xlim = c(0, 10), yli
 title(ylab = expression(X[2]), line = 1.8, cex.lab = 1.5) #ylab was being cut off
 
 # Boundaries
-abline(10, -1, lwd=3) 
+abline(10, -1, lwd=3)
 yhat <- predict(mybag, fgrid, type = 'prob')[, 2]
 contour(x, x, matrix(yhat, 100, 100), add = T,
         levels = 0.5, drawlabels = F, lwd = 3, col = 'darkgreen')
@@ -668,7 +684,6 @@ par(mfrow = c(1, 2))
 
 # Simulate random points
 set.seed(123)
-
 x1 <- runif(1000, 0, 10)
 x2 <- runif(1000, 0, 10)
 circ <- (x1 - 5)^2 + (x2 - 5)^2
@@ -718,7 +733,6 @@ To obtain an estimate of the test error, we simply predict the response for obse
 Figure \@ref(fig:OOB) again illustrates the process for a simple regression example (note that some rounding was applied for ease of presentation).
 
 ```{r OOB, echo=FALSE, fig.align='center', fig.dim=c(8,8), fig.cap='A dummy example illustrating out-of-bag (OOB) error estimation.'}
-
 include_graphics('figs/OOB.png')
 ```
 
@@ -794,8 +808,7 @@ Interestingly, we see that the bagged model has the higher $R^2$. Comparing thei
 plot(calif_bag$mse, type = 'l', xlab = 'Number of trees', ylab = 'OOB MSE',
      col = 'blue', lwd = 2, ylim = c(0, max(calif_rf$mse)))
 lines(calif_rf$mse, col = 'darkgreen', lwd = 2, type = 's')
-
-legend('topright', legend = c('Bagging', 'Random Forest'), 
+legend('topright', legend = c('Bagging', 'Random Forest'),
        col = c('blue', 'darkgreen'), lwd = 2)
 ```
 
@@ -804,7 +817,7 @@ Based on this, if we had to choose a model between these two, we would pick the 
 ```{r calif-test, fig.align='center', fig.cap='Testing errors for the bagged tree, random forest (default m), and single tree fitted to the California housing dataset, added to the OOB plots.'}
 # Quick single tree
 stopcrit <- tree.control(nobs = length(train), mindev = 0.002)
-calif_tree_overfit <- tree(HousePrice ~ ., data = calif[-train, ], control = stopcrit) 
+calif_tree_overfit <- tree(HousePrice ~ ., data = calif[-train, ], control = stopcrit)
 set.seed(4026)
 calif_cv <- cv.tree(calif_tree_overfit)
 T <- calif_cv$size[which.min(calif_cv$dev)]
@@ -822,13 +835,13 @@ calif_rf_mse   <- mean((y_calif_test - calif_rf_pred)^2)
 calif_tree_mse <- mean((y_calif_test - calif_tree_pred)^2)
 
 # Plot MSEs
-plot(calif_bag$mse, type = 'l', xlab = 'Number of trees', ylab = 'MSE', 
+plot(calif_bag$mse, type = 'l', xlab = 'Number of trees', ylab = 'MSE',
      col = 'blue', lwd = 2, ylim = c(0, calif_tree_mse*2))
 lines(calif_rf$mse, col = 'darkgreen', lwd = 2)
 abline(h = calif_bag_mse, col = 'blue', lty = 2, lwd = 2)
 abline(h = calif_rf_mse, col = 'darkgreen', lty = 2, lwd = 2)
 abline(h = calif_tree_mse, col = 'grey', lty = 2, lwd = 2)
-legend('topright', legend = c('Bagging OOB', 'Bagging test', 'Random forest OOB', 'Random forest test', 'Single tree test'), 
+legend('topright', legend = c('Bagging OOB', 'Bagging test', 'Random forest OOB', 'Random forest test', 'Single tree test'),
        col = c('blue', 'blue', 'darkgreen', 'darkgreen', 'grey'), lwd = 2, lty = c('solid', 'dashed', 'solid', 'dashed', 'dashed'))
 ```
 
@@ -864,10 +877,11 @@ rf_250_time
 
 The `ranger` package offers inter alia built-in parallelisation across cores to improve runtimes significantly. Fitting the bagged model using this package:
 
-```{r message=F}
+```{r, message=F, warning=F}
 library(ranger)
+
 ranger_time <- system.time(
-  ranger_bag <- ranger(formula = HousePrice ~ ., data = calif[train, ], 
+  ranger_bag <- ranger(formula = HousePrice ~ ., data = calif[train, ],
                        num.trees = 250, mtry = ncol(calif) - 1)
 )
 ```
@@ -878,19 +892,17 @@ We observe a significantly faster runtime:
 ranger_time
 ```
 
-
 The model object also has some neat output to explore. For example, let's investigate the 100th tree in the forest:
 
 ```{r}
 head(treeInfo(ranger_bag, 100))
 ```
 
-Note, however, that since the trees are fitted in parallel we cannot keep track of OOB MSE as the number of trees increase; we can only extract the final OOB MSE. 
+Note, however, that since the trees are fitted in parallel we cannot keep track of OOB MSE as the number of trees increase; we can only extract the final OOB MSE.
 
 Another option for faster random forest implementation is `Rborist`. @ranger compares the two packages across a range of combinations of observations and features. The result is neatly summarised in Figure \@ref(fig:ranger-vs-rborist), taken from that paper.
 
 ```{r ranger-vs-rborist, echo=FALSE, fig.align='center', out.width='65%', fig.cap='Runtime comparison of ranger with Rborist (classification, 1000 trees per run). Source: @ranger.'}
-
 include_graphics('figs/ranger.jpg')
 ```
 
@@ -909,14 +921,14 @@ calif_rf_grid <- expand.grid(mtry = 2:(ncol(calif) - 1),
 ctrl <- trainControl(method = 'oob', verboseIter = F)     #Can set to T to track progress
 
 # Use ranger to run all these models
-calif_rf_gridsearch <- train(HousePrice ~ ., 
+calif_rf_gridsearch <- train(HousePrice ~ .,
                              data = calif,
                              subset = train,
                              method = 'ranger',
                              num.trees = 250,
                              #verbose = T,
                              trControl = ctrl,
-                             tuneGrid = calif_rf_grid) #Here is the grid
+                             tuneGrid = calif_rf_grid)    #Here is the grid
 ```
 
 The hyperparameter combination that yielded the best OOB result is as follows:
@@ -940,11 +952,11 @@ mean((y_calif_test - calif_rfgrid_pred)^2)
 
 Comparing this to the $m=8$ model from earlier, we see a miniscule improvement on its test MSE of `r calif_bag_mse`, although the difference is negligible. To reiterate: in practice, one would only use the test set to get one final prediction after selecting a model based on CV/OOB errors. This test set comparison was merely for illustration.
 
-We can now apply the same procedure to the Titanic dataset. 
+We can now apply the same procedure to the Titanic dataset.
 
 ### Example 8 -- Titanic (continued)
 
-In practice one might want to jump straight to the hyperparameter tuning (after doing the necessary exploration and cleaning, of course). However, since we are still exploring and comparing these methods, we will again first see how the bagged model compares to the default random forest, with a single pruned tree again added for reference. This step also helps to determine whether the number of trees is sufficient.  
+In practice one might want to jump straight to the hyperparameter tuning (after doing the necessary exploration and cleaning, of course). However, since we are still exploring and comparing these methods, we will again first see how the bagged model compares to the default random forest, with a single pruned tree again added for reference. This step also helps to determine whether the number of trees is sufficient.
 
 Since the Titanic dataset is much smaller than the California data, we will use a 70/30 split to be more certain of our out-of-sample performance.
 
@@ -955,19 +967,17 @@ set.seed(1)
 train <- sample(1:nrow(titanic), 0.7*nrow(titanic))
 
 # Bagging
-titanic_bag <- randomForest(Survived ~ ., data = titanic, subset = train, 
+titanic_bag <- randomForest(Survived ~ ., data = titanic, subset = train,
                             mtry = ncol(titanic) - 1,
                             ntree = 1000)
 
 # Random Forest
-titanic_rf <- randomForest(Survived ~ ., data = titanic, subset = train, 
+titanic_rf <- randomForest(Survived ~ ., data = titanic, subset = train,
                            ntree = 1000)
-
 
 # Quick single tree
 stopcrit <- tree.control(nobs = length(train), mindev = 0.005)
-titanic_tree_overfit <- tree(Survived ~ ., data = titanic, subset = train, control = stopcrit) 
-
+titanic_tree_overfit <- tree(Survived ~ ., data = titanic, subset = train, control = stopcrit)
 titanic_cv <- cv.tree(titanic_tree_overfit)
 T <- titanic_cv$size[which.min(titanic_cv$dev)]
 titanic_pruned <- prune.tree(titanic_tree_overfit, best = T)
@@ -984,13 +994,13 @@ titanic_rf_mis   <- mean(y_titanic_test != titanic_rf_pred)
 titanic_tree_mis <- mean(y_titanic_test != titanic_tree_pred)
 
 # Plot errors
-plot(titanic_rf$err.rate[, 'OOB'], xlab = 'Number of trees', ylab = 'Classification error', 
+plot(titanic_rf$err.rate[, 'OOB'], xlab = 'Number of trees', ylab = 'Classification error',
      type = 's', col = 'darkgreen', ylim = c(0.1, titanic_tree_mis))
 lines(titanic_bag$err.rate[, 'OOB'], col = 'blue', type = 's')
 abline(h = titanic_bag_mis, col = 'blue', lty = 2, lwd = 2)
 abline(h = titanic_rf_mis, col = 'darkgreen', lty = 2, lwd = 2)
 abline(h = titanic_tree_mis, col = 'grey', lty = 2, lwd = 2)
-legend('bottomright', legend = c('Bagging OOB', 'Bagging test', 'Random forest OOB', 'Random forest test', 'Single tree test'), 
+legend('bottomright', legend = c('Bagging OOB', 'Bagging test', 'Random forest OOB', 'Random forest test', 'Single tree test'),
        col = c('blue', 'blue', 'darkgreen', 'darkgreen', 'grey'), lwd = 2, lty = c('solid', 'dashed', 'solid', 'dashed', 'dashed'))
 ```
 
@@ -1001,20 +1011,20 @@ set.seed(2)
 
 # Create combinations of hyperparameters
 titanic_rf_grid <- expand.grid(mtry = 2:(ncol(titanic) - 1),
-                               splitrule = c('gini', 'hellinger'),      
-                               min.node.size = c(1, 5, 10)) 
+                               splitrule = c('gini', 'hellinger'),
+                               min.node.size = c(1, 5, 10))
 
-ctrl <- trainControl(method = 'oob', verboseIter = F) 
+ctrl <- trainControl(method = 'oob', verboseIter = F)
 
 # Use ranger to run all these models
-titanic_rf_gridsearch <- train(Survived ~ ., 
-                             data = titanic,
-                             subset = train,
-                             method = 'ranger',
-                             num.trees = 1000,
-                             trControl = ctrl,
-                             tuneGrid = titanic_rf_grid, 
-                             importance = 'impurity') 
+titanic_rf_gridsearch <- train(Survived ~ .,
+                               data = titanic,
+                               subset = train,
+                               method = 'ranger',
+                               num.trees = 1000,
+                               trControl = ctrl,
+                               tuneGrid = titanic_rf_grid,
+                               importance = 'impurity')
 
 plot(titanic_rf_gridsearch)
 ```
@@ -1025,25 +1035,560 @@ Next, we use the model that did best in OOB performance for prediction.
 
 ```{r}
 titanic_rfgrid_pred <- predict(titanic_rf_gridsearch, newdata = titanic[-train,])
-mean(y_titanic_test != titanic_rfgrid_pred)
+titanic_rf_tuned_mis <- mean(y_titanic_test != titanic_rfgrid_pred)
 ```
 
-Tuning the random forest's hyperparameters brought the misclassification rate down from `r round(titanic_rf_mis*100, 2)`% to `r round(mean(y_titanic_test != titanic_rfgrid_pred)*100, 2)`%. 
+Tuning the random forest's hyperparameters brought the misclassification rate down from `r round(titanic_rf_mis*100, 2)`% to `r round(titanic_rf_tuned_mis*100, 2)`%.
 
-Finally, let's consider the variable importance plot. 
+Finally, let's consider the variable importance plot.
 
 ```{r titanic-rf-imp, fig.align='center', fig.cap='Variable importance plot for the random forest fitted to the Titanic dataset. Hyperparameter tuning has been applied to the model.'}
 plot(varImp(titanic_rf_gridsearch))
 ```
 
-The variable importance for this model -- which has been optimised for classification accuracy -- is measured by decrease in Gini index. Passenger sex is by far the most important factor, followed by age and fare, which were similar. Whether or not they were 3^rd^ class passengers is somewhat important (also refer back to Figure \@ref(fig:titanic-dev), where we used the entire dataset). 
+The variable importance for this model -- which has been optimised for classification accuracy -- is measured by decrease in Gini index. Passenger sex is by far the most important factor, followed by age and fare, which were similar. Whether or not they were 3^rd^ class passengers is somewhat important (also refer back to Figure \@ref(fig:titanic-dev), where we used the entire dataset).
 
 Although there are many modern extensions to random forests, those will be left for future exploration. Our final topic in this section is another, different form of tree ensembling, namely boosting.
 
 ## Gradient boosting
 
+Boosting describes a general purpose family of algorithms that ensemble many weak learners into strong learners by letting the base models **sequentially** learn from the mistakes made by the previous ones, in contrast to bagging which grow all trees **independently**. The weak learner can be any classification or regression algorithm, but it is most common to use a decision tree, specifically one with few splits.
+
+There are several boosting variations, the more popular ones being AdaBoost and so-called **stochastic gradient boosting** (it has been shown that this boosting can be interpreted as a form of gradient descent in function space). Our application will entail the latter, which is a more generic and flexible algorithm. Boosting can be applied to both regression and classification trees -- which we will do -- although our exploration of the algorithm will focus only on the regression case.
+
+The main idea of boosting is to let the algorithm gradually learn from its mistakes by starting with a base prediction, for example the mean of the target variable. A regression tree with a small number of splits $(d)$, is fitted to the **residuals** of this base prediction. The (scaled) **residuals** of this tree are then treated as the response variable used to grow the next tree with $d$ splits. The (scaled) residuals of the new tree are then used to grow another tree with $d$ splits, and so on...
+
+This yields a sequence of $B$ trees, each one accounting for some of the variation in $y$ that was not explained by the previous trees, gradually bringing the residuals down to zero. Therefore, the model eventually overfits as the number of trees increases, and we make use of cross-validation (CV) to determine at which point this occurs.
+
+The initial trees will capture the strongest patterns in the data and will contribute the most to RSS reduction, whilst subsequent trees will lead to smaller improvements. We limit the rate of learning firstly by using trees with few splits, and secondly via a **shrinkage parameter** $\lambda$ that down-weights the contribution of each tree. In general, methods that learn slowly tend to perform well, although this **slow learning** approach requires many more trees than a random forest.
+
+The steps are laid out in the following algorithm:
+
+------------------------------------------------------------------------
+
+**Algorithm 1** Gradient Tree Boosting (as implemented in R)
+
+------------------------------------------------------------------------
+
+Let $\hat{y}^{(b)}$ be the predictions after fitting $b$ trees\
+Let $\hat{r}^{(b)}$ be the predicted values (of the residuals) of tree $b$\
+Let $r^{(b)}$ be the residuals after fitting $b$ trees
+
+1.  Set $\hat{y}^{(0)} = \bar{y}$ such that $r^{(0)} = y - \bar{y}$
+
+2.  For $b = 1, \ldots, B$:
+
+    (a) Fit a regression tree with $d$ splits to $(X, r^{(b-1)})$
+    (b) Using the predictions $\hat{r}^{(b)}$ of the current tree, update the predictions $$\hat{y}^{(b)} = \hat{y}^{(b-1)} + \lambda\hat{r}^{(b)}$$
+    (c) Updated the residuals using the current predictions $$r^{(b)} = r^{(b-1)} - \lambda \hat{r}^{(b)}$$
+
+3.  Calculate the model's final predictions $$ \hat{y} = y - r^{(B)} = \bar{y} + \lambda \sum_{b=1}^{B} \hat{r}^{(b)} $$
+
+------------------------------------------------------------------------
+
+This algorithm works remarkably well on a variety of problems despite (perhaps because of) its simplicity. In the code below we initiate the algorithm from scratch and apply it to a dummy data set.
+
+```{r}
+library(rpart)
+set.seed(4026)
+n <- 100
+x1 <- round(runif(n, 0, 10), 0)
+x2 <- round(runif(n, 0, 10), 0)
+y <- round(10 + 3*x1 + x2 + rnorm(n, 0, 10))
+dat <- data.frame(cbind(y, x1, x2))
+
+# Initiate algorithm "by hand"
+gb.manual <- function(lambda, d, ntrees){
+  train_mse <<- c()                     #To keep track of training error
+  resids <<- c()                        #To keep track of residuals
+  rhats <<- c()                         #To keep track of tree predictions
+  
+  yhat_b <- mean(y)                     #First initialisation of prediction -> step 1
+  r_b <- y - yhat_b                     #First initialisation of residuals  -> step 1
+  
+  for(b in 1:ntrees){
+    ctrl <- rpart.control(maxdepth = 1, cp = 0.001)  
+    t <- rpart(r_b ~ x1 + x2, 
+               control = ctrl)          #Fit tree to residuals              -> step 2a
+    rhat_b <- predict(t, newdata = dat) #Predicted values of tree b         -> step 2b
+    yhat_b <- yhat_b + lambda*rhat_b    #Updated prediction                 -> step 2b
+    r_b <- y - yhat_b                   #Updated residuals                  -> step 2c
+    # r_b <- r_b - lambda*rhat_b        #Could also write it like this, same thing
+    
+    # Save all the training mses, residuals, and tree predictions
+    train_mse <<- c(train_mse, mean((y - yhat_b)^2)) #Double arrow saves object outside function
+    resids <<- cbind(resids, r_b)
+    rhats <<- cbind(rhats, rhat_b)
+  }
+  return(mean(y) + lambda*apply(rhats, 1, sum)) #Output final predictions   -> step 3
+  # Could also return y - resids[, ntrees]
+  # Or just yhat_b
+}
+
+#Run algorithm
+yhat_manual <- gb.manual(lambda = 0.01, d = 1, ntrees = 1000)
+
+#Final model training error
+(gbm_manual_train_mse <- mean((y - yhat_manual)^2)) # Or just train_mse[ntrees]
+```
+
+In order to validate this procedure, let us compare the results with those obtained from using the `gbm` package.
+
+```{r, warning=F, message=F}
+library(gbm)
+gbm_lib <- gbm(y ~ ., data = dat, 
+               distribution = 'gaussian', #Applies squared error loss 
+               n.trees = 1000,
+               interaction.depth = 1,
+               shrinkage = 0.01,
+               bag.fraction = 1)          #Subsamples observations by default (0.5)
+
+yhat_gbm <- gbm_lib$fit
+(mse_gbm <- mean((y - yhat_gbm)^2))
+```
+
+We see that the training MSEs match exactly. As a final sanity check, let's compare each tree's training error between the manual implementation and the package's.
+
+```{r}
+all(round(gbm_lib$train.error, 10) == round(train_mse, 10))
+#Some rounding issue creeps in after 10 decimal places (exacerbated by larger trees)
+```
+
+In the above algorithm description and example we see that there are three main hyperparameters that must be specified beforehand:
+
+1.  The number of trees -- $B$
+
+    Unlike bagging and random forests, boosting can lead to overfitting if $B$ is too large. We use cross-validation to select $B$.
+
+2.  The shrinkage parameter or learning rate -- $\lambda$
+
+    Typical values are 0.01 or 0.001 (the default in `gbm`). Smaller values require more trees.
+
+3.  The maximum number of splits in each tree -- $d$
+
+    Also called the **interaction depth** of the boosted model, since $d$ splits can involve at most $d$ variables. Depending on the size of the problem, $d=1$ can work well when fitting many trees.
+
+Although these are the main hyperparameters, one can also further control the tree depth (useful when larger trees are preferred), as well as introduce randomisation by randomly subsampling the training set, somewhat reminiscent of the bagging process.
+
+To illustrate the application, let us return to the California housing example.
+
+### Example 6 -- California housing (continued)
+
+Since this is our final analysis of this dataset, we will apply some **feature engineering**, a process of adapting/transforming/combining the existing information into new features to improve model performance.
+
+Instead of using the total number of bedrooms, bathrooms, and people per neighbourhood, let's use the number of households to convert these into per-house rates. We will also apply a 70/30 train/test split, here showing how a `caret` function can be used to do so.
+
+```{r}
+library(dplyr)
+
+# Create calif feature engineered
+calif_fe <- calif %>% mutate(AveRooms = Rooms/Households,
+                             AveBedrms = Bedrooms/Households,
+                             AveOccup = Population/Households) %>% 
+  select(-Rooms, -Bedrooms, -Households)
+
+## Using caret for train/test split:
+set.seed(4026)
+train_index <- createDataPartition(y = calif_fe$HousePrice, p = 0.8, list = FALSE)
+calif_fe_train <- calif_fe[train_index,]
+calif_fe_test <- calif_fe[-train_index,]
+```
+
+As some benchmark for comparison -- and to see whether the engineered features are useful -- we will first fit a single regression tree.
+
+```{r calif-fe-cv, fig.align='center', fig.cap='Cross-validated pruning results from a tree fitted to the feature-engineered Cailfornia housing training set.'}
+# Slightly larger tree
+calif_fe_tree <- tree(HousePrice ~ ., data = calif_fe_train, 
+                      control = tree.control(nobs=nrow(calif), 
+                                             mindev = 0.003))
+
+# Tune
+set.seed(1)
+calif_fe_cv <- cv.tree(calif_fe_tree)
+calif_fe_cv$k[1] <- 0
+
+plot(calif_fe_cv$size, calif_fe_cv$dev, type = 'o', 
+     pch = 16, col = 'navy', lwd = 2,
+     xlab = 'Number of terminal nodes', ylab = 'CV RSS')
+axis(side = 1, at = 1:max(calif_fe_cv$size), labels = 1:max(calif_fe_cv$size))
+alpha <- round(calif_fe_cv$k)
+axis(3, at = calif_fe_cv$size, lab = alpha)
+mtext(expression(alpha), 3, line = 2.5, cex = 1.5)
+```
+
+The CV RSS first reaches a minimum at 12 terminal nodes, hence we will prune it down to that size.
+
+```{r calif-fe-pruned, fig.align='center', fig.dim=c(12, 15), fig.cap='Pruning tree fitted to the feature-engineered Cailfornia housing training set.'}
+calif_fe_pruned <- prune.tree(calif_fe_tree, best = 12)
+plot(calif_fe_pruned)
+text(calif_fe_pruned)
+```
+
+Here we see that the average number of rooms and average occupancy were indeed useful in this model (compare to Figure \@ref(fig:calif-pruned15), which split almost exclusively on income and location). The CV RMSE is `r round(sqrt(calif_fe_cv$dev[which(calif_fe_cv$size==12)]/nrow(calif_fe_train)), 3)`.
+
+Next, we fit a gradient boosted trees model to the training set via the `gbm` package, using `caret` to apply hyperparameter tuning according to 10-fold CV (which can be parallelised). Note that for a problem of this size, the gbm model does take a while to run. Therefore, the code run below has been commented out after running, with the results saved and loaded back in for quick reproducibility.
+
+```{r}
+# set.seed(4026)
+# ctrl <- trainControl(method = 'cv', number = 10, verboseIter = T)
+# 
+# calif_gbm_grid <- expand.grid(n.trees = c(1000, 10000, 50000),
+#                               interaction.depth = c(1, 2, 5),
+#                               shrinkage = c(0.01, 0.001),
+#                               n.minobsinnode = 10)
+# 
+# calif_gbm_gridsearch <- train(HousePrice ~ ., data = calif_fe_train,
+#                               method = 'gbm',
+#                               distribution = 'gaussian',
+#                               trControl = ctrl,
+#                               verbose = T,
+#                               tuneGrid = calif_gbm_grid)
+# save(calif_gbm_gridsearch, file = 'data/gbm_calif_50k.Rdata')
+load('data/gbm_calif_50k.Rdata')
+```
+
+Although we only touch on the subject here, the hyperparameter tuning procedure can be an entire topic on its own. One alternative to the grid search applied above -- whereby all combinations of **fixed** sets of hyperparameter values are used -- is to apply a random search, which introduces some variation in the hyperparameters. @bergstra2012random initially provided a strong argument for this approach within a neural network context. Further exploration of these topics is left for the reader.
+
+Looking at the CV results in Figure \@ref(fig:calif-gbm-hps), we see that higher values of $d$ in fact yielded better results. As expected, the higher learning rate reduced the CV error quicker for the same number of trees.
+
+```{r calif-gbm-hps, fig.align='center', fig.cap='Hyperparameter combinations results for a gradient boosted trees model fitted to the feature-engineered California housing dataset.'}
+plot(calif_gbm_gridsearch)
+```
+
+However, it is important to note that for this particular combination of number of trees it is difficult to determine whether the error is still decreasing at 50,000 trees. To ascertain this, we will use a large number of trees and see where the CV error reaches a minimum, as shown in Figure \@ref(fig:calif-gbm-cv).
+
+```{r calif-gbm-cv, fig.align='center', fig.cap='Cross-validation results for the gradient boosted trees model with $\\lambda=0.01$ and $d=5$ fitted to the feature-engineered California housing dataset.'}
+# calif_fe_gbm <-   gbm(HousePrice ~ ., data = calif_fe_train, 
+#                       distribution = 'gaussian', 
+#                       n.trees = 100000, 
+#                       interaction.depth = 5, 
+#                       shrinkage = 0.01, 
+#                       bag.fraction = 1, 
+#                       cv.folds = 10,  #built-in CV
+#                       n.cores = 10,   #which can be parallelised
+#                       verbose = T)
+# save(calif_fe_gbm, file = 'data/gbm_calif_100k.Rdata')
+load('data/gbm_calif_100k.Rdata')
+d <- gbm.perf(calif_fe_gbm)
+legend('topright', c('CV error', 'Training error'), col = c('green', 'black'), lty = 1)
+```
+
+It turns out the CV error actually started increasing after `r d` trees. However, it is possible that one of the other hyperparameter combinations (different $\lambda$ and $d$) would have yielded a lower CV if allowed to run for more than 50,000 trees. This example serves to illustrate that this style of hyperparameter tuning can be tedious, time-consuming, and a trial-and-error process. Whilst more sophisticated tuning techniques exist, for example Bayesian optimisation, they are beyond the scope of this course.
+
+The `gbm()` package contains some convenient functions that one can apply to the model object. For example, extracting and plotting **variable importance** can be achieved as follows:
+
+```{r calif-gbm-vi, fig.align='center', fig.cap='Variable importance for the gbm model fitted to the feature-engineered California housing dataset.'}
+par(mar=c(5,6,4,1) + 0.1)
+calif_gbm_varimp <- summary(calif_fe_gbm, n.trees = d, las = 1, xlim = c(0, 50))
+```
+
+Variable importance is measured in the same way as in the random forest model, i.e. by tracking the average reduction in the loss function resulting from splitting on each feature. Once again we see that median income and the location variables are the most important features, although two of our engineered features, average occupancy and average rooms were also somewhat infuential.
+
+Although variable importance plots tell us which features are most important for predicting the response, they do not tell us **how** the predictors influence the predictions. For this, we make use of partial dependence plots.
+
+### Partial dependence plots
+
+Partial dependence functions can be used to interpret the results of any "black box" learning method by measuring the relationship between **certain features** and the approximation of $f(\boldsymbol{X})$. For $p$ features, $X_1, \ldots, X_p$, consider some feature $X_j$ and let $X_{-j}$ denote all other features.
+
+One way to define the average or partial dependence of $f(\boldsymbol{X})$ on $X_j$ is
+
+$$f_j(X_j) = E_{X_{-j}}f(X_j, X_{-j}),$$
+
+which can be estimated by
+
+$$\bar{f}_j(X_j) =\frac{1}{N} \sum_{i=1}^N f(X_j, X_{i,-j}).$$ This must be done for each value of $X_j$ and can be computationally intensive, even for moderately-sized datasets. Note that these partial dependence functions represent the effect of $X_j$ on $f(\boldsymbol{X})$ after accounting for the **average** effects of the other features on $f(\boldsymbol{X})$, as opposed to the effect of $X_j$ on $f(\boldsymbol{X})$ when **ignoring** the effects of the $X_{-j}$.
+
+Unfortunately, visualisation of these relationships is limited to low-dimensional views. Although these "slices" of information can seldom provide a comprehensive depiction of the approximation, it can still provide a useful indication of how certain features influenced the predictions on average, especially when their interaction with other variables is limited.
+
+The `gbm` package again allows us to easily produce the partial dependence plots. Figure \@ref(fig:calif-pdp) shows 1-dimensional partial dependence plots for the previously fitted model on the (feature-engineered) California dataset for four of the (non-location) features.
+
+```{r calif-pdp, warning=F, message=F, fig.align='center', fig.cap='Partial dependence plots for the gbm model fitted to the feature-engineered California housing dataset.'}
+library(gridExtra)
+library(grid)
+
+ylims <- c(11.5,12.8)
+p1 <- plot.gbm(calif_fe_gbm, 'Income', d, ylim = ylims, ylab = '')
+p2 <- plot.gbm(calif_fe_gbm, 'AveRooms', d, ylim = ylims, ylab = '', xlab = 'Average Rooms')
+p3 <- plot.gbm(calif_fe_gbm, 'AveOccup', d, ylim = ylims, ylab = '', xlab = 'Average Occupancy')
+p4 <- plot.gbm(calif_fe_gbm, 'HouseAge', d, ylim = ylims, ylab = '', xlab = 'House Age')
+
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+grid.text('Partial Predicted Log House Price', x = 0, vjust = 1, rot = 90)
+```
+
+Looking at the average occupancy and average rooms, something is not right -- an average occupancy of more than 1000 does not make sense, nor does more than 100 rooms on average! It is most likely an errant observation(s) with too few households.
+
+```{r}
+calif[which.max(calif_fe$AveOccup),]
+calif[which.max(calif_fe$AveRooms),]
+```
+
+Indeed, six households for a population of 7460 is nonsensical. 1561 rooms for 11 households and a population of 30 is questionable, given some of the areas filled with mansions one finds in California. This goes to show how important an exploratory data analysis and cleaning are at the start of an analysis! These are just the observations yielding the maximum average occupancy and average rooms values, one could explore their distributions further.
+
+It would be best to rerun the analysis with the cleaned data, which is left as a homework exercise. For now, we will just cut off these outliers, for which we can use a package offering more options for partial dependence plots. `pdp` is a popular package for this.
+
+```{r calif-pdp2, warning=F, fig.align='center', fig.cap='Partial dependence plots for some of the features in the gbm model fitted to the feature-engineered California housing dataset. Some of the x-axes have been rescaled.'}
+library(pdp)
+
+p1 <- partial(calif_fe_gbm, 'Income',   n.trees = d)
+p2 <- partial(calif_fe_gbm, 'AveRooms', n.trees = d, trim.outliers = T)
+p3 <- partial(calif_fe_gbm, 'AveOccup', n.trees = d, trim.outliers = T)
+p4 <- partial(calif_fe_gbm, 'HouseAge', n.trees = d)
+
+
+grid.arrange(plotPartial(p1, ylab = '', ylim = ylims), 
+             plotPartial(p2, ylab = '', ylim = ylims, xlab = 'Average Rooms'), 
+             plotPartial(p3, ylab = '', ylim = ylims, xlab = 'Average Occupancy'), 
+             plotPartial(p4, ylab = '', ylim = ylims, xlab = 'House Age'), 
+             ncol = 2)
+grid.text('Partial Predicted Log House Price', x = 0, vjust = 1, rot = 90)
+```
+
+The lack of discernible relationship between house age and predicted house price reflects its low variable importance, noting that the y-axes have been adjusted such that the features are directly comparable. For income and average rooms we observe a general positive relationship, whilst increasing average occupancy initially increases the predicted house price (although increasing the resolution could add a lot of noise between one and two occupants), before it gradually decreases.
+
+Finally, we can also look at the partial dependence of two features simultaneously. To come full-circle with this example, we will do so for the latitude and longitude. In order to add the map border, we will extract the partial dependence information.
+
+```{r calif-pdp-latlong, fig.align='center', fig.dim=c(6,6), fig.cap='Partial dependence plot of the location information for the gbm model fitted to the feature-engineered California housing dataset.'}
+latlong_pd <- plot.gbm(calif_fe_gbm, c('Longitude', 'Latitude'), return.grid = T)
+
+# Same colour scale as before
+n_breaks <- 9
+my_cols <- brewer.pal(n_breaks, 'YlOrBr')[cut(latlong_pd$y, breaks = n_breaks)]
+
+# Plot the partial dependence values
+plot(latlong_pd$Longitude, latlong_pd$Latitude, pch = 15, 
+     xlab = 'Longitude', ylab = 'Latitude', col = my_cols)
+legend(x = 'topright', bty = 'n', title = 'Log Median House Price', cex = 0.9,
+       legend = round(seq(min(latlong_pd$y), max(latlong_pd$y), length.out = n_breaks), 2),
+       fill = brewer.pal(n_breaks, 'YlOrBr'))
+
+# Add the state border
+map('state', 'california', add = T, lwd = 2)
+text(-123, 35, 'Pacific Ocean')
+```
+
+In Figure \@ref(fig:calif-pdp-latlong) we see that the model extrapolates beyond the state boundaries, extending the general trend observed earlier of "the more south-west, the more expensive". This completely messes up the colour scale, so to get a more realistic and useful picture let us rather only plot the partial dependence information pertaining to populated locations.
+
+```{r calif-pdp-latlong2, warning=F, message=F, fig.align='center', fig.dim=c(6,6), fig.cap='Partial dependence plot for the observed location information for the gbm model fitted to the feature-engineered California housing dataset.'}
+library(latticeExtra)
+
+locs <- distinct(calif, Longitude, Latitude)
+p <- partial(calif_fe_gbm, c('Longitude', 'Latitude'), locs, n.trees = d)
+
+# Same colour scale as before
+n_breaks <- 9
+my_cols <- colorRampPalette(brewer.pal(n_breaks, 'YlOrBr'))
+
+pp <- plotPartial(p, col.regions = my_cols(100))
+
+# Add the state border. plotPartial creates a lattice be default
+my_map <- map_data('state', 'california')
+border_layer <- latticeExtra::layer(panel.polygon(my_map, col = 'transparent'))
+pp + border_layer
+```
+
+Comparing this with Figure \@ref(fig:calif-map), we can see how the gbm model learned how location relates to house price.
+
+So far we have only discussed the base version of stochastic gradient boosting, but there are many variants that use the same basic principle whilst making changes to some aspects of the algorithm. One particularly powerful, relatively recent development is Extreme Gradient Boosting (XGBoost).
+
+### XGBoost
+
+Since @xgboost first proposed XGBoost, it has become a highly popular choice for solving a wide range of machine learning problems, especially structured/tabular data. For the sake of scope we will not delve into the details of its implementation; we only summarise some of the key innovations of the algorithm here:
+
+1.  **Regularisation**: XGBoost incorporates $L_1$ and $L_2$ regularisation terms into its objective function to prevent overfitting. This helps in controlling the complexity of the learned trees.
+
+2.  **Newton boosting**: Computes the second derivative (Hessian) of the loss function with respect to the predicted scores, allowing for more precise updates to the tree structure and yielding faster convergence.
+
+3.  **Tree pruning**: Trees are grown to a maximum depth and then pruned iteratively, which helps in reducing overfitting and computational complexity.
+
+4.  **Parallel processing**: It is designed for parallel processing, making it faster and more scalable.
+
+5.  **Subsampling**: Row subsampling helps prevent overfitting; column subsampling adds extra randomisation, similar to random forests.
+
+6.  **Missing values**: It automatically learns how to partition data points with missing values and assign them to the appropriate child nodes during tree construction.
+
+To illustrate its application, we will analyse the California data one final time. The required package in R is `xgboost`, although we will again implement it via `caret` for hyperparameter tuning. The only hyperparameters we will search over are $B$ from 5000 to 40000 in increments of 5000; $d \in (6, 8)$; $\lambda \in (0.005, 0.01)$; and proportion of features used per tree (similar to $m$ in the random forest, only at tree level) set to 0.5 and 1.
+
+Note that separate models are not run for different numbers of trees; the chain is simply extended. Therefore, we can actually use more granular trees than we did above. Below we see all the hyperparameters than must be specified when creating a search grid for XGBoost.
+
+```{r}
+getModelInfo()$xgbTree$parameters
+
+# calif_xgb_grid <- expand.grid(nrounds = seq(5000, 40000, 5000),  #number of trees
+#                               max_depth = c(6, 8),               #interaction depth
+#                               eta = c(0.01, 0.005),              #learning rate
+#                               gamma = 0.001,                     #mindev
+#                               colsample_bytree = c(1, 0.5),      #proportion random features per tree
+#                               min_child_weight = 1,              #also controls tree depth
+#                               subsample = 1)                     #bootstrap proportion
+# 
+# ctrl <-  trainControl(method = 'cv', number = 5, verboseIter = T)
+# 
+# calif_xgb_gridsearch <- train(HousePrice ~ ., data = calif_fe_train,
+#                               method = 'xgbTree',
+#                               trControl = ctrl,
+#                               verbose = F,
+#                               tuneGrid = calif_xgb_grid)
+# 
+# save(calif_xgb_gridsearch, file = 'data/xgb_calif_40k.Rdata')
+
+load('data/xgb_calif_40k.Rdata')
+```
+
+Looking at the hyperparameter tuning CV results in Figure \@ref(fig:calif-xgb-hps), we once again see that the deeper tree (8 leaves) is preferable across all combinations. We would ideally want to find the best tree size, since this seems to make a notable difference, especially when applying random feature selection. For this number of trees, the learning rate change does not make a substantial difference. 
+
+```{r calif-xgb-hps, fig.align='center', fig.cap='Hyperparameter combinations results for an XGBoost model fitted to the feature-engineered California housing dataset.'}
+plot(calif_xgb_gridsearch)
+```
+
+The best model combination (of the ones tested) is as follows:
+
+```{r}
+kable(calif_xgb_gridsearch$bestTune)
+```
+
+Finally, we can use the selected model to predict on the test set. 
+
+```{r, message=FALSE, warning=FALSE}
+y_calif_fe <- calif_fe_test$HousePrice
+calif_xgb_pred <- predict(calif_xgb_gridsearch, calif_fe_test)
+calif_xgb_mse <- mean((y_calif_fe - calif_xgb_pred)^2)
+```
+
+The CV RMSE of `r round(min(calif_xgb_gridsearch$results$RMSE), 3)` was relatively close to the testing RMSE of `r round(sqrt(calif_xgb_mse), 3)` (MSE = `r round(calif_xgb_mse, 3)`), in fact slightly overestimating it. We can also determine the proportion of variation explained in the unseen data as $R^2$ = `r round((1 - sum((y_calif_fe - calif_xgb_pred)^2)/sum((y_calif_fe - mean(y_calif_fe))^2))*100, 2)`%. 
+
+One way of visualising a model's predictions is to simply plot them against the observed values. The closer the points lie to a straight line, the better the fit. 
+
+```{r, warning=F, message=F}
+plot_data <- as.data.frame(cbind(predicted = calif_xgb_pred, observed = calif_fe_test$HousePrice))
+
+ggplot(plot_data, aes(predicted, observed)) + geom_point(color = 'darkred', alpha = 0.5) + 
+  geom_smooth(method = lm) + 
+  xlab('Predicted log(price)') + ylab('Observed log(price)') + 
+  theme(plot.title = element_text(color = 'darkgreen', size = 16, hjust = 0.5),
+        axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12, hjust = 0.5),
+        axis.title.x = element_text(size = 14), axis.title.y = element_text(size = 14)) +
+  theme_bw()
+```
+
+The first thing to notice is the clear ceiling on the observed house prices, which one should once again ideally have already picked up in the data exploration. This maximum value of `r format(max(exp(calif$HousePrice)), scientific = F)` is suspiciously round. It turns out that there are `r sum(round(exp(calif$HousePrice)) == 500000 | round(exp(calif$HousePrice)) == 500001)` neighbourhoods where the median house price was either \$500,000 or \$500,001. Whether this is an artifact of the data due to some measurement limit or estimation, or whether it was because of some real-world bound is something the analyst should determine before providing definitive conclusions. 
+
+For our very last example, we will return to the Titanic data.
+
+### Example 7 -- Titanic (continued)
+
+Slow learning methods like gradient boosting generally tend to work better on larger datasets. Having said that, nothing prevents us from applying boosting to the Titanic data for comparison, even though it is relatively limited in size. 
+
+The benefit of a smaller problem is of course that the training goes quicker and it generally requires fewer trees, such that one can test more hyperparameter combinations for the same time cost. Subsampling is also unlikely to yield much, if any benefit, hence we will just use the gbm method.
+
+We will search across trees from 500 to 6000 in increments of 500; $d = 1, \ldots, 5$; and $\lambda \in (0.001, 0.005, 0.01)$.
+
+```{r}
+set.seed(1)
+train <- sample(1:nrow(titanic), 0.7*nrow(titanic))
+
+titanic_train <- titanic[train,]
+titanic_test <- titanic[-train,]
+
+# set.seed(4026)
+# titanic_gbm_grid <- expand.grid(n.trees = seq(500, 6000, 500),
+#                                 interaction.depth = 1:5,
+#                                 shrinkage = c(0.01, 0.005, 0.001),
+#                                 n.minobsinnode = 1)
+# 
+# ctrl <-  trainControl(method = 'cv', number = 10, verboseIter = T)
+# 
+# titanic_gbm_gridsearch <- train(Survived ~ ., data = titanic_train,
+#                                 method = 'gbm',
+#                                 distribution = 'bernoulli', #For classification
+#                                 trControl = ctrl,
+#                                 verbose = F,
+#                                 tuneGrid = titanic_gbm_grid)
+# save(titanic_gbm_gridsearch, file = 'data/gbm_titanic.Rdata')
+load('data/gbm_titanic.Rdata')
+```
+
+The best model used the following hyperparameters:
+
+```{r} 
+kable(titanic_gbm_gridsearch$bestTune)
+```
+
+This is a desirable result, since none of the hyperparameters are on the edge of the explored space. Using $d = 4$ and $\lambda = 0.005$, we can now find the exact number of trees where the CV deviance is minimised.
+
+```{r titanic-gbm-cv, fig.align='center', fig.cap='Cross-validation results for the gradient boosted trees model with $\\lambda=0.005$ and $d=4$ fitted to the Titanic dataset.'}
+# gbm requires 0-1 for binary classification (without caret)
+titanic_train$Survived <- as.numeric(titanic_train$Survived) - 1
+
+set.seed(4026)
+titanic_gbm <- gbm(Survived ~ ., data = titanic_train, 
+                   distribution = 'bernoulli',    #For binary classification (see ?gbm)
+                   n.trees = 4000, 
+                   interaction.depth = 4, 
+                   shrinkage = 0.005, 
+                   bag.fraction = 1, 
+                   cv.folds = 10, 
+                   n.cores = 10, 
+                   verbose = F)
+
+d <- gbm.perf(titanic_gbm)
+legend('topright', c('CV error', 'Training error'), col = c('green', 'black'), lty = 1)
+```
+
+We will use this model, with only `r d` trees, for prediction.
+
+```{r}
+y_titanic_test <- as.numeric(titanic_test$Survived) - 1
+titanic_gbm_pred <- predict(titanic_gbm, newdata = titanic_test, type = 'response')
+titanic_gbm_mis <- mean(y_titanic_test != round(titanic_gbm_pred))
+```
+
+Through gbm we have managed to reduce the testing misclassification rate even further, from `r round(titanic_rf_tuned_mis*100, 2)`% for the tuned random forest to `r round(titanic_gbm_mis*100, 2)`%. Exploring the confusion matrix and other classification metrics is left as an exercise. 
+
+Interestingly, the variable importance for the gbm model showed passenger class to be more influential than age and fare, contrary to the random forest model variable importance shown in Figure \@ref(fig:titanic-rf-imp). Considering that the gbm model performed better on the same out-of-sample data, it can be interpreted as this model extracting more information from the passenger class variable than the random forest managed. Number of siblings/spouses also featured more prominently in this model.
+
+```{r titanic-gbm-vi, fig.align='center', fig.cap='Variable importance for the gbm model fitted to the Titanic dataset.'}
+par(mar=c(5,6,4,1) + 0.1)
+titanic_gbm_varimp <- summary(titanic_gbm, n.trees = d, las = 1)
+```
+
+Moving on to the partial dependence plots, we observe the expected patterns based on the classification tree, where the log-odds of survival were significantly increased by being female; decreased as class increases; dipped sharply after late-teens, but picked up again for the elderly; and increased sharply beyond a specific fare. There are once again outliers in fare which can be removed, although this is left for the reader.
+
+```{r titanic-pdp, warning=F, message=F, fig.align='center', fig.cap='Partial dependence plots for the gbm model fitted to the Titanic dataset.'}
+p1 <- plot.gbm(titanic_gbm, 'Sex', d, ylab = '')
+p2 <- plot.gbm(titanic_gbm, 'Pclass', d, ylab = '')
+p3 <- plot.gbm(titanic_gbm, 'Age', d, ylab = '') 
+p4 <- plot.gbm(titanic_gbm, 'Fare', d, ylab = '') 
+
+grid.arrange(p1, p2, p3, p4, ncol = 2)
+grid.text('Partial Predicted Log-odds', x = 0, vjust = 1, rot = 90)
+```
+
+We might also be interested in the interaction between age and sex, shown in Figure \@ref(fig:titanic-pdp-biv).
+
+```{r titanic-pdp-biv, fig.align='center', fig.dim=c(6,6), fig.cap='Bivariate partial dependence plot for the gbm model fitted to the Titanic dataset.'}
+#Bivariate PD plot
+plot.gbm(titanic_gbm, c('Sex', 'Age'), d)
+```
+
+Although the overall pattern across ages is roughly the same for males and females, we do a see a noticeably more pronounced dip specifically for males beyond age of approximately 16. 
+
+These various approaches have allowed us to extract useful insights into the data (statistical learning paradigm) as well create some relatively accurate predictions on unseen data (machine learning paradigm). 
+
+### Final word
+
+We end this section with one final reminder that the implementation of these supervised learning algorithms is constantly being developed. For example, we only used `caret` for hyperparameter tuning, although one could achieve the same with a number of other packages, e.g. the tried-and-trusted [tidymodels](https://workflowsets.tidymodels.org/articles/tuning-and-comparing-models.html), or the newly-developed [EZtune](https://arxiv.org/abs/2303.12177).
+
+You are indeed encouraged to keep on exploring new methods in R, although one should always ensure that you have a deeply grounded understanding of the theory underpinning these methods. So continue balancing depth of theory, breadth of topic, and practical application on your future journey through supervised learning. 
+
+Happy continued learning!
+
 ## Homework exercises
 
-1. We observed a fairly high $R^2$ value for the random forest fitted to the California housing dataset. How does this compare to the other regression models we encountered? Compare it with the lasso regression, some polynomial regression model, and KNN. 
+1.  We observed a fairly high $R^2$ value for the random forest fitted to the California housing dataset. How does this compare to the other regression models we encountered? Compare it with the lasso regression, some polynomial regression model, and KNN.
 
-2. Run the random forest grid search on the Titanic dataset multiple times. What is the distribution of hyperparameter selections? How does the splitting rule choice affect the predictive performance and variable importance measurements?
+2.  Run the random forest grid search on the Titanic dataset multiple times. What is the distribution of hyperparameter selections? How does the splitting rule choice affect the predictive performance and variable importance measurements?
+
+3.  Rerun the feature-engineered California housing analyses after removing all definite outliers. Does this affect any of the results?
+
+4.  Fit and tune a random forest on the feature-engineered California training set. How do the test set results compare with that of the boosted trees?
