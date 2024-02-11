@@ -682,7 +682,7 @@ We now have three logistic regression models of varying complexity: the full mod
 
 ```{r}
 x_test <- select(heart, -DEATH_EVENT) %>% slice(-train) #predict.glm requires matrix
-x_test_dummies <- model.matrix( ~ ., x_test)            #with dummy variables
+x_test_dummies <- makeX(x_test)            #with dummy variables
 y_test <- heart$DEATH_EVENT[-train]
 
 pred_full <- predict(heart_lr, newdata = heart[-train, ], type = 'response') #response for p(x)

@@ -15,12 +15,12 @@ eq:bridget
 eq:rss-lambda
 eq:bridge-hat
 fig:pros-cor
-tab:unnamed-chunk-3
+tab:unnamed-chunk-19
 fig:ridge-coeffs
 fig:ridge-cv
 eq:blasst
 eq:blass
-fig:unnamed-chunk-5
+fig:unnamed-chunk-21
 fig:lasso-coeffs
 fig:lasso-cv
 eq:elastic
@@ -34,8 +34,8 @@ eq:pred
 eq:dec-rule
 fig:scatter
 fig:boxes
-tab:unnamed-chunk-9
-tab:unnamed-chunk-10
+tab:unnamed-chunk-25
+tab:unnamed-chunk-26
 fig:d1
 fig:d2-bound
 eq:misc
@@ -48,7 +48,7 @@ tab:van-lr-tab
 fig:heart-l1
 fig:heart-l1-cv
 fig:heart-rocs
-tab:unnamed-chunk-18
+tab:unnamed-chunk-34
 eq:poly
 fig:auto-pairs
 fig:auto-fits
