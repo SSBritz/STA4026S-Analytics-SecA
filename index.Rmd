@@ -1,9 +1,9 @@
 ---
 title: |
   STA4026S -- Honours Analytics  
-  Section B: Theory and Application of Supervised Learning
+  Section A: Theory and Application of Supervised Learning
 author: 'Stefan S. Britz'
-date: 'September 2023'
+date: 'February 2024'
 site: bookdown::bookdown_site
 bibliography: references.bib
 csl: apa.csl

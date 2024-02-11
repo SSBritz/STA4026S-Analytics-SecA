@@ -605,7 +605,7 @@ heart <- read.csv('data/heart.csv', header = TRUE,
 
 # Create indices for train/test split
 set.seed(4026)
-train <- sample(1:nrow(heart), size=0.8*nrow(heart))
+train <- sample(nrow(heart), size=0.8*nrow(heart))
 
 # Always check the prevalence rate
 y_train <- heart$DEATH_EVENT[train]
@@ -639,8 +639,8 @@ plot_glmnet(heart_l1, xvar = 'norm')
 Figure \@ref(fig:heart-l1) shows how the regression coefficients are reduced to zero as the $L_1$ norm constraint decreases. To decide on the penalty to apply -- and by extension the number of variables to drop -- we again use 10-fold cross-validation with classification error as loss function.
 
 ```{r heart-l1-cv, fig.align='center', fig.cap='10-fold CV classification errors as a function of $\\log(\\lambda)$ for $L_1$ logistic regression applied to the heart failure dataset'}
-# cv.glmnet cannot take factor variables directly (?!), we must create explicit dummy variables
-x_train_dummies <- model.matrix( ~ ., x_train)
+# cv.glmnet cannot take factor variables directly, we must create explicit dummy variables
+x_train_dummies <- makeX(x_train) #For which the package has this function
 
 set.seed(1)
 heart_l1_cv <- cv.glmnet(x_train_dummies, y_train, family = 'binomial', type.measure = 'class')

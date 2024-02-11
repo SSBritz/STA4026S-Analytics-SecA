@@ -28,7 +28,7 @@ L4: Beyond Linearity <br>
 
 L5 & L6: Tree-based Methods <br>
 - [x] CART <br>
-- [x] Random forest <br>
+- [x] Random forests <br>
 - [x] Boosting <br>
 
 
