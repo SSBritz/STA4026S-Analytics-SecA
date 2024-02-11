@@ -1,11 +1,11 @@
 <h1>University of Cape Town<br>
 Department of Statistical Sciences<br>
 STA4026S - Honours Analytics<br>  
-Section B: Theory and Application of Supervised Learning</h1>
+Section A: Theory and Application of Supervised Learning</h1>
 
 A 6-lecture (double-period) section on supervised learning. 
 
-The outline for 2023 is as follows:
+The outline for 2024 is as follows:
 
 L1: Introduction to supervised learning <br>
 - [x] Bias-Variance trade-off <br>
