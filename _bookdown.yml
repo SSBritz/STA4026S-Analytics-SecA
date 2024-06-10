@@ -1,8 +1,8 @@
 book_filename: "bookdownproj"
 output_dir: docs
 delete_merged_file: true
-edit: https://github.com/SSBritz/STA4026S-Analytics-SecB/edit/main/%s
-view: https://github.com/SSBritz/STA4026S-Analytics-SecB/blob/main/%s
+edit: https://github.com/SSBritz/STA4026S-Analytics-SecA/edit/main/%s
+view: https://github.com/SSBritz/STA4026S-Analytics-SecA/blob/main/%s
 language:
   ui:
     chapter_name: "Chapter "
