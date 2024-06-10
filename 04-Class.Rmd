@@ -55,7 +55,7 @@ Now we need to define an appropriate function in order to map the linear functio
 
 ```{=tex}
 \begin{equation}
-p(\boldsymbol{X}) = \frac{e^{\beta_0+\beta_1X_1+\ldots+\beta_pX_p}}{1+e^{\beta_0+\beta_1X_1+\ldots+\beta_pX_p}}.
+p(\boldsymbol{X}) = \frac{e^{\beta_0+\beta_1X_1+\cdots+\beta_pX_p}}{1+e^{\beta_0+\beta_1X_1+\cdots+\beta_pX_p}}.
 (\#eq:log)
 \end{equation}
 ```
@@ -73,7 +73,7 @@ Consider now the exponent of the log odds, i.e. the **odds**:
 
 ```{=tex}
 \begin{equation}
-\text{odds} = \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} = \exp(\beta_0 + \beta_1x_1 + \ldots + \beta_px_p).
+\text{odds} = \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} = \exp(\beta_0 + \beta_1x_1 + \cdots + \beta_px_p).
 (\#eq:odds)
 \end{equation}
 ```
@@ -87,7 +87,7 @@ The most common approach for estimating the parameters $\boldsymbol{\beta}$ is b
 
 ```{=tex}
 \begin{align}
-L(\boldsymbol{\beta}) &= \Pr(Y = y_1|\boldsymbol{X} = \boldsymbol{X}_1)\times \Pr(Y = y_2|\boldsymbol{X} = \boldsymbol{x}_2)\times \ldots \times \Pr(Y = y_n|\boldsymbol{X} = \boldsymbol{x}_n) \\
+L(\boldsymbol{\beta}) &= \Pr(Y = y_1|\boldsymbol{X} = \boldsymbol{X}_1)\times \Pr(Y = y_2|\boldsymbol{X} = \boldsymbol{x}_2)\times \cdots \times \Pr(Y = y_n|\boldsymbol{X} = \boldsymbol{x}_n) \\
 &= \prod_{i=1}^np(\boldsymbol{x}_i)^{y_i}(1 - p(\boldsymbol{x}_i))^{1 - y_i}
 (\#eq:L)
 \end{align}
@@ -112,8 +112,8 @@ For example, consider the case where $X_1$ increases by one unit, i.e. from $x_1
 
 ```{=tex}
 \begin{align}
-\text{odds}(X_1 = x_1 + 1) &= \exp(\beta_0 + \beta_1(x_1 + 1) + \ldots + \beta_px_p) \\
-&= e^{\beta_1}\exp(\beta_0 + \beta_1x_1 + \ldots + \beta_px_p) \\
+\text{odds}(X_1 = x_1 + 1) &= \exp(\beta_0 + \beta_1(x_1 + 1) + \cdots + \beta_px_p) \\
+&= e^{\beta_1}\exp(\beta_0 + \beta_1x_1 + \cdots + \beta_px_p) \\
 &= e^{\beta_1}\text{odds}(X_1 = x_1)
 (\#eq:oddschange)
 \end{align} 
@@ -128,7 +128,7 @@ Prediction for logistic regression is carried out in exactly the same way as wit
 
 ```{=tex}
 \begin{equation}
-\hat{\Pr}(Y=1|\boldsymbol{X}) = \hat{p}(\boldsymbol{X}) = \frac{e^{\hat{\beta}_0+\hat{\beta}_1X_1+\ldots+\hat{\beta}_pX_p}}{1+e^{\hat{\beta}_0+\hat{\beta}_1X_1+\ldots+\hat{\beta}_pX_p}}
+\hat{\Pr}(Y=1|\boldsymbol{X}) = \hat{p}(\boldsymbol{X}) = \frac{e^{\hat{\beta}_0+\hat{\beta}_1X_1+\cdots+\hat{\beta}_pX_p}}{1+e^{\hat{\beta}_0+\hat{\beta}_1X_1+\cdots+\hat{\beta}_pX_p}}
 \end{equation}
 (\#eq:pred)
 ```
@@ -309,7 +309,7 @@ points3d(Default$balance, Default$income, Y, col = ifelse(p2 >= 0.5, 'green', 'b
 
 **Note that this figure is interactive in html.**
 
-Here we can see that the contour on the sigmoid surface corresponding to a constant threshold yields a straight line. Projecting this line orthogonally onto a plane together with the observations yields our original plot of the data in Figure \@ref(fig:scatter) (this time with all the data, not just a subset) with the resulting linear decision boundary.
+Here we can see that the contour on the sigmoid surface corresponding to a constant threshold yields a straight line. Projecting this line orthogonally onto the xy-plane together with the observations yields our original plot of the data in Figure \@ref(fig:scatter) (this time with all the data, not just a subset) with the resulting linear decision boundary.
 
 ```{r d2-bound, fig.align='center', fig.dim=c(6,6), fig.cap='The logistic regression decision boundary for the default dataset using balance and income as predictors.'}
 
@@ -414,11 +414,13 @@ We can now define several metrics to describe the performance of a classificatio
 -   Positive Predictive Value = PPV = Precision = $\frac{TP}{TP + FP}$
 -   Negative Predictive Value = NPV = $\frac{TN}{TN + FN}$
 
-Note that the complements of these values yield the corresponding errors. Various other metrics exist for specific testing purposes. For example, the F~1~ score -- which represents the harmonic mean of precision and sensitivity -- is a popular performance metric, especially in computer vision and in the case of imbalanced data:
+Note that the complements of these values yield the corresponding errors. Various other metrics exist for specific testing purposes. For example, the F~1~ score -- which represents the harmonic mean of precision and sensitivity -- is a popular performance metric, especially when evaluating performance on imbalanced data[^04-class-1]:
+
+[^04-class-1]: Imbalanced data refers to a dataset where the distribution of target classes is not uniform, i.e. there are significantly more observations with labels from the majority class(es) than the minority class(es).
 
 $$F_1=2\frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
 
-This metric ranges from 0 to 1, with higher being better.
+This metric ranges from 0 to 1, with higher being better. It is often used to gauge the performance of classification models across a variety of different tasks, for example in computer vision (image classification, object detection, segmentation), Natural Language Processing (named entity recognition, sentiment analysis, document classification), recommender systems, etc.
 
 All of these metrics can be calculated manually from a confusion matrix. Alternatively, we could use packages like `caret` or `MLmetrics` to set up the confusion matrix and get the measurements directly, as shown here:
 
@@ -427,14 +429,14 @@ library(MLmetrics)
 library(caret)
 
 # Example using MLMetrics function, caret has similar
-f1_mod3 <- MLmetrics::F1_Score(y, yhat3)
+f1_mod3 <- MLmetrics::F1_Score(y, yhat3, positive = 'Yes')
 
 # Confusion matrix and metrics using caret
 caretmat3 <- confusionMatrix(as.factor(yhat3), y, positive = 'Yes') #NB to set the ref category!
 caretmat3
 ```
 
-Our logistic regression model on the `Default` dataset yielded a training F~1~ score of `r round(f1_mod3, 3)`, indicating excellent performance (as is expected on such a well separable simulated example!)
+Our logistic regression model on the `Default` dataset yielded a training F~1~ score of `r round(f1_mod3, 3)`, which provides a more informative measure of the model's performance than just considering the accuracy. This metric balances the facts that the model only correctly identified `r 100*round(caretmat3$byClass[1], 4)`% of defaulters (recall), and of those predicted as defaulters, `r 100*round(caretmat3$byClass[5], 4)`% had actually defaulted (precision).
 
 We have noted that all of the above metrics can be calculated from the confusion matrix, regardless of which underlying model yielded the matrix. But the exact confusion matrix is determined by the predictions, which in turn depend on the decision rule threshold. Now that we know all errors are not equal, can we perhaps change the threshold to adjust certain metrics? Note that, for now, all of this is applied to just the training set in order to illustrate the principle.
 
@@ -470,7 +472,7 @@ compar %>% kable(digits = 3, caption = 'Comparison of the TPR, FPR, and accuracy
 
 Another way of measuring how well the classifier is performing, is by varying $\tau$ over a range of values and keeping track of the TPR and FPR. To illustrate this, consider again the 1-variable model where we include only `Balance`. For convenience and clearer illustration, Figure \@ref(fig:thresh-anim) only displays a subsample of 200 observations.
 
-```{r thresh-anim, animation.hook='gifski', interval=0.333, fig.align='center', fig.dim=c(8, 6), fig.cap='The effect of varying the decision rule threshold on the TPR and FPR'}
+```{r thresh-anim, animation.hook='gifski', interval=0.333, fig.align='center', fig.dim=c(9, 6), out.width= '100%', fig.cap='The effect of varying the decision rule threshold on the TPR and FPR'}
 
 # Create a range of thresholds and empty vectors for their corresponding metrics
 taus <- seq(0, 1, 0.01) 
@@ -676,9 +678,9 @@ However, the resulting model corresponds to a relatively small penalty, only dro
 round(coef(auc_cv, s = 'lambda.min'), 3)
 ```
 
-We now have three logistic regression models of varying complexity: the full model[^04-class-1] (containing some unnecessary variables), the 5-variable model (regularised according to CV accuracy), and the 8-variable model (regularised according to CV AUC). At this point, one would need to select one of these models to use on the test set. If the goal is classification accuracy, then we would use the 5-variable model. However, for the sake of this example we will apply all three models to the test set and compare their performance across a few metrics.
+We now have three logistic regression models of varying complexity: the full model[^04-class-2] (containing some unnecessary variables), the 5-variable model (regularised according to CV accuracy), and the 8-variable model (regularised according to CV AUC). At this point, one would need to select one of these models to use on the test set. If the goal is classification accuracy, then we would use the 5-variable model. However, for the sake of this example we will apply all three models to the test set and compare their performance across a few metrics.
 
-[^04-class-1]: This model -- using all the predictors without any constraints and applying the default settings -- is often colloquially referred to as the "vanilla" model.
+[^04-class-2]: This model -- using all the predictors without any constraints and applying the default settings -- is often colloquially referred to as the "vanilla" model.
 
 ```{r}
 x_test <- select(heart, -DEATH_EVENT) %>% slice(-train) #predict.glm requires matrix

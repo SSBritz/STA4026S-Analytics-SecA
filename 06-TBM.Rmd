@@ -234,7 +234,7 @@ plot(calif_pruned15)
 text(calif_pruned15)
 ```
 
-This example primarily serves to illustrate the interpretive properties of decision trees. We will explore their sensitivity to sampling variation and their performance on unseen data later once ensembling methods are introduced. First, however, we will see how this method can be used to classify a qualitative predictor.
+This example primarily serves to illustrate the interpretive properties of decision trees. We will explore their sensitivity to sampling variation and their performance on unseen data later once ensembling methods are introduced. First, however, we will see how this method can be used to classify a qualitative response.
 
 ## Classification trees
 

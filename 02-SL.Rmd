@@ -137,7 +137,7 @@ This serves to illustrate how the model's degrees of freedom are directly propor
 
 In the following simulation we again observe $n=100$ training observations at a time, to which the same models of varying complexity as above are fitted. Each model's fit is then assessed on a set of 100 testing observations, where the $\boldsymbol{x}_0$ (and, therefore, true $f(\boldsymbol{x}_0)$) are fixed, but random noise is added. This process is repeated 1000 times, such that we can keep track of how each test observation's predictions vary across the iterations, as well as the errors.
 
-```{r b-v-trade, warning=FALSE, fig.dim=c(6,6), fig.align='center', fig.cap='Averaged error components over 1000 simulations of samples of $n=100$. The horizontal dashed line represent the minimum lower bound for the test MSE. The vertical dashed line indicates the point at which both the test MSE and reducible error are minimised.'}
+```{r b-v-trade, warning=FALSE, fig.dim=c(6,6), fig.align='center', fig.cap='Averaged error components over 1000 simulations of samples of $n=100$. The horizontal dashed line represents the minimum lower bound for the test MSE. The vertical dashed line indicates the point at which both the test MSE and reducible error are minimised.'}
 set.seed(1)
 
 n <- 100          #Sample size
