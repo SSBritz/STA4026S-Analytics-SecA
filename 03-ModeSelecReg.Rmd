@@ -318,7 +318,7 @@ ridge_mse <- mean((test_y - ridge_pred)^2)
 lasso_mse <- mean((test_y - lasso_pred)^2)
 ```
 
-```{r comp}
+```{r lm_comp}
 comparison_table <- data.frame(
   Model = c('OLS', 'Ridge', 'Lasso'),
   MSE = c(ols_mse, ridge_mse, lasso_mse)

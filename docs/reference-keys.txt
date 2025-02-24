@@ -24,6 +24,9 @@ fig:unnamed-chunk-5
 fig:lasso-coeffs
 fig:lasso-cv
 eq:elastic
+fig:elastic
+fig:elastic-pros
+fig:elastic-pros-mses
 eq:log
 eq:logit
 eq:odds
@@ -188,8 +191,3 @@ xgboost
 example-7-titanic-continued
 final-word
 homework-exercises-4
-tab:unnamed-chunk-1
-fig:unnamed-chunk-3
-fig:elastic
-fig:elastic-pros
-fig:elastic-pros-mses
