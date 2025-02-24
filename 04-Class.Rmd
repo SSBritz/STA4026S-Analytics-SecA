@@ -118,7 +118,7 @@ For example, consider the case where $X_1$ increases by one unit, i.e. from $x_1
 (\#eq:oddschange)
 \end{align} 
 ```
-Therefore, increasing $X_1$ by one unit (whilst holding all predictors constant), increases the odds of $Y = 1$ by a multiple of $e^{\beta_1}$.
+Therefore, increasing $X_1$ by one unit (whilst holding all predictors constant), increases the odds of $Y = 1$ by a factor of $e^{\beta_1}$.
 
 Note that the linear predictor may still take predictors with various measurement scales, including categorical variables represented by dummy variables, in which case we can interpret the change in odds for a specific category of the predictor against the reference category.
 

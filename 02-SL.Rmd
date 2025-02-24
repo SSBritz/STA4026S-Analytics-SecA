@@ -1,8 +1,3 @@
----
-csl: apa.csl
-output: pdf_document
----
-
 # Supervised Learning
 
 ```{r, setup2, include=FALSE}
@@ -289,8 +284,8 @@ folds <- cut(1:n, breaks = k, labels = F)   #Create indices for k folds
 
 #10-fold CV
 for(fld in 1:k){
-  x_train <- x[folds != fld]                    #Could streamline this code, (see next block)
-  x_valid <- x[folds == fld]                    #but this is easier to follow   
+  x_train <- x[folds != fld]      #Could streamline this code, (see next block)
+  x_valid <- x[folds == fld]      #but this is easier to follow   
   y_train <- y[folds != fld]                    
   y_valid <- y[folds == fld]
   fit <- smooth.spline(x_train, y_train, df = 8)

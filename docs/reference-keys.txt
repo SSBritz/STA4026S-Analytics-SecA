@@ -188,3 +188,8 @@ xgboost
 example-7-titanic-continued
 final-word
 homework-exercises-4
+tab:unnamed-chunk-1
+fig:unnamed-chunk-3
+fig:elastic
+fig:elastic-pros
+fig:elastic-pros-mses
