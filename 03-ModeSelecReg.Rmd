@@ -341,7 +341,7 @@ Although both of the regularisation approaches above can be effective in certain
 
 Note that the $\alpha$ terms have actually been swapped around here in order to correspond with the application in `glmnet`. The elastic-net selects variables like the lasso, and shrinks together the coefficients of correlated predictors like ridge. The effect of $\alpha$ on the constraint function is illustrated in Figure \@ref(fig:elastic).
 
-```{r elastic, animation.hook='gifski', interval=0.5, fig.align='center', fig.cap='The constraint function of elastic-net regularisation for different values of $\\alpha$.'}
+```{r elastic, animation.hook='gifski', interval=0.5, fig.align='center', fig.dim=c(6,6), fig.cap='The constraint function of elastic-net regularisation for different values of $\\alpha$.'}
 #Set up a range of alphas between 0 and 1
 alphas <- seq(0, 1, 0.1)
 
@@ -350,10 +350,10 @@ for(alpha in alphas){
   grid <- expand.grid(beta1 = beta1, beta2 = beta2)
   
   #Define elastic-net constraint
-  tau <- sqrt((1 - alpha) * (grid$beta1^2 + grid$beta2^2) + alpha * (abs(grid$beta1) + abs(grid$beta2)))
-  
+  tau <- (1 - alpha) * (grid$beta1^2 + grid$beta2^2) + alpha * (abs(grid$beta1) + abs(grid$beta2))
   tau_matrix <- matrix(tau, nrow = length(beta1))
   
+  #Draw contours
   contour(beta1, beta2, tau_matrix, levels = 1, drawlabels = FALSE,
           main = bquote('Elastic-net with' ~ alpha ~ '=' ~ .(alpha)),
           xlim = c(-1.5, 1.5), ylim = c(-1.5, 1.5), lwd = 2, col = 'lightblue',
