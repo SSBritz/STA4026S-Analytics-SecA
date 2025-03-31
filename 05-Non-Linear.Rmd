@@ -184,7 +184,7 @@ lines(xx, (cbind(1, xx, xx^2, xx^3, xx^4) %*% cfs4[-6])/-cfs4[6], #again, do the
       col = 'navy', lwd = 2)
 ```
 
-Of course we know that increased complexity does not necessarily imply improved fit or prediction. As with any other model, we would need to use out-of-sample data to determine whether this model better captures the underlying relationship in the data, whilst again considering what constitutes an ideal fit for the problem, i.e. weighing the asymmetric cost of misclassification. This is once again left as an exercise to the reader. 
+Of course we know that increased complexity does not necessarily imply improved fit or prediction. As with any other model, we would need to use out-of-sample data to determine whether this model better captures the underlying relationship in the data, whilst again considering what constitutes an ideal fit for the problem, i.e. weighing the asymmetric cost of misclassification. This is once again left as an exercise for the reader. 
 
 To limit the scope of this section of the course, we will end our discussion on non-linear parametric models here, with a brief addendum:
 

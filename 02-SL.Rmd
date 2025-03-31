@@ -251,7 +251,7 @@ The next obvious question is: What value of $k$ should we choose? Start by consi
 
 However, just as with model complexity we also need to consider the variance aspect. Consider now the other extreme, when $k = n$ (the number of observations in the training set). Here we have what is referred to as **Leave-one-out cross-validation (LOOCV)**, since we have $n$ folds, each leaving out just one observation for validation. Each of these $n$ training sets will be almost identical, such that there will be very high correlation between them. Now, remember that when we add correlated random variables (note that averaging involves summation), then the correlation affects the resulting variance:
 
-$$Var(X+Y) = \sigma^2_X + \sigma^2_Y + 2\frac{\rho_{XY}}{\sigma_X\sigma_Y}$$
+$$Var(X+Y) = \sigma^2_X + \sigma^2_Y + 2\rho_{XY}\sigma_X\sigma_Y$$
 Therefore, larger $k$ implies larger variation of the estimated error. This means that the same bias-variance trade-off applies to $k$-fold CV! In practice, it has been shown that $k = 5$ or $k = 10$ yields a good balance such that the test error estimate does not suffer from excessively high bias nor variance. 
 
 Also note that as $k$ increases, the computational cost increases proportionally, since $k$ separate models must be fitted to $k$ different data splits. This could cause unnecessarily long training times for large datasets/complicated models, such that a smaller $k$ might be preferable. 
